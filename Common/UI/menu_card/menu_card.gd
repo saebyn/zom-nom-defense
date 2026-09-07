@@ -65,6 +65,7 @@ signal locked_inspected(card_id: StringName)
 @onready var _title_label: Label = %Title
 @onready var _description_label: Label = %Description
 @onready var _status_label: Label = %Status
+@onready var _status_plate: NinePatchRect = %StatusPlate
 @onready var _artwork_frame: PanelContainer = %ArtworkFrame
 @onready var _artwork_rect: TextureRect = %Artwork
 @onready var _artwork_placeholder: Control = %ArtworkPlaceholder
@@ -73,10 +74,13 @@ signal locked_inspected(card_id: StringName)
 @onready var _selection_marker: Control = %SelectionMarker
 @onready var _completion_badge: Control = %CompletionBadge
 @onready var _base_surface: Control = %BaseSurface
-@onready var _card_frame: Control = %CardFrame
-@onready var _hover_frame: Control = %HoverFrame
-@onready var _focus_frame: Control = %FocusFrame
-@onready var _title_stack: Control = %TitleStack
+@onready var _card_frame: NinePatchRect = %CardFrame
+@onready var _hover_frame: NinePatchRect = %HoverFrame
+@onready var _focus_frame: NinePatchRect = %FocusFrame
+@onready var _title_stack: BoxContainer = %TitleStack
+@onready var _content_margin: MarginContainer = %ContentMargin
+@onready var _card_body: BoxContainer = %CardBody
+@onready var _info_area: BoxContainer = %InfoArea
 
 var _hovered := false
 var _uses_preview_navigation_state := false
@@ -114,6 +118,7 @@ func _refresh() -> void:
   _completion_badge.visible = completed
   _lock_overlay.visible = locked and not temporarily_disabled
   tooltip_text = _get_tooltip_text()
+  _refresh_layout()
   _refresh_artwork_frame()
 
   disabled = temporarily_disabled
@@ -217,17 +222,75 @@ func _refresh_navigation_frames() -> void:
 func _refresh_content_dimming() -> void:
   var dimmed_color := Color(0.78, 0.78, 0.72, 0.9) if locked else Color.WHITE
   if temporarily_disabled:
-    dimmed_color = Color(0.62, 0.62, 0.58, 0.78)
+    dimmed_color = Color(0.86, 0.84, 0.76, 0.9)
   _artwork_placeholder.modulate = dimmed_color
   _artwork_rect.modulate = dimmed_color
   _title_stack.modulate = dimmed_color
   _description_label.modulate = dimmed_color
+  _artwork_dim.color = Color(0.075, 0.082, 0.068, 0.24) if temporarily_disabled else Color(0.075, 0.082, 0.068, 0.52)
 
 func _refresh_artwork_frame() -> void:
   if locked:
     _artwork_frame.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
   else:
     _artwork_frame.remove_theme_stylebox_override("panel")
+
+func _refresh_layout() -> void:
+  _card_body.vertical = true
+  _card_body.add_theme_constant_override("separation", 12)
+
+  _content_margin.add_theme_constant_override("margin_left", 24)
+  _content_margin.add_theme_constant_override("margin_top", 36)
+  _content_margin.add_theme_constant_override("margin_right", 24)
+  _content_margin.add_theme_constant_override("margin_bottom", 32)
+
+  _artwork_frame.custom_minimum_size = Vector2(280, 364)
+  _artwork_frame.clip_contents = false
+  _artwork_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+  _artwork_frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+  _artwork_frame.size_flags_vertical = Control.SIZE_FILL
+  _artwork_frame.size_flags_stretch_ratio = 1.0
+  _artwork_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+  _artwork_rect.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+  _info_area.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+  _info_area.size_flags_vertical = Control.SIZE_EXPAND_FILL
+  _info_area.size_flags_stretch_ratio = 1.0
+  _info_area.add_theme_constant_override("separation", 10)
+
+  _title_stack.vertical = true
+  _title_stack.add_theme_constant_override("separation", 2)
+
+  _title_label.custom_minimum_size = Vector2(0, 92)
+  _description_label.custom_minimum_size = Vector2(0, 70)
+  _status_label.custom_minimum_size = Vector2(0, 64)
+
+  _title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+  _number_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+  _description_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+  _status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+  _status_plate.visible = true
+
+  _refresh_frame_layout()
+  _refresh_selection_marker_layout()
+
+func _refresh_frame_layout() -> void:
+  var frame_margin := 72
+  for frame in [_card_frame, _hover_frame, _focus_frame]:
+    frame.patch_margin_left = frame_margin
+    frame.patch_margin_top = frame_margin
+    frame.patch_margin_right = frame_margin
+    frame.patch_margin_bottom = frame_margin
+
+func _refresh_selection_marker_layout() -> void:
+  _selection_marker.anchor_left = 1.0
+  _selection_marker.anchor_top = 0.0
+  _selection_marker.anchor_right = 1.0
+  _selection_marker.anchor_bottom = 0.0
+  _selection_marker.offset_left = -92.0
+  _selection_marker.offset_top = -18.0
+  _selection_marker.offset_right = 12.0
+  _selection_marker.offset_bottom = 148.0
 
 func _ignore_mouse_on_children(node: Node) -> void:
   for child in node.get_children():

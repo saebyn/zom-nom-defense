@@ -8,6 +8,7 @@ class_name UI_MainMenu
 const SettingsMenuScene = preload("res://Common/UI/settings_menu/settings_menu.tscn")
 const TechTreeScene = preload("res://Stages/UI/tech_tree/tech_tree.tscn")
 const AchievementListScene = preload("res://Stages/UI/achievement_list/achievement_list.tscn")
+const PLAY_SELECT_SCENE := "res://Stages/UI/play_select/play_select.tscn"
 
 var settings_menu = null
 var tech_tree_ui = null
@@ -38,29 +39,10 @@ func _setup_settings_menu():
   settings_menu.closed.connect(_on_settings_menu_closed)
 
 func _on_start_button_pressed():
-  MyLogger.info("MainMenu", "Start button pressed")
-  
-  # Check how many scenarios are unlocked
-  var unlocked_scenarios: Array[String] = []
-  var scenario_ids = ScenarioManager.get_all_scenario_ids()
-  for scenario_id in scenario_ids:
-    if ScenarioManager.is_scenario_unlocked(scenario_id):
-      unlocked_scenarios.append(scenario_id)
-  
-  # If only one scenario is unlocked, go directly to it
-  # Otherwise show scenario selection screen
-  if unlocked_scenarios.size() == 1:
-    var scenario_id = unlocked_scenarios[0]
-    MyLogger.info("MainMenu", "Only one scenario unlocked (%s) - starting directly" % scenario_id)
-    _start_specific_scenario(scenario_id)
-  elif unlocked_scenarios.size() > 1:
-    MyLogger.info("MainMenu", "Multiple scenarios unlocked - showing scenario select")
-    _show_scenario_select()
-  else:
-    # Fallback: This should never happen as scenario_1 is always unlocked,
-    # but handle gracefully just in case
-    MyLogger.warn("MainMenu", "No scenarios unlocked - starting scenario_1 as fallback")
-    _start_specific_scenario("scenario_1")
+  MyLogger.info("MainMenu", "Start button pressed - opening play mode selection")
+  var error = get_tree().change_scene_to_file(PLAY_SELECT_SCENE)
+  if error != OK:
+    MyLogger.error("MainMenu", "Failed to load play mode selection: %s (Error: %d)" % [PLAY_SELECT_SCENE, error])
 
 func _on_settings_button_pressed():
   MyLogger.info("MainMenu", "Settings button pressed")

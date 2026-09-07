@@ -1,0 +1,206 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://Stages/UI/play_select/play_mode_card.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://b4v5s5em52b4q" path="res://Assets/Textures/UI/canvas-panel.png" id="2_canvas_panel"]
+[ext_resource type="Texture2D" path="res://Assets/Textures/UI/cyan-frame-small.png" id="3_focus_frame"]
+[ext_resource type="Texture2D" uid="uid://darl8rrqs10qu" path="res://Assets/Textures/UI/amber-steel-frame.png" id="4_hover_frame"]
+[ext_resource type="Texture2D" uid="uid://b50njo6nxv18x" path="res://Assets/Textures/UI/star-ribbon.png" id="5_selected_ribbon"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBox_empty"]
+
+[node name="PlayModeCard" type="Button"]
+custom_minimum_size = Vector2(0, 166)
+focus_mode = 2
+mouse_default_cursor_shape = 2
+texture_filter = 2
+theme_type_variation = &"MenuCard"
+text = ""
+script = ExtResource("1_script")
+
+[node name="CardFill" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.075, 0.082, 0.068, 1)
+
+[node name="Surface" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_canvas_panel")
+patch_margin_left = 48
+patch_margin_top = 48
+patch_margin_right = 48
+patch_margin_bottom = 48
+
+[node name="ArtClip" type="Control" parent="."]
+z_index = 2
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 0.585
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 14.0
+offset_right = -8.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Artwork" type="TextureRect" parent="ArtClip"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ArtworkDim" type="ColorRect" parent="ArtClip"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.075, 0.082, 0.068, 0.22)
+
+[node name="InfoPanel" type="ColorRect" parent="."]
+z_index = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.585
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = 14.0
+offset_right = -18.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.075, 0.082, 0.068, 0.94)
+
+[node name="InfoMargin" type="MarginContainer" parent="InfoPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 88
+theme_override_constants/margin_bottom = 18
+
+[node name="Info" type="VBoxContainer" parent="InfoPanel/InfoMargin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="InfoPanel/InfoMargin/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_type_variation = &"MenuCardTitle"
+text = "MODE"
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="Description" type="Label" parent="InfoPanel/InfoMargin/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"MenuBody"
+text = "Mode description."
+autowrap_mode = 2
+
+[node name="Status" type="Label" parent="InfoPanel/InfoMargin/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"MenuStatus"
+text = "READY"
+
+[node name="SelectedRibbon" type="TextureRect" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 5
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = -62.0
+offset_right = -8.0
+offset_bottom = 62.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_selected_ribbon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FocusFrame" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 4
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_focus_frame")
+draw_center = false
+patch_margin_left = 18
+patch_margin_top = 18
+patch_margin_right = 18
+patch_margin_bottom = 18
+
+[node name="HoverFrame" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 4
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_hover_frame")
+draw_center = false
+modulate = Color(1, 1, 1, 0.92)
+patch_margin_left = 72
+patch_margin_top = 72
+patch_margin_right = 72
+patch_margin_bottom = 72
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]
