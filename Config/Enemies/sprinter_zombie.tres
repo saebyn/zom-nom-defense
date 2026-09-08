@@ -13,5 +13,4 @@ hitpoints = 500
 speed = 40.0
 damage_amount = 100
 scrap_reward = 15
-xp_reward = 50
 metadata/_custom_type_script = "uid://veme7gd0dvne"

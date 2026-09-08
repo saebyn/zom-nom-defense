@@ -118,7 +118,7 @@ func get_level() -> int:
 ## Request a HUD pulse for a currency value. This can be called from Dialogic.
 func pulse_display(value_name: String, duration: float = 3.0) -> void:
   var normalized_name = value_name.to_lower()
-  if normalized_name not in ["scrap", "xp", "level"]:
+  if normalized_name not in ["scrap", "level"]:
     push_warning("Unknown currency display value: %s" % value_name)
     return
 

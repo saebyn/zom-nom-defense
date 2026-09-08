@@ -9,9 +9,8 @@ if {SettingsManager.tutorial_enabled} == true:
 		survivor: Good! Let me point out a few things on the screen.
 		do CurrencyManager.pulse_display("scrap", 3.0)
 		survivor: Top-left is your [b]Scrap[/b] counter — that's your currency for building. Defeat zombies to earn more!
-		do CurrencyManager.pulse_display("xp", 3.0)
 		do CurrencyManager.pulse_display("level", 3.0)
-		survivor: Your [b]XP and Level[/b] are shown there too. Level up to unlock better defenses!
+		survivor: Your [b]Level[/b] is shown there too. Level up to unlock better defenses!
 		survivor: And the [b]wave counter[/b] up top tells you how many waves are left. Stay sharp!
 		do GameManager.resume_game()
 		if GameManager.has_enemy_appeared == false:

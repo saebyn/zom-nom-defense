@@ -14,6 +14,5 @@ scale_multiplier = 1.5
 hitpoints = 5000
 speed = 5.0
 scrap_reward = 100
-xp_reward = 500
 skin_material = ExtResource("3_ggg66")
 metadata/_custom_type_script = "uid://veme7gd0dvne"

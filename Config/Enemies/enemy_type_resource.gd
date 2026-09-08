@@ -14,7 +14,6 @@ extends Resource
 @export var damage_amount: float = 10.0 ## Damage dealt by the enemy
 @export var attack_speed: float = 1.0 ## Cooldown between enemy attacks
 @export var scrap_reward: int = 10 ## Scrap awarded when enemy dies
-@export var xp_reward: int = 10 ## XP awarded when enemy dies
 @export var target_desired_distance: float = 4.0 ## Desired distance to target when approaching (navigation stopping distance)
 @export var target_attack_range: float = 4.0 ## Range at which the enemy will attack the primary target
 @export var building_attack_range: float = 6.0 ## Range at which the enemy will start attacking buildings instead of the survivor (if they are closer than the survivor)
