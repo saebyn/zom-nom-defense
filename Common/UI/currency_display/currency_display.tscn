@@ -28,12 +28,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 10
 
-[node name="XPLabel" type="Label" parent="HBoxContainer" unique_id=578499904]
-layout_mode = 2
-text = "Currency: 10"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="ScrapLabel" type="Label" parent="HBoxContainer" unique_id=1540898741]
 layout_mode = 2
 text = "Currency: 100"

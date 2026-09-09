@@ -194,7 +194,7 @@ Legend: **T#** = Tier; **[EXC]** = mutually exclusive pair; **⟂** = exclusivit
 
 Each node defines:
 
-* **`level_requirement`** – Player level threshold (from XP via zombie kills)
+* **`level_requirement`** – Player level threshold (from XP awarded at scenario boundaries)
 * **`scrap_cost`** – Scrap spent at the moment of unlock (0 = free; values to be balanced in a dedicated pass)
 * **`prerequisites`** – Techs that must be unlocked first
 * **`achievements`** – Optional gating (e.g., `ach_place_3`, `ach_survive_3`, `ach_kill_100`, `ach_click_100`, `ach_click_kills_25`, `ach_lose_5_defenses`)

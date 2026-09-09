@@ -26,7 +26,6 @@ hitpoints = 1500
 speed = 10.0
 damage_amount = 150
 scrap_reward = 30
-xp_reward = 150
 attack_effect = SubResource("Resource_k7oag")
 skin_material = ExtResource("3_x0neu")
 metadata/_custom_type_script = "uid://veme7gd0dvne"

@@ -334,9 +334,9 @@ Game entities use a data-driven architecture separating behavior (templates) fro
 ```mermaid
 graph TB
     subgraph "Config Resources (Data)"
-        GruntConfig[grunt_config.tres<br/>Resource File<br/>- hitpoints: 100<br/>- speed: 2.0<br/>- damage: 15<br/>- scrap_reward: 10<br/>- xp_reward: 10]
+        GruntConfig[grunt_config.tres<br/>Resource File<br/>- hitpoints: 100<br/>- speed: 2.0<br/>- damage: 15<br/>- scrap_reward: 10]
         
-        ScoutConfig[scout_config.tres<br/>Resource File<br/>- hitpoints: 50<br/>- speed: 4.0<br/>- damage: 10<br/>- scrap_reward: 8<br/>- xp_reward: 8]
+        ScoutConfig[scout_config.tres<br/>Resource File<br/>- hitpoints: 50<br/>- speed: 4.0<br/>- damage: 10<br/>- scrap_reward: 8]
         
         TurretConfig[turret_config.tres<br/>Resource File<br/>- cost: 50<br/>- damage: 25<br/>- fire_rate: 2.0<br/>- range: 20.0]
     end
@@ -414,7 +414,7 @@ graph TB
         
         Hotbar[Hotbar<br/>Building selection<br/>1-9 keys]
         
-        CurrencyDisplay[Currency Display<br/>Scrap & XP<br/>Level progress]
+        CurrencyDisplay[Currency Display<br/>Scrap & Level]
         
         StatsDisplay[Stats Display<br/>Enemies defeated<br/>Buildings placed<br/>Toggle: T key]
         

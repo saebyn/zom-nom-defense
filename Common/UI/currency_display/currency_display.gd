@@ -1,11 +1,10 @@
 extends Control
 class_name UI_CurrencyDisplay
 
-## UI component to display the player's current resources (scrap and XP)
+## UI component to display the player's current scrap and level
 
 const LOSS_COLOR = Color(0.694, 0.298, 0.122, 1.0)
 
-@onready var xp_label: Label = $HBoxContainer/XPLabel
 @onready var scrap_label: Label = $HBoxContainer/ScrapLabel
 @onready var level_label: Label = $HBoxContainer/LevelLabel
 
@@ -16,7 +15,6 @@ func _ready():
   # Connect to the currency manager signals
   if CurrencyManager:
     CurrencyManager.scrap_changed.connect(_on_scrap_changed)
-    CurrencyManager.xp_changed.connect(_on_xp_changed)
     CurrencyManager.level_up.connect(_on_level_up)
     CurrencyManager.display_pulse_requested.connect(_on_display_pulse_requested)
     # Initialize the display with current resources
@@ -27,10 +25,8 @@ func _ready():
 
 func _update_display():
   var scrap = CurrencyManager.get_scrap()
-  var xp = CurrencyManager.get_xp()
   var level = CurrencyManager.get_level()
   scrap_label.text = "Scrap: %d" % scrap
-  xp_label.text = "XP: %d" % xp
   level_label.text = "Level: %d" % level
   _displayed_scrap = scrap
 
@@ -39,10 +35,6 @@ func _on_scrap_changed(new_amount: int):
   var pulse_color = LOSS_COLOR if new_amount < _displayed_scrap else Color.GOLD
   _update_display()
   _pulse_label(scrap_label, pulse_color)
-
-func _on_xp_changed(_new_amount: int):
-  _update_display()
-  _pulse_label(xp_label)
 
 func _on_level_up(_new_level: int):
   _update_display()
@@ -53,8 +45,6 @@ func _on_display_pulse_requested(value_name: String, duration: float) -> void:
   match value_name:
     "scrap":
       _pulse_label(scrap_label, Color.GOLD, duration)
-    "xp":
-      _pulse_label(xp_label, Color.GOLD, duration)
     "level":
       _pulse_label(level_label, Color.GOLD, duration)
 

@@ -9,7 +9,6 @@ const CMP_EPSILON = 0.001
 @export var target_attack_range: float = 2.0
 @export var building_attack_range: float = 6.0
 @export var scrap_reward: int = 10 ## Scrap awarded when enemy dies (can be 0)
-@export var xp_reward: int = 10 ## XP awarded when enemy dies (always given)
 @export var enemy_type: String = "base_enemy" ## Type identifier for stats tracking
 
 @export_group("Animations")
@@ -57,7 +56,6 @@ func load_resource(resource: Resource_EnemyType) -> void:
     target_attack_range = resource.target_attack_range
     building_attack_range = resource.building_attack_range
     scrap_reward = resource.scrap_reward
-    xp_reward = resource.xp_reward
     enemy_type = resource.enemy_type
 
     # Update skin material if specified
@@ -148,9 +146,6 @@ func _on_died(damage_source: String = "unknown"):
   if StatsManager:
     var defeated_by_hand = (damage_source == "player")
     StatsManager.track_enemy_defeated(enemy_type, defeated_by_hand)
-  
-  # Always award XP to the player
-  CurrencyManager.earn_xp(xp_reward)
   
   # Award scrap if the enemy gives any
   if scrap_reward > 0:

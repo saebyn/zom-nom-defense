@@ -182,13 +182,20 @@ func test_get_xp_for_next_level():
 func test_pulse_display_requests_valid_value():
   watch_signals(CurrencyManager)
 
-  CurrencyManager.pulse_display("XP")
+  CurrencyManager.pulse_display("LEVEL")
 
-  assert_signal_emitted_with_parameters(CurrencyManager, "display_pulse_requested", ["xp", 3.0])
+  assert_signal_emitted_with_parameters(CurrencyManager, "display_pulse_requested", ["level", 3.0])
 
 func test_pulse_display_ignores_unknown_value():
   watch_signals(CurrencyManager)
 
   CurrencyManager.pulse_display("coins")
+
+  assert_signal_not_emitted(CurrencyManager, "display_pulse_requested")
+
+func test_pulse_display_ignores_removed_xp_value():
+  watch_signals(CurrencyManager)
+
+  CurrencyManager.pulse_display("xp")
 
   assert_signal_not_emitted(CurrencyManager, "display_pulse_requested")
