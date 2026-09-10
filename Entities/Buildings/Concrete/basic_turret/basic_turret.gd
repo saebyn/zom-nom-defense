@@ -5,18 +5,22 @@ extends Entity_ShootingBuilding
 ## The turret smoothly rotates its top mesh towards the nearest enemy target
 ## and only attacks when properly aligned within the aim_margin threshold.
 
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var animation_tree: AnimationTree = $AnimationTree
 
 @export var rotation_speed: float = 360 # Degrees per second
-@export var idle_animation: String = "idle"
 @export var aim_margin: float = 0.1 # Radians within which we consider ourselves "aimed" at the target
 @onready var turret_yaw: Node3D = $turret/TurretYaw
 @export var attack_particle_system: GPUParticles3D
 
+const BASE_BLEND_PATH := "parameters/BaseBlend/blend_amount"
+const FIRE_REQUEST_PATH := "parameters/FireOneShot/request"
+
 func _process(delta: float) -> void:
   if current_target:
-    if animation_player.current_animation != "RESET":
-      animation_player.play("RESET")
+    # Blend to the reset pose so TurretYaw can own target tracking without
+    # competing with the idle animation.
+    animation_tree.set(BASE_BLEND_PATH, 0.0)
+
     # Calculate target direction for yaw rotation
     var target_direction: Vector3 = (current_target.global_position - turret_yaw.global_position).normalized()
     var aim_yaw_angle: float = atan2(-target_direction.x, -target_direction.z) + PI / 2
@@ -37,8 +41,7 @@ func _process(delta: float) -> void:
   else:
     MyLogger.trace("BasicTurret", "No target detected.")
     ready_to_attack = false
-    if animation_player.current_animation != idle_animation:
-      animation_player.play(idle_animation)
+    animation_tree.set(BASE_BLEND_PATH, 1.0)
 
 
 func get_angle_difference(angle1: float, angle2: float) -> float:
@@ -47,4 +50,5 @@ func get_angle_difference(angle1: float, angle2: float) -> float:
 
 
 func _on_attack() -> void:
+  animation_tree.set(FIRE_REQUEST_PATH, AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
   attack_particle_system.restart()
