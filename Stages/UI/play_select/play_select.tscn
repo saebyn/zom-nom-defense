@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://cnlg4x54uw56q"]
+
+[ext_resource type="Script" uid="uid://dq0gc3hx5p1yb" path="res://Stages/UI/play_select/play_select.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://bj3nrufr0b4io" path="res://Config/ztd_menu_theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" path="res://Stages/UI/play_select/play_mode_card.tscn" id="3_play_mode_card"]
+[ext_resource type="Texture2D" uid="uid://3fjqym2md2e2" path="res://Assets/Textures/UI/mode-campaign.png" id="4_campaign"]
+[ext_resource type="Texture2D" uid="uid://5aok5kii1jv0" path="res://Assets/Textures/UI/mode-challenge.png" id="5_challenge"]
+[ext_resource type="Texture2D" uid="uid://cna1wb30mxeb2" path="res://Assets/Textures/UI/mode-endless.png" id="6_endless"]
+[ext_resource type="Texture2D" uid="uid://dmy17llximdhb" path="res://Assets/Textures/UI/play-banner.png" id="7_play_banner"]
+[ext_resource type="Texture2D" uid="uid://c0mgkwb5jkqw8" path="res://Assets/Textures/UI/back-to-main-menu-button.png" id="8_back_button"]
+[ext_resource type="Texture2D" uid="uid://cd7mw0k6gxm6d" path="res://Assets/Textures/UI/main-menu-background.png" id="9_background"]
+
+[node name="PlaySelect" type="Control" unique_id=1750305155]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="Background" type="TextureRect" parent="." unique_id=2071217444]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("9_background")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="SafeArea" type="MarginContainer" parent="." unique_id=1370262425]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 18
+
+[node name="Center" type="CenterContainer" parent="SafeArea" unique_id=1427965534]
+layout_mode = 2
+
+[node name="Page" type="VBoxContainer" parent="SafeArea/Center" unique_id=2024172377]
+custom_minimum_size = Vector2(1152, 648)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="VBoxContainer" parent="SafeArea/Center/Page" unique_id=934116330]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PlayBanner" type="TextureRect" parent="SafeArea/Center/Page/Header" unique_id=1280034291]
+custom_minimum_size = Vector2(330, 108)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+texture = ExtResource("7_play_banner")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HeaderActions" type="HBoxContainer" parent="SafeArea/Center/Page/Header" unique_id=474470850]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="BackButton" type="TextureButton" parent="SafeArea/Center/Page/Header/HeaderActions" unique_id=2100140686]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 38)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("8_back_button")
+texture_pressed = ExtResource("8_back_button")
+texture_hover = ExtResource("8_back_button")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="HeaderSpacer" type="Control" parent="SafeArea/Center/Page/Header/HeaderActions" unique_id=813467686]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cards" type="VBoxContainer" parent="SafeArea/Center/Page" unique_id=1330074974]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="CampaignCard" parent="SafeArea/Center/Page/Cards" unique_id=2061630804 instance=ExtResource("3_play_mode_card")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+card_id = &"campaign"
+title_text = "Campaign"
+description_text = "Learn the ropes through handcrafted defense scenarios."
+artwork = ExtResource("4_campaign")
+artwork_source_region = Rect2(0, -174.854, 0, 0)
+selected = true
+
+[node name="ChallengeCard" parent="SafeArea/Center/Page/Cards" unique_id=322748955 instance=ExtResource("3_play_mode_card")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+tooltip_text = "Challenge mode is coming later."
+focus_mode = 0
+disabled = true
+card_id = &"challenge"
+title_text = "Challenge Mode"
+description_text = "Short special missions with unusual rules."
+artwork = ExtResource("5_challenge")
+temporarily_disabled = true
+disabled_reason = "Challenge mode is coming later."
+
+[node name="EndlessCard" parent="SafeArea/Center/Page/Cards" unique_id=1574047136 instance=ExtResource("3_play_mode_card")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+tooltip_text = "Endless mode is coming later."
+focus_mode = 0
+disabled = true
+card_id = &"endless"
+title_text = "Endless Mode"
+description_text = "Build a persistent defense and survive wave after wave."
+artwork = ExtResource("6_endless")
+artwork_source_region = Rect2(0, -15.542, 0, 0)
+temporarily_disabled = true
+disabled_reason = "Endless mode is coming later."

@@ -112,6 +112,29 @@ texture_margin_top = 64.0
 texture_margin_right = 64.0
 texture_margin_bottom = 64.0
 
+[sub_resource type="StyleBoxTexture" id="StyleBox_play_back_button"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+texture = ExtResource("2_olive_plate")
+texture_margin_left = 64.0
+texture_margin_top = 18.0
+texture_margin_right = 64.0
+texture_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_play_back_button_pressed"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+texture = ExtResource("2_olive_plate")
+texture_margin_left = 64.0
+texture_margin_top = 18.0
+texture_margin_right = 64.0
+texture_margin_bottom = 18.0
+modulate_color = Color(0.8, 0.86, 0.72, 1)
+
 [sub_resource type="StyleBoxTexture" id="StyleBox_primary_button"]
 texture = ExtResource("6_turquoise_panel")
 texture_margin_left = 80.82439
@@ -186,6 +209,19 @@ MenuMeta/font_sizes/font_size = 16
 MenuMeta/fonts/font = SubResource("SystemFont_ui_bold")
 MenuPanel/base_type = &"PanelContainer"
 MenuPanel/styles/panel = SubResource("StyleBox_panel")
+MenuPlayBackButton/base_type = &"Button"
+MenuPlayBackButton/colors/font_color = Color(0.922, 0.843, 0.702, 1)
+MenuPlayBackButton/colors/font_disabled_color = Color(0.922, 0.843, 0.702, 0.45)
+MenuPlayBackButton/colors/font_focus_color = Color(0.922, 0.843, 0.702, 1)
+MenuPlayBackButton/colors/font_hover_color = Color(0.922, 0.843, 0.702, 1)
+MenuPlayBackButton/colors/font_pressed_color = Color(0.922, 0.843, 0.702, 1)
+MenuPlayBackButton/font_sizes/font_size = 18
+MenuPlayBackButton/fonts/font = SubResource("SystemFont_ui_bold")
+MenuPlayBackButton/styles/disabled = SubResource("StyleBox_play_back_button")
+MenuPlayBackButton/styles/focus = SubResource("StyleBox_focus")
+MenuPlayBackButton/styles/hover = SubResource("StyleBox_play_back_button")
+MenuPlayBackButton/styles/normal = SubResource("StyleBox_play_back_button")
+MenuPlayBackButton/styles/pressed = SubResource("StyleBox_play_back_button_pressed")
 MenuPrimaryButton/base_type = &"MenuActionButton"
 MenuPrimaryButton/colors/font_color = Color(0.239, 0.761, 0.757, 1)
 MenuPrimaryButton/colors/font_hover_color = Color(0.239, 0.761, 0.757, 1)

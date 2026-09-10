@@ -51,6 +51,7 @@ mouse_filter = 2
 color = Color(0.196, 0.18, 0.145, 1)
 
 [node name="ContentMargin" type="MarginContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -63,10 +64,12 @@ theme_override_constants/margin_top = 36
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 32
 
-[node name="CardBody" type="VBoxContainer" parent="ContentMargin"]
+[node name="CardBody" type="BoxContainer" parent="ContentMargin"]
+unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 12
+vertical = true
 
 [node name="ArtworkFrame" type="PanelContainer" parent="ContentMargin/CardBody"]
 unique_name_in_owner = true
@@ -91,6 +94,8 @@ horizontal_alignment = 1
 [node name="Artwork" type="TextureRect" parent="ContentMargin/CardBody/ArtworkFrame"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 6
@@ -141,17 +146,19 @@ text = "LOCKED"
 horizontal_alignment = 1
 
 [node name="InfoArea" type="VBoxContainer" parent="ContentMargin/CardBody"]
+unique_name_in_owner = true
 z_index = 8
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 theme_override_constants/separation = 10
 
-[node name="TitleStack" type="VBoxContainer" parent="ContentMargin/CardBody/InfoArea"]
+[node name="TitleStack" type="BoxContainer" parent="ContentMargin/CardBody/InfoArea"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 2
+vertical = true
 
 [node name="Number" type="Label" parent="ContentMargin/CardBody/InfoArea/TitleStack"]
 unique_name_in_owner = true
@@ -199,6 +206,7 @@ clip_text = true
 autowrap_mode = 2
 
 [node name="StatusPlate" type="NinePatchRect" parent="ContentMargin/CardBody/InfoArea/Status"]
+unique_name_in_owner = true
 show_behind_parent = true
 layout_mode = 1
 anchors_preset = 15
