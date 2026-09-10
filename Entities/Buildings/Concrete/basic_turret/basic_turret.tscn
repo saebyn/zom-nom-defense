@@ -48,6 +48,38 @@ tracks/0/path = NodePath("turret/TurretYaw/Top")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1)
+tracks/1/type = "position_3d"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("turret/TurretYaw/Top/Barrel")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0, 1.185, 0)
+
+[sub_resource type="Animation" id="Animation_fire"]
+resource_name = "fire"
+length = 0.18
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("turret/TurretYaw/Top/Barrel")
+tracks/0/interp = 2
+tracks/0/loop_wrap = false
+tracks/0/keys = PackedFloat32Array(0, 1, -0.111, 1.185, 0.005, 0.06666667, 1, -0.231, 1.185, 0.005, 0.18, 1, -0.111, 1.185, 0.005)
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_emit_muzzle_flash"
+}]
+}
 
 [sub_resource type="Animation" id="Animation_6y5ob"]
 resource_name = "idle_turret"
@@ -60,17 +92,52 @@ tracks/0/path = NodePath("turret/TurretYaw/Top")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = PackedFloat32Array(0.5, 1, 0, -0.713, 0, 0.701, 2.53333, 1, 0, -0.013, 0, 1, 3.73333, 1, 0, -0.08, 0, -0.997, 4.6, 1, 0, 0.995, 0, 0.097, 5.96667, 1, 0, -0.25, 0, 0.968, 6.76667, 1, 0, 0.769, 0, 0.639)
+tracks/1/type = "position_3d"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("turret/TurretYaw/Top/Barrel")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0, 1.185, 0)
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_2a5gv"]
 _data = {
 &"RESET": SubResource("Animation_cvjpm"),
+&"fire": SubResource("Animation_fire"),
 &"idle": SubResource("Animation_6y5ob")
 }
+
+[sub_resource type="AnimationNodeBlend2" id="AnimationNodeBlend2_base"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_fire"]
+animation = &"fire"
+
+[sub_resource type="AnimationNodeOneShot" id="AnimationNodeOneShot_fire"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
+animation = &"idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_reset"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_turret"]
+graph_offset = Vector2(-340.5514, -54.918774)
+nodes/output/position = Vector2(660, 100)
+nodes/Reset/node = SubResource("AnimationNodeAnimation_reset")
+nodes/Reset/position = Vector2(-380, 20)
+nodes/Idle/node = SubResource("AnimationNodeAnimation_idle")
+nodes/Idle/position = Vector2(-373.33334, 280)
+nodes/BaseBlend/node = SubResource("AnimationNodeBlend2_base")
+nodes/BaseBlend/position = Vector2(-120, 80)
+nodes/Fire/node = SubResource("AnimationNodeAnimation_fire")
+nodes/Fire/position = Vector2(80, 220)
+nodes/FireOneShot/node = SubResource("AnimationNodeOneShot_fire")
+nodes/FireOneShot/position = Vector2(360, 100)
+node_connections = [&"output", 0, &"FireOneShot", &"BaseBlend", 0, &"Reset", &"BaseBlend", 1, &"Idle", &"FireOneShot", 0, &"BaseBlend", &"FireOneShot", 1, &"Fire"]
 
 [node name="BasicTurret" unique_id=693839905 node_paths=PackedStringArray("attack_particle_system", "mesh_instances") instance=ExtResource("1_turret")]
 script = ExtResource("2_6y5ob")
 rotation_speed = 360.0
-idle_animation = "idle"
 aim_margin = 0.1
 attack_particle_system = NodePath("turret/TurretYaw/Top/Barrel/GPUParticles3D")
 mesh_instances = [NodePath("turret/TurretBase/Leg_000"), NodePath("turret/TurretBase/Leg_001"), NodePath("turret/TurretBase/Leg_002"), NodePath("turret/TurretBase/Screw"), NodePath("turret/TurretBase/ScrewBase"), NodePath("turret/TurretBase/Table"), NodePath("turret/TurretYaw/Top/Barrel"), NodePath("turret/TurretYaw/Top/BarrelStraps")]
@@ -113,7 +180,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0869002, 1.6847744, -0.043
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0426648, 0)
 
 [node name="Barrel" parent="turret/TurretYaw/Top" parent_id_path=PackedInt32Array(1882957817, 1023051705) index="0" unique_id=1905556764]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11129147, 1.1795998, 0.0047358274)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.185, 0)
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="turret/TurretYaw/Top/Barrel" index="0" unique_id=1721422763]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.3402462, 0, 0)
@@ -132,7 +199,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11129147, 1.1795998, 0.004
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." index="5" unique_id=2046900780]
 libraries/ = SubResource("AnimationLibrary_2a5gv")
-autoplay = &"idle"
+
+[node name="AnimationTree" type="AnimationTree" parent="." index="6" unique_id=790123355]
+tree_root = SubResource("AnimationNodeBlendTree_turret")
+anim_player = NodePath("../AnimationPlayer")
+parameters/BaseBlend/blend_amount = 0.0
+parameters/FireOneShot/active = false
+parameters/FireOneShot/internal_active = false
+parameters/FireOneShot/request = 0
 
 [node name="Component_IdleSounds" type="Node3D" parent="." index="7" unique_id=1302254347 node_paths=PackedStringArray("audio_player")]
 script = ExtResource("4_cvjpm")
@@ -142,7 +216,7 @@ min_idle_interval = 10.0
 max_idle_interval = 30.0
 metadata/_custom_type_script = "uid://c7bdetuss8stb"
 
-[node name="AudioStreamPlayer3D" parent="." index="8" unique_id=1513947477]
+[node name="AudioStreamPlayer3D" parent="." index="9" unique_id=1513947477]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0017229319, 2.0537462, 0)
 
 [connection signal="cooldown_started" from="Attack" to="." method="_on_attack"]
