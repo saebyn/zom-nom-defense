@@ -51,4 +51,7 @@ func get_angle_difference(angle1: float, angle2: float) -> float:
 
 func _on_attack() -> void:
   animation_tree.set(FIRE_REQUEST_PATH, AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
+
+
+func _emit_muzzle_flash() -> void:
   attack_particle_system.restart()
