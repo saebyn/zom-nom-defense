@@ -139,10 +139,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55678797, 0.81351906, -0.12
 [node name="Leg_002" parent="turret/TurretBase" index="2" unique_id=796154571]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46751213, 0.81351906, -0.5741553)
 
-[node name="Screw" parent="turret/TurretBase" index="3" unique_id=173475533]
+[node name="Screw" parent="turret/TurretBase" index="3" unique_id=1734750195]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08880546, 0.83942974, -0.04415649)
 
-[node name="ScrewBase" parent="turret/TurretBase" index="4" unique_id=2088051304]
+[node name="ScrewBase" parent="turret/TurretBase" index="4" unique_id=2088071304]
 transform = Transform3D(0.1132952, 0, 0, 0, 0.04595851, 0, 0, 0, 0.1132952, -0.08686017, 0.83468866, -0.04591787)
 
 [node name="Table" parent="turret/TurretBase" index="5" unique_id=668724516]
