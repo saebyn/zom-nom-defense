@@ -149,6 +149,16 @@ text = "EXIT"
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="CurrentSongLabel" type="Label" parent="." unique_id=1249684209]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -20.0
+offset_right = 328.0
+grow_vertical = 0
+text = "Current track: None"
+
 [connection signal="pressed" from="CenterContainer/MenuPanel/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="CenterContainer/MenuPanel/VBoxContainer/LoadGameButton" to="." method="_on_load_game_button_pressed"]
 [connection signal="pressed" from="CenterContainer/MenuPanel/VBoxContainer/AchievementsButton" to="." method="_on_achievements_button_pressed"]

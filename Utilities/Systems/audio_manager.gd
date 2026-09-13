@@ -2,6 +2,18 @@ extends Node
 
 # Signal emitted when a sound effect is played (for debug/tracking purposes)
 signal sound_played(effect: Resource_SoundEffect.SoundEffect)
+# Signal emitted when a new song starts
+signal song_started(song_name: String)
+
+
+@export var current_song: String
+@export var songs: Dictionary[String, AudioStream] = {}
+@export var min_duration_between_same_song: float = 30.0  ## In seconds
+
+var want_bg_music: bool = false
+
+## Track the time when each song was last played to avoid repetition
+var song_last_played_time: Dictionary[String, float] = {}
 
 var sound_effect_configs: Dictionary[Resource_SoundEffect.SoundEffect, Resource_SoundEffect] = {}
 
@@ -9,18 +21,13 @@ var sfx_directory: String = "res://Config/SoundEffects/"
 var sfx_resource_extension: String = ".tres"
 
 # UI audio player for non-spatial sounds (buttons, menus, etc.)
-var ui_audio_player: AudioStreamPlayer
+@onready var ui_audio_player: AudioStreamPlayer = $UIAudioStreamPlayer
 
 # Background music player (child node configured in audio_manager.tscn)
 @onready var bg_music_player: AudioStreamPlayer = $BgMusicAudioStreamPlayer
 
 
 func _ready() -> void:
-  # Create UI audio player
-  ui_audio_player = AudioStreamPlayer.new()
-  ui_audio_player.bus = "Sound Effects"
-  add_child(ui_audio_player)
-  
   # load resources from config directory into sound_effect_configs
   var dir = DirAccess.open(sfx_directory)
   if not dir:
@@ -53,6 +60,16 @@ func _ready() -> void:
   SettingsManager.audio_settings_changed.connect(_on_audio_settings_changed)
 
   play_background_music()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+  print("unhandled")
+  if event is InputEventKey and event.pressed:
+    match event.keycode:
+      KEY_F2:
+        print("f2")
+        current_song = _pick_next_song()
+        _play_song(current_song)
 
 
 ## Recursively process existing buttons in the scene tree
@@ -174,16 +191,16 @@ func get_category_name(category: Resource_SoundEffect.SoundCategory) -> String:
 
 ## Start playing background music. Safe to call if already playing.
 func play_background_music() -> void:
-  if bg_music_player and not bg_music_player.playing:
-    bg_music_player.play()
-    MyLogger.info("AudioManager", "Background music started")
+  want_bg_music = true
+  if current_song != "":
+    _play_song(current_song)
 
 
 ## Stop background music.
 func stop_background_music() -> void:
-  if bg_music_player and bg_music_player.playing:
-    bg_music_player.stop()
-    MyLogger.info("AudioManager", "Background music stopped")
+  want_bg_music = false
+  current_song = ""
+  bg_music_player.stop()
 
 
 ## Apply the music pause mode based on current settings.
@@ -191,3 +208,40 @@ func _on_audio_settings_changed() -> void:
   if bg_music_player:
     bg_music_player.process_mode = Node.PROCESS_MODE_PAUSABLE if SettingsManager.music_pause else Node.PROCESS_MODE_ALWAYS
     MyLogger.debug("AudioManager", "Applied music pause setting: %s" % SettingsManager.music_pause)
+
+
+func _on_playlist_timer_timeout() -> void:
+  if not bg_music_player.playing:
+    current_song = ""
+
+    if want_bg_music:
+      current_song = _pick_next_song()
+      _play_song(current_song)
+
+
+func _pick_next_song() -> String:
+  # Get a list of all songs that have not been played
+  # more recently than `min_duration_between_same_song` seconds ago.
+  var current_time = Time.get_ticks_msec() / 1000.0
+  var eligible_songs: Array[String] = []
+  for song_name in songs.keys():
+    var last_played_time = song_last_played_time.get(song_name, -INF)
+    if current_time - last_played_time >= min_duration_between_same_song:
+      eligible_songs.append(song_name)
+
+  if eligible_songs.size() == 0:
+    return ""
+
+  return eligible_songs.pick_random()
+
+func _play_song(song_name: String) -> void:
+  if song_name != "":
+    MyLogger.debug("AudioManager", "Started playing song: %s" % current_song)
+    bg_music_player.stream = songs[song_name]
+    bg_music_player.play()
+    song_last_played_time[song_name] = Time.get_ticks_msec() / 1000.0  # Store time in seconds
+    song_started.emit(song_name)
+  else:
+    MyLogger.info("AudioManager", "No valid song selected to play.")
+    song_started.emit("")  # Emit empty string to indicate no song is playing
+    bg_music_player.stop()

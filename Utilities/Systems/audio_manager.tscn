@@ -2,15 +2,25 @@
 
 [ext_resource type="Script" uid="uid://1usxseel8j6n" path="res://Utilities/Systems/audio_manager.gd" id="1_audio_mgr"]
 [ext_resource type="AudioStream" uid="uid://besdcxihxcckh" path="res://Assets/Audio/Music/battleThemeA.mp3" id="2_battle_theme"]
-
-[sub_resource type="AudioStreamPlaylist" id="AudioStreamPlaylist_bgmusic"]
-shuffle = true
-stream_count = 1
-stream_0 = ExtResource("2_battle_theme")
+[ext_resource type="AudioStream" uid="uid://c870h3dxyi4cr" path="res://Assets/Audio/Music/make_do_or_die.mp3" id="3_mjhew"]
 
 [node name="AudioManager" type="Node" unique_id=685505261]
 script = ExtResource("1_audio_mgr")
+current_song = "Make Do Or Die"
+songs = Dictionary[String, AudioStream]({
+"Battle Theme A": ExtResource("2_battle_theme"),
+"Make Do Or Die": ExtResource("3_mjhew")
+})
 
 [node name="BgMusicAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=69000391]
-stream = SubResource("AudioStreamPlaylist_bgmusic")
 bus = &"Music"
+
+[node name="UIAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1455416242]
+bus = &"Sound Effects"
+
+[node name="BgMusicWatchdogTimer" type="Timer" parent="." unique_id=604182914]
+process_mode = 3
+autostart = true
+ignore_time_scale = true
+
+[connection signal="timeout" from="BgMusicWatchdogTimer" to="." method="_on_playlist_timer_timeout"]

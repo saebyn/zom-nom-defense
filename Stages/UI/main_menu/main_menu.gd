@@ -9,6 +9,8 @@ const SettingsMenuScene = preload("res://Common/UI/settings_menu/settings_menu.t
 const TechTreeScene = preload("res://Stages/UI/tech_tree/tech_tree.tscn")
 const AchievementListScene = preload("res://Stages/UI/achievement_list/achievement_list.tscn")
 
+@onready var current_song_label: Label = $CurrentSongLabel
+
 var settings_menu = null
 var tech_tree_ui = null
 var achievement_list_ui = null
@@ -31,6 +33,9 @@ func _ready():
   
   # Create and add settings menu
   _setup_settings_menu()
+
+  AudioManager.song_started.connect(_on_song_change)
+  _on_song_change(AudioManager.current_song)
 
 func _setup_settings_menu():
   settings_menu = SettingsMenuScene.instantiate()
@@ -143,3 +148,10 @@ func _show_save_slot_selection():
   var error = get_tree().change_scene_to_file(save_slot_path)
   if error != OK:
     MyLogger.error("MainMenu", "Failed to load save slot selection scene: %s (Error: %d)" % [save_slot_path, error])
+
+
+func _on_song_change(song_name: String):
+  if song_name != "":
+    current_song_label.text = "Current track: " + song_name
+  else:
+    current_song_label.text = "Current track: None"
