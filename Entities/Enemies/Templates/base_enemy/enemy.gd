@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 const CMP_EPSILON = 0.001
+const SHAMBLE_REFERENCE_SPEED = 1.0
 
 @export var movement_speed: float = 2.0
 @export var rotation_speed: float = PI / 3.0 # Radians per second, adjust for faster/slower turning. This is independent of movement speed to ensure the enemy can always turn towards the target effectively.
@@ -12,14 +13,18 @@ const CMP_EPSILON = 0.001
 @export var enemy_type: String = "base_enemy" ## Type identifier for stats tracking
 
 @export_group("Animations")
-@export var idle_animation: String = "zombie_library/zombie_idle"
-@export var run_animation: String = "zombie_library/zombie_running"
+@export var idle_animation: String = "Idle"
+@export var walk_animation: String = "Walk"
+@export var run_animation: String = "Run"
 
 var attack: Component_Attack
 var health: Component_Health
 var damage_numbers: Component_DamageNumbers
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var animation_tree: AnimationTree = $AnimationTree
+@onready var animation_state: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/playback")
+
 @onready var mesh_instance: MeshInstance3D = $characterMedium
 
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
@@ -52,6 +57,9 @@ func load_resource(resource: Resource_EnemyType) -> void:
     MyLogger.debug("Enemy", "Loading enemy resource: %s" % resource.name)
     # Override properties from resource
     movement_speed = resource.speed
+
+    _update_animation_speed()
+
     target_desired_distance = resource.target_desired_distance
     target_attack_range = resource.target_attack_range
     building_attack_range = resource.building_attack_range
@@ -89,7 +97,7 @@ func load_resource(resource: Resource_EnemyType) -> void:
 func _process(_delta: float) -> void:
   # play animation based on movement speed
   if velocity.length() > 0.1:
-    animation_player.play(run_animation)
+    animation_state.travel(walk_animation)
   else:
     animation_player.play(idle_animation)
 
@@ -159,3 +167,10 @@ func _on_died(damage_source: String = "unknown"):
 
 func _on_health_damaged(amount: int, hitpoints: int, damage_source: String = "unknown") -> void:
   MyLogger.debug("Enemy.Combat", "Enemy (%s) took %d damage from %s. Remaining HP: %d" % [enemy_type, amount, damage_source, hitpoints])
+
+
+func _update_animation_speed() -> void:
+  animation_tree.set(
+    "parameters/Walk/TimeScale/scale",
+    movement_speed / SHAMBLE_REFERENCE_SPEED
+  )

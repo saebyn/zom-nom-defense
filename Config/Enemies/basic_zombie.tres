@@ -10,7 +10,6 @@ enemy_type = "basic_zombie"
 description = "Just an ordinary zombie"
 scene = ExtResource("1_004w5")
 hitpoints = 200
-speed = 5.0
 damage_amount = 80.0
 scrap_reward = 15
 target_desired_distance = 0.5
