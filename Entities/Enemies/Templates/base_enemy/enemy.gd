@@ -13,9 +13,11 @@ const SHAMBLE_REFERENCE_SPEED = 1.0
 @export var enemy_type: String = "base_enemy" ## Type identifier for stats tracking
 
 @export_group("Animations")
-@export var idle_animation: String = "Idle"
-@export var walk_animation: String = "Walk"
-@export var run_animation: String = "Run"
+@export var idle_animation_state: StringName = &"Idle"
+@export var walk_animation_state: StringName = &"Walk"
+@export var run_animation_state: StringName = &"Run"
+@export var walk_speed_threshold: float = 0.2
+@export var run_speed_threshold: float = 4.0
 
 var attack: Component_Attack
 var health: Component_Health
@@ -43,6 +45,12 @@ func _ready():
   navigation_agent.path_desired_distance = path_desired_distance
   navigation_agent.target_desired_distance = target_desired_distance
 
+  var state_machine := animation_tree.tree_root as AnimationNodeStateMachine
+
+  assert(state_machine.has_node(idle_animation_state))
+  assert(state_machine.has_node(walk_animation_state))
+  assert(state_machine.has_node(run_animation_state))
+
   # Sync NavigationAgent3D debug display with the project setting
   navigation_agent.debug_enabled = ProjectSettings.get_setting("zom_nom_defense/debug/show_navigation_paths", false)
 
@@ -57,8 +65,6 @@ func load_resource(resource: Resource_EnemyType) -> void:
     MyLogger.debug("Enemy", "Loading enemy resource: %s" % resource.name)
     # Override properties from resource
     movement_speed = resource.speed
-
-    _update_animation_speed()
 
     target_desired_distance = resource.target_desired_distance
     target_attack_range = resource.target_attack_range
@@ -94,12 +100,20 @@ func load_resource(resource: Resource_EnemyType) -> void:
   , Object.CONNECT_ONE_SHOT)
 
 
-func _process(_delta: float) -> void:
-  # play animation based on movement speed
-  if velocity.length() > 0.1:
-    animation_state.travel(walk_animation)
+func _update_locomotion_animation() -> void:
+  var actual_speed := get_real_velocity().length()
+
+  if actual_speed < walk_speed_threshold:
+    animation_state.travel(idle_animation_state)
+  elif actual_speed < run_speed_threshold:
+    var playback_scale := actual_speed / SHAMBLE_REFERENCE_SPEED
+    animation_tree.set(
+      "parameters/Walk/TimeScale/scale",
+      playback_scale
+    )
+    animation_state.travel(walk_animation_state)
   else:
-    animation_player.play(idle_animation)
+    animation_state.travel(run_animation_state)
 
 
 func _physics_process(delta: float):
@@ -111,6 +125,8 @@ func _physics_process(delta: float):
   _update_navigation(delta)
 
   move_and_slide()
+
+  _update_locomotion_animation()
 
 func _update_navigation(delta: float):
   if navigation_agent.is_navigation_finished():
@@ -168,9 +184,3 @@ func _on_died(damage_source: String = "unknown"):
 func _on_health_damaged(amount: int, hitpoints: int, damage_source: String = "unknown") -> void:
   MyLogger.debug("Enemy.Combat", "Enemy (%s) took %d damage from %s. Remaining HP: %d" % [enemy_type, amount, damage_source, hitpoints])
 
-
-func _update_animation_speed() -> void:
-  animation_tree.set(
-    "parameters/Walk/TimeScale/scale",
-    movement_speed / SHAMBLE_REFERENCE_SPEED
-  )
