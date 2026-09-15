@@ -55,6 +55,10 @@ func _ready():
   # Sync NavigationAgent3D debug display with the project setting
   navigation_agent.debug_enabled = ProjectSettings.get_setting("zom_nom_defense/debug/show_navigation_paths", false)
 
+
+  if attack:
+    attack.cooldown_started.connect(_trigger_attack_animation)
+
   # Connect the death signal from Health component
   if health:
     health.died.connect(_on_died)
@@ -107,11 +111,7 @@ func _update_locomotion_animation() -> void:
   if actual_speed < walk_speed_threshold:
     animation_state.travel(idle_animation_state)
   elif actual_speed < run_speed_threshold:
-    var playback_scale := actual_speed / SHAMBLE_REFERENCE_SPEED
-    animation_tree.set(
-      "parameters/Locomotion/Walk/TimeScale/scale",
-      playback_scale
-    )
+    _set_walk_animation_playback_speed(actual_speed)
     animation_state.travel(walk_animation_state)
   else:
     animation_state.travel(run_animation_state)
@@ -185,3 +185,17 @@ func _on_died(damage_source: String = "unknown"):
 func _on_health_damaged(amount: int, hitpoints: int, damage_source: String = "unknown") -> void:
   MyLogger.debug("Enemy.Combat", "Enemy (%s) took %d damage from %s. Remaining HP: %d" % [enemy_type, amount, damage_source, hitpoints])
 
+
+func _trigger_attack_animation() -> void:
+  animation_tree.set(
+    "parameters/AttackOneShot/request",
+    AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE
+  )
+
+
+func _set_walk_animation_playback_speed(actual_speed: float) -> void:
+  var playback_scale := actual_speed / SHAMBLE_REFERENCE_SPEED
+  animation_tree.set(
+    "parameters/Locomotion/Walk/TimeScale/scale",
+    playback_scale
+  )

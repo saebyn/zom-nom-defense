@@ -1,11 +1,13 @@
 [gd_resource type="AnimationLibrary" format=3 uid="uid://gu27m4oglbg8"]
 
+[ext_resource type="Animation" uid="uid://t0o5eej8wjj0" path="res://Assets/Animations/zombie_attack.tres" id="1_k7kdx"]
 [ext_resource type="Animation" uid="uid://dlaildu4oqsrp" path="res://Assets/Animations/zombie_idle.tres" id="1_lttlv"]
 [ext_resource type="Animation" uid="uid://cmwg3leppmtm5" path="res://Assets/Animations/zombie_running.tres" id="2_a4qyo"]
 [ext_resource type="Animation" uid="uid://cia73v5q8db4i" path="res://Assets/Animations/zombie_shambling.tres" id="3_a4qyo"]
 
 [resource]
 _data = {
+&"zombie_attack": ExtResource("1_k7kdx"),
 &"zombie_idle": ExtResource("1_lttlv"),
 &"zombie_running": ExtResource("2_a4qyo"),
 &"zombie_shambling": ExtResource("3_a4qyo")
