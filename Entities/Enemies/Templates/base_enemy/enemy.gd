@@ -25,7 +25,7 @@ var damage_numbers: Component_DamageNumbers
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var animation_tree: AnimationTree = $AnimationTree
-@onready var animation_state: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/playback")
+@onready var animation_state: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/Locomotion/playback")
 
 @onready var mesh_instance: MeshInstance3D = $characterMedium
 
@@ -45,7 +45,8 @@ func _ready():
   navigation_agent.path_desired_distance = path_desired_distance
   navigation_agent.target_desired_distance = target_desired_distance
 
-  var state_machine := animation_tree.tree_root as AnimationNodeStateMachine
+  var animation_root := animation_tree.tree_root as AnimationNode
+  var state_machine := animation_root.get_node("Locomotion") as AnimationNodeStateMachine
 
   assert(state_machine.has_node(idle_animation_state))
   assert(state_machine.has_node(walk_animation_state))
@@ -108,7 +109,7 @@ func _update_locomotion_animation() -> void:
   elif actual_speed < run_speed_threshold:
     var playback_scale := actual_speed / SHAMBLE_REFERENCE_SPEED
     animation_tree.set(
-      "parameters/Walk/TimeScale/scale",
+      "parameters/Locomotion/Walk/TimeScale/scale",
       playback_scale
     )
     animation_state.travel(walk_animation_state)
