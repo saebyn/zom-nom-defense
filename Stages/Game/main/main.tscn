@@ -46,21 +46,32 @@ audio_player = NodePath("../AudioStreamPlayer")
 [node name="UI" parent="." unique_id=321578720 instance=ExtResource("3_272bh")]
 process_mode = 3
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=2044361057]
+[node name="CameraRig" type="Node3D" parent="." unique_id=2044361057 node_paths=PackedStringArray("camera", "yaw_pivot")]
 process_mode = 3
-transform = Transform3D(-4.37114e-08, 0.707107, -0.707107, 0, 0.707107, 0.707107, 1, 3.09086e-08, -3.09086e-08, -117.333, 113.256, 1.30774)
-projection = 1
-current = true
-fov = 58.3
-size = 65.539
+position = Vector3(-1.95816, 0, 3.80759)
 script = ExtResource("5_hjeu7")
+camera = NodePath("YawPivot/PitchPivot/Camera3D")
+yaw_pivot = NodePath("YawPivot")
 camera_move_speed = 30.0
 camera_zoom_fast_multiplier = 5.0
 camera_max_size = 300.0
 
-[node name="AudioListener3D" type="AudioListener3D" parent="." unique_id=1017148499 node_paths=PackedStringArray("camera")]
+[node name="YawPivot" type="Node3D" parent="CameraRig"]
+rotation = Vector3(0, -0.785398, 0)
+
+[node name="PitchPivot" type="Node3D" parent="CameraRig/YawPivot"]
+rotation = Vector3(-0.785398, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig/YawPivot/PitchPivot"]
+position = Vector3(0, 0, 160.168)
+projection = 1
+current = true
+fov = 58.3
+size = 65.539
+
+[node name="AudioListener3D" type="AudioListener3D" parent="." unique_id=1017148499 node_paths=PackedStringArray("camera_rig")]
 script = ExtResource("8_audio_listener")
-camera = NodePath("../Camera3D")
+camera_rig = NodePath("../CameraRig")
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=609461712]
 navigation_mesh = SubResource("NavigationMesh_pcgyj")
@@ -72,7 +83,7 @@ compositor = SubResource("Compositor_hjeu7")
 [node name="BuildingPlacement" parent="." unique_id=977494137 node_paths=PackedStringArray("audio_player", "navigation_region", "camera") instance=ExtResource("7_kek77")]
 audio_player = NodePath("../AudioStreamPlayer")
 navigation_region = NodePath("../NavigationRegion3D")
-camera = NodePath("../Camera3D")
+camera = NodePath("../CameraRig/YawPivot/PitchPivot/Camera3D")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=704157109]
 bus = &"Sound Effects"
@@ -99,12 +110,12 @@ joinqueue_command = NodePath("../JoinQueueCommand")
 
 [node name="HoverController" type="Node" parent="." unique_id=300000003 node_paths=PackedStringArray("camera", "ui")]
 script = ExtResource("13_hover_ctrl")
-camera = NodePath("../Camera3D")
+camera = NodePath("../CameraRig/YawPivot/PitchPivot/Camera3D")
 ui = NodePath("../UI")
 
 [node name="PlayerInputController" type="Node" parent="." unique_id=300000004 node_paths=PackedStringArray("camera", "attack", "building_placement", "hover_controller", "navigation_controller", "ui")]
 script = ExtResource("14_player_input")
-camera = NodePath("../Camera3D")
+camera = NodePath("../CameraRig/YawPivot/PitchPivot/Camera3D")
 attack = NodePath("../Attack")
 building_placement = NodePath("../BuildingPlacement")
 hover_controller = NodePath("../HoverController")
@@ -115,7 +126,7 @@ attack_waiting_cursor_image = ExtResource("2_wy7n0")
 [node name="Debug" type="Node" parent="." unique_id=92549688 node_paths=PackedStringArray("camera")]
 script = ExtResource("14_qyy2v")
 enemy_type = ExtResource("15_qm00m")
-camera = NodePath("../Camera3D")
+camera = NodePath("../CameraRig/YawPivot/PitchPivot/Camera3D")
 
 [connection signal="cooldown_ended" from="Attack" to="PlayerInputController" method="_on_attack_cooldown_ended"]
 [connection signal="cooldown_started" from="Attack" to="PlayerInputController" method="_on_attack_cooldown_started"]
