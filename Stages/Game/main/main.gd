@@ -1,6 +1,7 @@
 extends Node3D
 
-@onready var camera: Camera3D = $Camera3D
+@onready var camera_controller: Main_CameraController = $CameraRig
+@onready var camera: Camera3D = $CameraRig/YawPivot/PitchPivot/Camera3D
 @onready var ui: MainUI = $UI
 @onready var building_placement: Utility_BuildingPlacement = $BuildingPlacement
 @onready var navigation_controller: Main_NavigationController = $NavigationController
@@ -64,10 +65,6 @@ func _load_scenario() -> void:
 
   add_child(current_scenario)
 
-  # Apply the 45-degree rotation to align with isometric camera view
-  # This matches the rotation applied in the editor to the hardcoded scenario
-  current_scenario.rotation.y = - PI / 4 # 45 degrees in radians
-
   # Send the scenario's full world-space AABB to the minimap immediately.
   # This covers all geometry (terrain + spawn surfaces), unlike the nav mesh
   # AABB which only covers the walkable area.
@@ -83,7 +80,7 @@ func _load_scenario() -> void:
   navigation_controller.rebake_navigation_mesh()
 
   # Configure camera max zoom/size from scenario settings
-  camera.camera_max_size = current_scenario.camera_max_size
+  camera_controller.camera_max_size = current_scenario.camera_max_size
 
   MyLogger.info("Main", "Scenario loaded successfully: %s" % scenario_id)
 
@@ -102,11 +99,11 @@ func _configure_boundaries_from_scenario() -> void:
   MyLogger.info("Main", "Configuring boundaries from scenario: X[%d, %d] Z[%d, %d]" % [int(min_x), int(max_x), int(min_z), int(max_z)])
 
   # Update camera boundary constraints
-  if camera:
-    camera.world_min_x = min_x
-    camera.world_max_x = max_x
-    camera.world_min_z = min_z
-    camera.world_max_z = max_z
+  if camera_controller:
+    camera_controller.world_min_x = min_x
+    camera_controller.world_max_x = max_x
+    camera_controller.world_min_z = min_z
+    camera_controller.world_max_z = max_z
 
 
 func _on_building_spawn_requested(building: Resource_BuildingType) -> void:
