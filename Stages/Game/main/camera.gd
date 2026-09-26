@@ -6,29 +6,29 @@ extends Node3D
 
 @export var camera_move_speed: float = 5.0
 @export var camera_zoom_speed: float = 50.0
-@export var camera_zoom_step: float = 2.0
-@export var camera_zoom_fast_multiplier: float = 3.0
-@export var camera_min_size: float = 5.0
-@export var camera_max_size: float = 100.0
-@export var camera_zoom_duration: float = 0.2
+@export var camera_zoom_step: float = 2.0 # Fixed zoom amount per wheel tick
+@export var camera_zoom_fast_multiplier: float = 3.0 # Fast zoom multiplier when Shift is held
+@export var camera_min_size: float = 5.0 # Minimum zoom (closest)
+@export var camera_max_size: float = 100.0 # Maximum zoom (farthest)
+@export var camera_zoom_duration: float = 0.2 # Duration for smooth zoom transitions
 
 @export_group("Mouse Controls")
-@export var enable_middle_mouse_drag: bool = true
-@export var mouse_drag_speed: float = 0.5
-@export var enable_edge_scroll: bool = true
-@export var edge_scroll_margin: float = 20.0
-@export var edge_scroll_speed: float = 30.0
+@export var enable_middle_mouse_drag: bool = true # Enable middle-mouse button drag to move camera
+@export var mouse_drag_speed: float = 0.5 # Speed multiplier for mouse drag movement
+@export var enable_edge_scroll: bool = true # Enable camera movement when mouse is at screen edge
+@export var edge_scroll_margin: float = 20.0 # Distance from screen edge to trigger scrolling (in pixels)
+@export var edge_scroll_speed: float = 30.0 # Speed of edge scrolling
 
 @export_group("Camera Boundaries")
-@export var enable_boundaries: bool = true
-@export var world_min_x: float = -200.0
-@export var world_max_x: float = 200.0
-@export var world_min_z: float = -200.0
-@export var world_max_z: float = 200.0
+@export var enable_boundaries: bool = true # Enable camera boundary constraints
+@export var world_min_x: float = -200.0 # Minimum X boundary for camera orbit center
+@export var world_max_x: float = 200.0 # Maximum X boundary for camera orbit center
+@export var world_min_z: float = -200.0 # Minimum Z boundary for camera orbit center
+@export var world_max_z: float = 200.0 # Maximum Z boundary for camera orbit center
 
 @export_group("Zoom Presets")
-@export var survivor_zoom_size: float = 15.0
-@export var zoom_preset_duration: float = 0.5
+@export var survivor_zoom_size: float = 15.0 # Zoom level when zooming to survivors
+@export var zoom_preset_duration: float = 0.5 # Duration for zoom preset transitions
 
 var zoom_tween: Tween
 var move_tween: Tween
