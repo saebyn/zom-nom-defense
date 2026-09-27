@@ -22,6 +22,7 @@ const SHAMBLE_REFERENCE_SPEED = 1.0
 var attack: Component_Attack
 var health: Component_Health
 var damage_numbers: Component_DamageNumbers
+var is_dead: bool = false
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var animation_tree: AnimationTree = $AnimationTree
@@ -118,6 +119,9 @@ func _update_locomotion_animation() -> void:
 
 
 func _physics_process(delta: float):
+  if is_dead:
+    return
+
   # Do not query when the map has never synchronized and is empty.
   if NavigationServer3D.map_get_iteration_id(navigation_agent.get_navigation_map()) == 0:
     MyLogger.debug("Enemy.Navigation", "Navigation map is empty, cannot navigate.")
@@ -179,23 +183,42 @@ func _on_died(damage_source: String = "unknown"):
     if damage_numbers:
         damage_numbers.show_scrap(scrap_reward)
   
-  queue_free()
+  is_dead = true
+  _trigger_death_animation()
 
 
 func _on_health_damaged(amount: int, hitpoints: int, damage_source: String = "unknown") -> void:
   MyLogger.debug("Enemy.Combat", "Enemy (%s) took %d damage from %s. Remaining HP: %d" % [enemy_type, amount, damage_source, hitpoints])
+  _trigger_hit_reaction_animation()
 
 
 func _trigger_attack_animation() -> void:
-  animation_tree.set(
-    "parameters/AttackOneShot/request",
-    AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE
-  )
+  if animation_tree:
+    animation_tree.set(
+      "parameters/AttackOneShot/request",
+      AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE
+    )
+
+
+func _trigger_hit_reaction_animation() -> void:
+  if animation_tree:
+    animation_tree.set(
+      "parameters/HitReactionOneShot/request",
+      AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE
+    )
 
 
 func _set_walk_animation_playback_speed(actual_speed: float) -> void:
-  var playback_scale := actual_speed / SHAMBLE_REFERENCE_SPEED
-  animation_tree.set(
-    "parameters/Locomotion/Walk/TimeScale/scale",
-    playback_scale
-  )
+  if animation_tree:
+    var playback_scale := actual_speed / SHAMBLE_REFERENCE_SPEED
+    animation_tree.set(
+      "parameters/Locomotion/Walk/TimeScale/scale",
+      playback_scale
+    )
+
+
+func _trigger_death_animation() -> void:
+  if animation_tree:
+    animation_tree.set(
+      "parameters/Status/transition_request", "dead"
+    )
