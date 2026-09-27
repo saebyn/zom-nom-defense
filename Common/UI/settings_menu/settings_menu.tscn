@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://q4474n3vbxwb" path="res://Common/UI/settings_menu/settings_menu.gd" id="1_settings"]
 [ext_resource type="Theme" uid="uid://b8k2vgj8hxk5r" path="res://Config/ztd_ui_theme.tres" id="2_theme"]
 [ext_resource type="Script" uid="uid://c1g3vqaakxkv2" path="res://Common/UI/settings_menu/SettingBinding.gd" id="3_settingbinding"]
+[ext_resource type="AudioStream" uid="uid://borwpkctbfksr" path="res://Assets/Audio/SFX/ui/click.wav" id="4_20v7f"]
 
 [node name="SettingsMenu" type="Control" unique_id=2049746040]
 process_mode = 3
@@ -62,7 +63,7 @@ horizontal_alignment = 1
 [node name="TabContainer" type="TabContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=311656233]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 3
+current_tab = 1
 
 [node name="Video" type="MarginContainer" parent="Panel/MarginContainer/VBoxContainer/TabContainer" unique_id=1361662898]
 visible = false
@@ -160,7 +161,6 @@ apply_group = "video"
 metadata/_custom_type_script = "uid://c1g3vqaakxkv2"
 
 [node name="Audio" type="MarginContainer" parent="Panel/MarginContainer/VBoxContainer/TabContainer" unique_id=2103301877]
-visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
@@ -273,6 +273,7 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="Twitch" type="MarginContainer" parent="Panel/MarginContainer/VBoxContainer/TabContainer" unique_id=181260752]
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
@@ -378,7 +379,7 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
-metadata/_tab_index = 5
+metadata/_tab_index = 4
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/TabContainer/Gameplay" unique_id=901234562]
 layout_mode = 2
@@ -427,3 +428,11 @@ layout_mode = 2
 custom_minimum_size = Vector2(120, 40)
 layout_mode = 2
 text = "Cancel"
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=972591166]
+stream = ExtResource("4_20v7f")
+pitch_scale = 0.77
+
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/MasterContainer/MasterSlider" to="." method="_on_master_slider_value_changed"]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/MusicContainer/MusicSlider" to="." method="_on_music_slider_value_changed"]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/SFXContainer/SFXSlider" to="." method="_on_sfx_slider_value_changed"]
