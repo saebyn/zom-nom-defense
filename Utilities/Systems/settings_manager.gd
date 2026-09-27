@@ -181,57 +181,6 @@ func apply_audio_settings() -> void:
   audio_settings_changed.emit()
   MyLogger.debug("SettingsManager", "Audio settings applied")
 
-## Set fullscreen mode
-func set_fullscreen(enabled: bool) -> void:
-  if fullscreen != enabled:
-    fullscreen = enabled
-    apply_video_settings()
-    save_settings()
-
-## Set vsync mode
-func set_vsync(enabled: bool) -> void:
-  if vsync_enabled != enabled:
-    vsync_enabled = enabled
-    apply_video_settings()
-    save_settings()
-
-## Set resolution by index
-func set_resolution(index: int) -> void:
-  if resolution_index != index and index >= 0 and index < RESOLUTIONS.size():
-    resolution_index = index
-    apply_video_settings()
-    save_settings()
-
-## Set UI scale by index
-func set_ui_scale(index: int) -> void:
-  if ui_scale_index != index and index >= 0 and index < UI_SCALES.size():
-    ui_scale_index = index
-    apply_video_settings()
-    save_settings()
-
-## Set master volume
-func set_master_volume(volume_db: float) -> void:
-  master_volume = clamp(volume_db, -80.0, 0.0)
-  apply_audio_settings()
-  save_settings()
-
-## Set music volume
-func set_music_volume(volume_db: float) -> void:
-  music_volume = clamp(volume_db, -80.0, 0.0)
-  apply_audio_settings()
-  save_settings()
-
-## Set sound effects volume
-func set_sfx_volume(volume_db: float) -> void:
-  sfx_volume = clamp(volume_db, -80.0, 0.0)
-  apply_audio_settings()
-  save_settings()
-
-## Set Twitch enabled
-func set_twitch_enabled(enabled: bool) -> void:
-  if twitch_enabled != enabled:
-    twitch_enabled = enabled
-    save_settings()
 
 ## Get resolution string for display
 func get_resolution_string(index: int) -> String:
