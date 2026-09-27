@@ -1,6 +1,8 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://c5t2estxun6yh"]
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://c5t2estxun6yh"]
 
 [ext_resource type="Texture2D" uid="uid://cr6e32gjpwmc2" path="res://Assets/Textures/zombieC.png" id="1_cvxir"]
 
 [resource]
+transparency = 1
+depth_draw_mode = 1
 albedo_texture = ExtResource("1_cvxir")
