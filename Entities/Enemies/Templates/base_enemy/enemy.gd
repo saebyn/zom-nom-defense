@@ -193,28 +193,32 @@ func _on_health_damaged(amount: int, hitpoints: int, damage_source: String = "un
 
 
 func _trigger_attack_animation() -> void:
-  animation_tree.set(
-    "parameters/AttackOneShot/request",
-    AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE
-  )
+  if animation_tree:
+    animation_tree.set(
+      "parameters/AttackOneShot/request",
+      AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE
+    )
 
 
 func _trigger_hit_reaction_animation() -> void:
-  animation_tree.set(
-    "parameters/HitReactionOneShot/request",
-    AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE
-  )
+  if animation_tree:
+    animation_tree.set(
+      "parameters/HitReactionOneShot/request",
+      AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE
+    )
 
 
 func _set_walk_animation_playback_speed(actual_speed: float) -> void:
-  var playback_scale := actual_speed / SHAMBLE_REFERENCE_SPEED
-  animation_tree.set(
-    "parameters/Locomotion/Walk/TimeScale/scale",
-    playback_scale
-  )
+  if animation_tree:
+    var playback_scale := actual_speed / SHAMBLE_REFERENCE_SPEED
+    animation_tree.set(
+      "parameters/Locomotion/Walk/TimeScale/scale",
+      playback_scale
+    )
 
 
 func _trigger_death_animation() -> void:
-  animation_tree.set(
-    "parameters/Status/transition_request", "dead"
-  )
+  if animation_tree:
+    animation_tree.set(
+      "parameters/Status/transition_request", "dead"
+    )

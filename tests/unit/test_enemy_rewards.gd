@@ -20,6 +20,8 @@ func after_each() -> void:
 
 
 func test_enemy_death_awards_scrap_without_xp_or_level_change() -> void:
+  # TODO this is not a great way to construct the enemy,
+  # because it leave out the resources from the scene.
   var enemy = ENEMY_SCRIPT.new()
   enemy.scrap_reward = 15
   enemy.enemy_type = "test_enemy"
