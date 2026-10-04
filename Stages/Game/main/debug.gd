@@ -40,7 +40,7 @@ func _project_to_ground(mouse_position: Vector2):
   raycast.force_raycast_update()
   if raycast.is_colliding():
     var collision_point = raycast.get_collision_point()
-    MyLogger.debug("Main_Debug", "Projected point on ground: %s" % collision_point)
+    MyLogger.info("Main_Debug", "Projected point on ground: %s" % collision_point)
     return collision_point
   else:
     MyLogger.warning("Main_Debug", "Raycast did not hit anything")
