@@ -37,8 +37,8 @@ vertex_color_use_as_albedo = true
 albedo_color = Color(0.54055595, 0.39825687, 0.19080138, 1)
 normal_enabled = true
 
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_8lne4"]
-data = PackedVector3Array(-50, 0.05, 50, 50, 0.05, 50, -50, -0.05, 50, 50, 0.05, 50, 50, -0.05, 50, -50, -0.05, 50, 50, 0.05, -50, -50, 0.05, -50, 50, -0.05, -50, -50, 0.05, -50, -50, -0.05, -50, 50, -0.05, -50, 50, 0.05, 50, 50, 0.05, -50, 50, -0.05, 50, 50, 0.05, -50, 50, -0.05, -50, 50, -0.05, 50, -50, 0.05, -50, -50, 0.05, 50, -50, -0.05, -50, -50, 0.05, 50, -50, -0.05, 50, -50, -0.05, -50, 50, 0.05, 50, -50, 0.05, 50, 50, 0.05, -50, -50, 0.05, 50, -50, 0.05, -50, 50, 0.05, -50, -50, -0.05, 50, 50, -0.05, 50, -50, -0.05, -50, 50, -0.05, 50, 50, -0.05, -50, -50, -0.05, -50)
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ebqns"]
+data = PackedVector3Array(-150, 0.049999997, 150, 150, 0.049999997, 150, -150, -0.049999997, 150, 150, 0.049999997, 150, 150, -0.049999997, 150, -150, -0.049999997, 150, 150, 0.049999997, -150, -150, 0.049999997, -150, 150, -0.049999997, -150, -150, 0.049999997, -150, -150, -0.049999997, -150, 150, -0.049999997, -150, 150, 0.049999997, 150, 150, 0.049999997, -150, 150, -0.049999997, 150, 150, 0.049999997, -150, 150, -0.049999997, -150, 150, -0.049999997, 150, -150, 0.049999997, -150, -150, 0.049999997, 150, -150, -0.049999997, -150, -150, 0.049999997, 150, -150, -0.049999997, 150, -150, -0.049999997, -150, 150, 0.049999997, 150, -150, 0.049999997, 150, 150, 0.049999997, -150, -150, 0.049999997, 150, -150, 0.049999997, -150, 150, 0.049999997, -150, -150, -0.049999997, 150, 150, -0.049999997, 150, -150, -0.049999997, -150, 150, -0.049999997, 150, 150, -0.049999997, -150, -150, -0.049999997, -150)
 
 [node name="Stage_Scenario" type="Node3D" unique_id=673340366 node_paths=PackedStringArray("enemy_spawner")]
 script = ExtResource("1_ffud3")
@@ -86,7 +86,7 @@ spawn_rate_curve = SubResource("Curve_ebqns")
 metadata/_custom_type_script = "uid://b7jdk6preu1s4"
 
 [node name="Ground" type="MeshInstance3D" parent="." unique_id=2093188596]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0005264282, 0.011428069, 0.015777588)
 mesh = SubResource("BoxMesh_ebqns")
 surface_material_override/0 = SubResource("StandardMaterial3D_m8tvj")
 
@@ -95,8 +95,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
 collision_layer = 17
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1866206734]
-shape = SubResource("ConcavePolygonShape3D_8lne4")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1174806619]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0005264282, 0.06142807, 0.015777588)
+shape = SubResource("ConcavePolygonShape3D_ebqns")
 
 [node name="Survivor1" parent="." unique_id=49640128 instance=ExtResource("2_xxlxc")]
 transform = Transform3D(0.8162794, 0, -0.5776592, 0, 1, 0, 0.5776592, 0, 0.8162794, -9.937922, 3.2032154, -9.683429)
