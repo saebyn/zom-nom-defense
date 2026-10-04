@@ -718,4 +718,4 @@ parameters/HitReactionOneShot/request = 0
 [connection signal="attack_accepted" from="Attack" to="." method="_trigger_attack_animation"]
 [connection signal="damaged" from="Health" to="." method="_on_health_damaged"]
 [connection signal="damaged" from="Health" to="ShakeEffect" method="damage_taken"]
-[connection signal="died" from="Health" to="." method="_on_health_died"]
+[connection signal="died" from="Health" to="." method="_on_died"]
