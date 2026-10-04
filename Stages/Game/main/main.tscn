@@ -48,7 +48,7 @@ process_mode = 3
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=2044361057 node_paths=PackedStringArray("camera", "yaw_pivot")]
 process_mode = 3
-position = Vector3(-1.95816, 0, 3.80759)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.95816, 0, 3.80759)
 script = ExtResource("5_hjeu7")
 camera = NodePath("YawPivot/PitchPivot/Camera3D")
 yaw_pivot = NodePath("YawPivot")
@@ -56,14 +56,14 @@ camera_move_speed = 30.0
 camera_zoom_fast_multiplier = 5.0
 camera_max_size = 300.0
 
-[node name="YawPivot" type="Node3D" parent="CameraRig"]
-rotation = Vector3(0, -0.785398, 0)
+[node name="YawPivot" type="Node3D" parent="CameraRig" unique_id=514023585]
+transform = Transform3D(0.7071069, 0, -0.70710665, 0, 1, 0, 0.70710665, 0, 0.7071069, 0, 0, 0)
 
-[node name="PitchPivot" type="Node3D" parent="CameraRig/YawPivot"]
-rotation = Vector3(-0.785398, 0, 0)
+[node name="PitchPivot" type="Node3D" parent="CameraRig/YawPivot" unique_id=444696255]
+transform = Transform3D(1, 0, 0, 0, 0.7071069, 0.70710665, 0, -0.70710665, 0.7071069, 0, 0, 0)
 
-[node name="Camera3D" type="Camera3D" parent="CameraRig/YawPivot/PitchPivot"]
-position = Vector3(0, 0, 160.168)
+[node name="Camera3D" type="Camera3D" parent="CameraRig/YawPivot/PitchPivot" unique_id=70219185]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 160.168)
 projection = 1
 current = true
 fov = 58.3
@@ -128,8 +128,8 @@ script = ExtResource("14_qyy2v")
 enemy_type = ExtResource("15_qm00m")
 camera = NodePath("../CameraRig/YawPivot/PitchPivot/Camera3D")
 
+[connection signal="attack_accepted" from="Attack" to="PlayerInputController" method="_on_attack_cooldown_started"]
 [connection signal="cooldown_ended" from="Attack" to="PlayerInputController" method="_on_attack_cooldown_ended"]
-[connection signal="cooldown_started" from="Attack" to="PlayerInputController" method="_on_attack_cooldown_started"]
 [connection signal="building_spawn_requested" from="UI" to="." method="_on_building_spawn_requested"]
 [connection signal="building_placement_status_changed" from="BuildingPlacement" to="UI" method="building_placement_status"]
 [connection signal="rebake_navigation_mesh" from="BuildingPlacement" to="NavigationController" method="rebake_navigation_mesh"]
