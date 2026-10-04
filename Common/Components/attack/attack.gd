@@ -5,10 +5,11 @@
 extends Node
 class_name Component_Attack
 
-# Emitted immediately after a successful attack when cooldown begins.
-signal cooldown_started
-# Emitted when the attack cooldown completes or is canceled early.
-signal cooldown_ended
+signal attack_accepted(target: Node) ## Emitted when the attack is successfully performed on a valid target.
+signal attack_released ## Emitted when the attack reaches the point where the damage is applied.
+signal attack_finished ## Emitted when the attack reaches the point where the animation is completed.
+signal attack_canceled ## Emitted when the attack is cancelled before completion (e.g., due to player input or interruption).
+signal cooldown_ended ## Emitted when the attack cooldown ends, allowing the next attack to be performed.
 
 enum AttackResult {
   SUCCESS,
@@ -72,7 +73,7 @@ func perform_attack(target: Node) -> AttackResult:
       # if attack_speed is 10 attacks/second,
       # then the attack cooldown is 0.1 seconds/attack
       attack_timer.start(1.0 / attack_speed)
-      cooldown_started.emit()
+      attack_accepted.emit(target)
       return AttackResult.SUCCESS
     else:
       return AttackResult.INVALID_TARGET

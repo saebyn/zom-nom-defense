@@ -219,6 +219,6 @@ metadata/_custom_type_script = "uid://c7bdetuss8stb"
 [node name="AudioStreamPlayer3D" parent="." index="9" unique_id=1513947477]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0017229319, 2.0537462, 0)
 
-[connection signal="cooldown_started" from="Attack" to="." method="_on_attack"]
+[connection signal="attack_accepted" from="Attack" to="." method="_on_attack"]
 
 [editable path="turret"]

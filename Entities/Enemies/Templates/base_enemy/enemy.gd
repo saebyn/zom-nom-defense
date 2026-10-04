@@ -184,7 +184,7 @@ func _on_health_damaged(amount: int, hitpoints: int, damage_source: String = "un
   _trigger_hit_reaction_animation()
 
 
-func _trigger_attack_animation() -> void:
+func _trigger_attack_animation(_target: Node) -> void:
   if animation_tree:
     animation_tree.set(
       "parameters/AttackOneShot/request",

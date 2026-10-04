@@ -49,7 +49,7 @@ func get_angle_difference(angle1: float, angle2: float) -> float:
   return diff
 
 
-func _on_attack() -> void:
+func _on_attack(_target: Node) -> void:
   animation_tree.set(FIRE_REQUEST_PATH, AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
 
 
