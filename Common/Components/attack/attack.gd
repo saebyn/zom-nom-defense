@@ -81,6 +81,7 @@ func perform_attack(target: Node) -> AttackResult:
   return AttackResult.ON_COOLDOWN
 
 func cancel():
+  MyLogger.debug("Attack", "Attack cooldown canceled.")
   attack_timer.stop()
   _on_AttackTimer_timeout()
 

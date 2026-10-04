@@ -57,14 +57,6 @@ func _ready():
   navigation_agent.debug_enabled = ProjectSettings.get_setting("zom_nom_defense/debug/show_navigation_paths", false)
 
 
-  if attack:
-    attack.cooldown_started.connect(_trigger_attack_animation)
-
-  # Connect the death signal from Health component
-  if health:
-    health.died.connect(_on_died)
-    health.damaged.connect(_on_health_damaged)
-
 # Resource_EnemyType
 func load_resource(resource: Resource_EnemyType) -> void:
   ready.connect(func() -> void:
