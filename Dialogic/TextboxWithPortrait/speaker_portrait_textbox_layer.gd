@@ -41,6 +41,8 @@ enum NameLabelColorModes {GLOBAL_COLOR, CHARACTER_COLOR, CUSTOM_COLOR}
 @export var box_modulate_custom_color: Color = Color(0.47247135639191, 0.31728461384773, 0.16592600941658)
 @export var box_size: Vector2 = Vector2(600, 160)
 @export var box_distance: int = 25
+## Stack the existing portrait and text in a right-hand tutorial panel.
+@export var tutorial_side_panel: bool = false
 
 @export_group('Portrait')
 @export_subgroup('Portrait')
@@ -55,12 +57,20 @@ var continue_feedback_tween: Tween
 
 func _ready() -> void:
   super._ready()
+  connect("resized", _update_box_layout)
   if Engine.is_editor_hint():
     return
 
   Dialogic.Text.text_started.connect(_on_text_started)
   Dialogic.Choices.question_shown.connect(_on_question_shown)
   Dialogic.Inputs.dialogic_action.connect(_on_dialogic_action)
+  continue_button.pressed.connect(_on_continue_pressed)
+
+
+func _on_continue_pressed() -> void:
+  # The conversation style keeps Dialogic's existing click-anywhere input.
+  if tutorial_side_panel and continue_button.is_visible_in_tree():
+    Dialogic.Inputs.handle_input()
 
 
 func _on_text_started(_info: Dictionary) -> void:
@@ -122,12 +132,26 @@ func _apply_export_overrides() -> void:
   ## BOX SETTINGS
   var panel: PanelContainer = %Panel
   var portrait_panel: Panel = %PortraitPanel
+  var content: BoxContainer = $Anchor/Panel/HBox
+  var text_content: VBoxContainer = $Anchor/Panel/HBox/VBoxContainer
+  var button_margin: MarginContainer = $Anchor/Panel/HBox/VBoxContainer/HSplitContainer
+  content.vertical = tutorial_side_panel
+  text_content.size_flags_vertical = Control.SIZE_EXPAND_FILL if tutorial_side_panel else Control.SIZE_FILL
+  portrait_panel.custom_minimum_size.y = 80 if tutorial_side_panel else 0
+  button_margin.add_theme_constant_override("margin_left", 0 if tutorial_side_panel else 265)
+  var anchor_preset := Control.PRESET_CENTER_RIGHT if tutorial_side_panel else Control.PRESET_CENTER_BOTTOM
+  $Anchor.set_anchors_and_offsets_preset(anchor_preset)
+  # Register as a scoped Dialogic input surface: the text node and Continue
+  # handle mouse input, while clicks elsewhere remain available to gameplay.
+  if tutorial_side_panel:
+    add_to_group("dialogic_input")
+  else:
+    remove_from_group("dialogic_input")
   if box_modulate_global_color:
     panel.self_modulate = get_global_setting(&'bg_color', box_modulate_custom_color)
   else:
     panel.self_modulate = box_modulate_custom_color
-  panel.size = box_size
-  panel.position = Vector2(-box_size.x/2, -box_size.y-box_distance)
+  _update_box_layout()
   portrait_panel.size_flags_stretch_ratio = portrait_stretch_factor
 
   var stylebox: StyleBox = load(box_panel)
@@ -163,3 +187,14 @@ func _apply_export_overrides() -> void:
 
   name_label.horizontal_alignment = name_label_alignment as HorizontalAlignment
   name_label.hide_when_empty = name_label_hide_when_no_character
+
+
+func _update_box_layout() -> void:
+  var panel: PanelContainer = %Panel
+  if tutorial_side_panel:
+    var available_height := get_viewport().get_visible_rect().size.y - 2 * box_distance
+    panel.size = Vector2(box_size.x, minf(box_size.y, available_height))
+    panel.position = Vector2(-panel.size.x-box_distance, -panel.size.y/2)
+  else:
+    panel.size = box_size
+    panel.position = Vector2(-box_size.x/2, -box_size.y-box_distance)
