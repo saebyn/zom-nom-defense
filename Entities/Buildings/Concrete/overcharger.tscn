@@ -18,18 +18,18 @@ mesh_instances = [NodePath("Overcharger/Base_Overcharger"), NodePath("Overcharge
 [node name="BuffLineEffect" type="Node3D" parent="." index="4" unique_id=613513737]
 script = ExtResource("1_buff_line")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="6" unique_id=937869572]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="5" unique_id=937869572]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, -0.008748665, 0.0019408464, 0.0340179)
 shape = SubResource("ConvexPolygonShape3D_j4x72")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="7" unique_id=601945726]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="6" unique_id=601945726]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0.02004017, 1.9356619, -0.120084964)
 shape = SubResource("ConvexPolygonShape3D_radig")
 
-[node name="Overcharger" parent="." index="8" unique_id=1009877928 instance=ExtResource("3_rfeoa")]
-transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 1.9769435, 0)
+[node name="Overcharger" parent="." index="7" unique_id=1009877928 instance=ExtResource("3_rfeoa")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0.87371755, 1.5004702, -0.8316126)
 
-[node name="OmniLight3D" type="OmniLight3D" parent="." index="9" unique_id=1610162620]
+[node name="OmniLight3D" type="OmniLight3D" parent="." index="8" unique_id=1610162620]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1110864, -0.102586925)
 light_color = Color(0.839216, 0.415686, 0.0392157, 1)
 light_size = 0.432
