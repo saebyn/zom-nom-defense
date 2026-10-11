@@ -17,6 +17,13 @@ enum AttackResult {
   INVALID_TARGET
 }
 
+enum AttackState {
+  READY,
+  STARTUP,
+  RECOVERY,
+  WAITING
+}
+
 @onready var attack_timer: Timer = $AttackTimer
 
 @export_group("Damage Settings")
@@ -31,7 +38,10 @@ enum AttackResult {
 @export var audio_player: AudioStreamPlayer3D
 
 
-var is_on_cooldown: bool = false
+var _attack_state: AttackState = AttackState.READY
+var is_ready: bool:
+  get:
+    return _attack_state == AttackState.READY
 var current_target: Node = null
 
 const CRITICAL_DAMAGE_SOURCE: String = "critical"
@@ -53,15 +63,19 @@ func _ready():
 
 
 func perform_attack(target: Node) -> AttackResult:
-  if not is_on_cooldown:
+  if _attack_state == AttackState.READY:
     MyLogger.debug("Attack", "Attempting to perform attack on target: %s" % target)
     # Find Health component via metadata
     var health := _get_target_health_component(target)
     if health == null:
       return AttackResult.INVALID_TARGET
 
-    # TODO state
     current_target = target
+    _attack_state = AttackState.STARTUP
+    # Start cooldown
+    # if attack_speed is 10 attacks/second,
+    # then the attack cooldown is 0.1 seconds/attack
+    attack_timer.start(1.0 / attack_speed)
     attack_accepted.emit(target)
     return AttackResult.SUCCESS
    
@@ -70,7 +84,9 @@ func perform_attack(target: Node) -> AttackResult:
 
 
 func release_attack() -> void:
-  # TODO check state
+  if _attack_state != AttackState.STARTUP:
+    MyLogger.warn("Attack", "Cannot release attack; not in STARTUP state.")
+    return
 
   var health := _get_target_health_component(current_target)
 
@@ -86,30 +102,57 @@ func release_attack() -> void:
   # Apply AoE splash to nearby enemies if radius is configured
   if attack_effect.aoe_radius > 0.0:
     _apply_aoe_splash(current_target, did_crit)
-  # Start cooldown
-  is_on_cooldown = true
-  # if attack_speed is 10 attacks/second,
-  # then the attack cooldown is 0.1 seconds/attack
-  attack_timer.start(1.0 / attack_speed)
-  # TODO state
+  _attack_state = AttackState.RECOVERY
   attack_released.emit()
 
 
 func finish_attack() -> void:
-  # TODO check state
-  current_target = null
+  if _attack_state != AttackState.RECOVERY:
+    MyLogger.warn("Attack", "Cannot finish attack; not in RECOVERY state.")
+    return
+
+  _attack_state = AttackState.WAITING
   attack_finished.emit()
+  if attack_timer.is_stopped():
+    _transition_waiting_to_ready()
 
 
 func cancel():
-  MyLogger.debug("Attack", "Attack cooldown canceled.")
+  if _attack_state == AttackState.READY:
+    MyLogger.warn("Attack", "Cannot cancel attack; already in READY state.")
+    return
+
+  if _attack_state == AttackState.WAITING:
+    MyLogger.warn("Attack", "Cannot cancel attack; already in WAITING state.")
+    return
+
+  MyLogger.debug("Attack", "Attack canceled.")
+  _attack_state = AttackState.WAITING
+  if attack_timer.is_stopped():
+    _transition_waiting_to_ready()
+
+
+func _transition_waiting_to_ready() -> void:
+  assert(
+    _attack_state == AttackState.WAITING,
+    "Cannot transition to READY from state: %s" % _attack_state
+  )
   current_target = null
-  attack_timer.stop()
-  _on_AttackTimer_timeout()
+  _attack_state = AttackState.READY
+  cooldown_ended.emit()
+
+
 
 func _on_AttackTimer_timeout():
-  is_on_cooldown = false
-  cooldown_ended.emit()
+  assert(
+    _attack_state != AttackState.READY,
+    "Attack timer timeout called in invalid state: %s" % _attack_state
+  )
+
+  # Only perform cooldown reset if the attack is in WAITING state,
+  # otherwise it will be reset when the attack finishes.
+  if _attack_state == AttackState.WAITING:
+    _transition_waiting_to_ready()
 
 
 func _get_target_health_component(target: Node) -> Component_Health:
