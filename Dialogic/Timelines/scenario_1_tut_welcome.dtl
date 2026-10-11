@@ -1,3 +1,4 @@
+[style name="Style"]
 do GameManager.pause_game()
 survivor: Another day, another horde of the undead...
 survivor: They just keep coming. First a few stragglers, then entire waves.
@@ -5,6 +6,7 @@ survivor: I can't hold them off alone. Whatever you do — keep them away from m
 if {SettingsManager.tutorial_enabled} == true:
 	survivor: Hey! You look new around here. Want me to walk you through the basics real quick?
 	- Yes, show me the ropes!
+		[style name="Tutorial"]
 		do GameManager.pause_game()
 		survivor: Good! Let me point out a few things on the screen.
 		do CurrencyManager.pulse_display("scrap", 3.0)
@@ -44,6 +46,7 @@ if {SettingsManager.tutorial_enabled} == true:
 		survivor: Use {SettingsManager.get_keybind('camera_move_left')} and {SettingsManager.get_keybind('camera_move_right')} to move the camera left and right, and {SettingsManager.get_keybind('camera_move_up')}/{SettingsManager.get_keybind('camera_move_down')} for up and down.
 		survivor: Use your scoll wheel or  {SettingsManager.get_keybind('camera_zoom_in_key')}/{SettingsManager.get_keybind('camera_zoom_out_key')} to zoom.
 		survivor: And you can rotate the camera with {SettingsManager.get_keybind('camera_rotate_left')} and {SettingsManager.get_keybind('camera_rotate_right')}.
+		[style name="Style"]
 		survivor: Alright, that's most of the important stuff. Now get out there and defend me!
 		survivor: Unpause the game to start confronting the horde. Good luck!
 	- No thanks, I've got this.
