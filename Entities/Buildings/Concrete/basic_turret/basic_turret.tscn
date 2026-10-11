@@ -58,7 +58,8 @@ tracks/1/keys = PackedFloat32Array(0, 1, 0, 1.185, 0)
 
 [sub_resource type="Animation" id="Animation_fire"]
 resource_name = "fire"
-length = 0.18
+length = 0.2
+step = 0.033
 tracks/0/type = "position_3d"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -78,6 +79,23 @@ tracks/1/keys = {
 "values": [{
 "args": [],
 "method": &"_emit_muzzle_flash"
+}]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Attack")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.18110636, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [],
+"method": &"release_attack"
+}, {
+"args": [],
+"method": &"finish_attack"
 }]
 }
 
@@ -121,7 +139,7 @@ animation = &"idle"
 animation = &"RESET"
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_turret"]
-graph_offset = Vector2(-340.5514, -54.918774)
+graph_offset = Vector2(-374.1818, 35.392853)
 nodes/output/position = Vector2(660, 100)
 nodes/Reset/node = SubResource("AnimationNodeAnimation_reset")
 nodes/Reset/position = Vector2(-380, 20)
@@ -142,17 +160,18 @@ aim_margin = 0.1
 attack_particle_system = NodePath("turret/TurretYaw/Top/Barrel/GPUParticles3D")
 mesh_instances = [NodePath("turret/TurretBase/Leg_000"), NodePath("turret/TurretBase/Leg_001"), NodePath("turret/TurretBase/Leg_002"), NodePath("turret/TurretBase/Screw"), NodePath("turret/TurretBase/ScrewBase"), NodePath("turret/TurretBase/Table"), NodePath("turret/TurretYaw/Top/Barrel"), NodePath("turret/TurretYaw/Top/BarrelStraps")]
 
-[node name="Attack" parent="." index="1" unique_id=663227314]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="1" unique_id=765644085]
+transform = Transform3D(1.74, 0, 0, 0, 1.74, 0, 0, 0, 1.74, 0.234956, 1.8958529, 0.0292969)
+shape = SubResource("BoxShape3D_sl1jc")
+
+[node name="Attack" parent="." index="2" unique_id=1417265482]
 damage_amount = 30.0
 attack_speed = 0.75
 damage_source = "turret"
 hit_sound = 2
+crit_sound = 2
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="2" unique_id=765644085]
-transform = Transform3D(1.74, 0, 0, 0, 1.74, 0, 0, 0, 1.74, 0.234956, 1.8958529, 0.0292969)
-shape = SubResource("BoxShape3D_sl1jc")
-
-[node name="turret" parent="." index="4" unique_id=1882957817 instance=ExtResource("3_cvjpm")]
+[node name="turret" parent="." index="3" unique_id=1882957817 instance=ExtResource("3_cvjpm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.022, -0.93759286, 0.036)
 
 [node name="TurretBase" parent="turret" index="0" unique_id=1863581079]
@@ -197,10 +216,10 @@ draw_pass_1 = SubResource("QuadMesh_3mut8")
 [node name="BarrelStraps" parent="turret/TurretYaw/Top" parent_id_path=PackedInt32Array(1882957817, 1023051705) index="1" unique_id=1971494862]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11129147, 1.1795998, 0.0047358274)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="5" unique_id=2046900780]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="4" unique_id=2046900780]
 libraries/ = SubResource("AnimationLibrary_2a5gv")
 
-[node name="AnimationTree" type="AnimationTree" parent="." index="6" unique_id=790123355]
+[node name="AnimationTree" type="AnimationTree" parent="." index="5" unique_id=790123355]
 tree_root = SubResource("AnimationNodeBlendTree_turret")
 anim_player = NodePath("../AnimationPlayer")
 parameters/BaseBlend/blend_amount = 0.0
@@ -208,7 +227,7 @@ parameters/FireOneShot/active = false
 parameters/FireOneShot/internal_active = false
 parameters/FireOneShot/request = 0
 
-[node name="Component_IdleSounds" type="Node3D" parent="." index="7" unique_id=1302254347 node_paths=PackedStringArray("audio_player")]
+[node name="Component_IdleSounds" type="Node3D" parent="." index="6" unique_id=1302254347 node_paths=PackedStringArray("audio_player")]
 script = ExtResource("4_cvjpm")
 idle_sound = 3
 audio_player = NodePath("../AudioStreamPlayer3D")
@@ -219,6 +238,6 @@ metadata/_custom_type_script = "uid://c7bdetuss8stb"
 [node name="AudioStreamPlayer3D" parent="." index="9" unique_id=1513947477]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0017229319, 2.0537462, 0)
 
-[connection signal="cooldown_started" from="Attack" to="." method="_on_attack"]
+[connection signal="attack_accepted" from="Attack" to="." method="_on_attack"]
 
 [editable path="turret"]

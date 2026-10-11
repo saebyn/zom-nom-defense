@@ -11,6 +11,7 @@ const SHAMBLE_REFERENCE_SPEED = 1.0
 @export var building_attack_range: float = 6.0
 @export var scrap_reward: int = 10 ## Scrap awarded when enemy dies (can be 0)
 @export var enemy_type: String = "base_enemy" ## Type identifier for stats tracking
+@export var enemy_group: String = "enemies"
 
 @export_group("Animations")
 @export var idle_animation_state: StringName = &"Idle"
@@ -56,14 +57,6 @@ func _ready():
   # Sync NavigationAgent3D debug display with the project setting
   navigation_agent.debug_enabled = ProjectSettings.get_setting("zom_nom_defense/debug/show_navigation_paths", false)
 
-
-  if attack:
-    attack.cooldown_started.connect(_trigger_attack_animation)
-
-  # Connect the death signal from Health component
-  if health:
-    health.died.connect(_on_died)
-    health.damaged.connect(_on_health_damaged)
 
 # Resource_EnemyType
 func load_resource(resource: Resource_EnemyType) -> void:
@@ -184,6 +177,7 @@ func _on_died(damage_source: String = "unknown"):
         damage_numbers.show_scrap(scrap_reward)
   
   is_dead = true
+  remove_from_group(enemy_group)
   _trigger_death_animation()
 
 
@@ -192,7 +186,7 @@ func _on_health_damaged(amount: int, hitpoints: int, damage_source: String = "un
   _trigger_hit_reaction_animation()
 
 
-func _trigger_attack_animation() -> void:
+func _trigger_attack_animation(_target: Node) -> void:
   if animation_tree:
     animation_tree.set(
       "parameters/AttackOneShot/request",

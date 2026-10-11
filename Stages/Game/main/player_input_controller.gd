@@ -80,6 +80,10 @@ func _handle_enemy_click(click_position: Vector2) -> void:
     MyLogger.debug("PlayerInput", "Clicked on: %s" % collider.name)
 
     var result = attack.perform_attack(collider)
+    if result == Component_Attack.AttackResult.SUCCESS:
+      attack.release_attack()
+      attack.finish_attack()
+
     # Only count as an enemy click if the collider is actually an enemy,
     # not other attackable things like scrap pickups.
     # We check the collider's group instead of class to allow for more flexible enemy implementations.
@@ -141,7 +145,7 @@ func _handle_building_remove_click(click_position: Vector2) -> void:
   _building_raycast.enabled = false
 
 
-func _on_attack_cooldown_started() -> void:
+func _on_attack_cooldown_started(_target: Node) -> void:
   if attack_waiting_cursor_image:
     Input.set_custom_mouse_cursor(attack_waiting_cursor_image)
 

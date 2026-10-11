@@ -5,15 +5,23 @@
 extends Node
 class_name Component_Attack
 
-# Emitted immediately after a successful attack when cooldown begins.
-signal cooldown_started
-# Emitted when the attack cooldown completes or is canceled early.
-signal cooldown_ended
+signal attack_accepted(target: Node) ## Emitted when the attack is successfully performed on a valid target.
+signal attack_released ## Emitted when the attack reaches the point where the damage is applied.
+signal attack_finished ## Emitted when the attack reaches the point where the animation is completed.
+signal attack_canceled ## Emitted when the attack is cancelled before completion (e.g., due to player input or interruption).
+signal cooldown_ended ## Emitted when the attack cooldown ends, allowing the next attack to be performed.
 
 enum AttackResult {
   SUCCESS,
   ON_COOLDOWN,
   INVALID_TARGET
+}
+
+enum AttackState {
+  READY,
+  STARTUP,
+  RECOVERY,
+  WAITING
 }
 
 @onready var attack_timer: Timer = $AttackTimer
@@ -30,7 +38,11 @@ enum AttackResult {
 @export var audio_player: AudioStreamPlayer3D
 
 
-var is_on_cooldown: bool = false
+var _attack_state: AttackState = AttackState.READY
+var is_ready: bool:
+  get:
+    return _attack_state == AttackState.READY
+var current_target: Node = null
 
 const CRITICAL_DAMAGE_SOURCE: String = "critical"
 
@@ -51,14 +63,35 @@ func _ready():
 
 
 func perform_attack(target: Node) -> AttackResult:
-  if not is_on_cooldown:
+  if _attack_state == AttackState.READY:
     MyLogger.debug("Attack", "Attempting to perform attack on target: %s" % target)
     # Find Health component via metadata
-    var health = null
-    if target.has_meta("health_component"):
-      health = target.get_meta("health_component")
-    
-    if health and health is Component_Health:
+    var health := _get_target_health_component(target)
+    if health == null:
+      return AttackResult.INVALID_TARGET
+
+    current_target = target
+    _attack_state = AttackState.STARTUP
+    # Start cooldown
+    # if attack_speed is 10 attacks/second,
+    # then the attack cooldown is 0.1 seconds/attack
+    attack_timer.start(1.0 / attack_speed)
+    attack_accepted.emit(target)
+    return AttackResult.SUCCESS
+   
+  MyLogger.debug("Attack", "Attack is on cooldown. Cannot perform attack on target: %s" % target)
+  return AttackResult.ON_COOLDOWN
+
+
+func release_attack() -> void:
+  if _attack_state != AttackState.STARTUP:
+    MyLogger.warn("Attack", "Cannot release attack; not in STARTUP state.")
+    return
+
+  if is_instance_valid(current_target):
+    var health := _get_target_health_component(current_target)
+
+    if health:
       var did_crit = _roll_crit()
       var effective_damage_source = CRITICAL_DAMAGE_SOURCE if did_crit else damage_source
       health.take_damage(calculate_damage_amount(did_crit), effective_damage_source)
@@ -66,27 +99,71 @@ func perform_attack(target: Node) -> AttackResult:
         AudioManager.play_sound(audio_player, crit_sound if did_crit else hit_sound)
       # Apply AoE splash to nearby enemies if radius is configured
       if attack_effect.aoe_radius > 0.0:
-        _apply_aoe_splash(target, did_crit)
-      # Start cooldown
-      is_on_cooldown = true
-      # if attack_speed is 10 attacks/second,
-      # then the attack cooldown is 0.1 seconds/attack
-      attack_timer.start(1.0 / attack_speed)
-      cooldown_started.emit()
-      return AttackResult.SUCCESS
+        _apply_aoe_splash(current_target, did_crit)
     else:
-      return AttackResult.INVALID_TARGET
-   
-  MyLogger.debug("Attack", "Attack is on cooldown. Cannot perform attack on target: %s" % target)
-  return AttackResult.ON_COOLDOWN
+      MyLogger.warn("Attack", "No Health component found on target. Cannot apply damage.")
+  else:
+    MyLogger.info("Attack", "Current target is no longer valid. Cannot apply damage.")
+
+  _attack_state = AttackState.RECOVERY
+  attack_released.emit()
+
+
+func finish_attack() -> void:
+  if _attack_state != AttackState.RECOVERY:
+    MyLogger.warn("Attack", "Cannot finish attack; not in RECOVERY state.")
+    return
+
+  _attack_state = AttackState.WAITING
+  attack_finished.emit()
+  if attack_timer.is_stopped():
+    _transition_waiting_to_ready()
+
 
 func cancel():
-  attack_timer.stop()
-  _on_AttackTimer_timeout()
+  if _attack_state == AttackState.READY:
+    MyLogger.warn("Attack", "Cannot cancel attack; already in READY state.")
+    return
+
+  if _attack_state == AttackState.WAITING:
+    MyLogger.warn("Attack", "Cannot cancel attack; already in WAITING state.")
+    return
+
+  MyLogger.debug("Attack", "Attack canceled.")
+  _attack_state = AttackState.WAITING
+  if attack_timer.is_stopped():
+    _transition_waiting_to_ready()
+
+
+func _transition_waiting_to_ready() -> void:
+  assert(
+    _attack_state == AttackState.WAITING,
+    "Cannot transition to READY from state: %s" % _attack_state
+  )
+  current_target = null
+  _attack_state = AttackState.READY
+  cooldown_ended.emit()
+
+
 
 func _on_AttackTimer_timeout():
-  is_on_cooldown = false
-  cooldown_ended.emit()
+  assert(
+    _attack_state != AttackState.READY,
+    "Attack timer timeout called in invalid state: %s" % _attack_state
+  )
+
+  # Only perform cooldown reset if the attack is in WAITING state,
+  # otherwise it will be reset when the attack finishes.
+  if _attack_state == AttackState.WAITING:
+    _transition_waiting_to_ready()
+
+
+func _get_target_health_component(target: Node) -> Component_Health:
+  if target.has_meta("health_component"):
+    var health = target.get_meta("health_component")
+    if health is Component_Health:
+      return health
+  return null
 
 ## Returns true if a critical hit should occur based on attack_effect.crit_chance.
 func _roll_crit() -> bool:
