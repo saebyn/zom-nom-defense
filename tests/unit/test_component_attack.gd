@@ -20,6 +20,13 @@ func _make_attack() -> Component_Attack:
   attack.damage_amount = 100.0
   attack.damage_source = "test"
   # No audio_player so sound is silently skipped
+  
+  # Hook up signals so that the attack component will work
+  attack.attack_accepted.connect(func(_target):
+    attack.release_attack()
+    attack.finish_attack()
+  )
+
   return attack
 
 
