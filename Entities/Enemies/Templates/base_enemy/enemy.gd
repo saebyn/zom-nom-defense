@@ -11,6 +11,7 @@ const SHAMBLE_REFERENCE_SPEED = 1.0
 @export var building_attack_range: float = 6.0
 @export var scrap_reward: int = 10 ## Scrap awarded when enemy dies (can be 0)
 @export var enemy_type: String = "base_enemy" ## Type identifier for stats tracking
+@export var enemy_group: String = "enemies"
 
 @export_group("Animations")
 @export var idle_animation_state: StringName = &"Idle"
@@ -176,6 +177,7 @@ func _on_died(damage_source: String = "unknown"):
         damage_numbers.show_scrap(scrap_reward)
   
   is_dead = true
+  remove_from_group(enemy_group)
   _trigger_death_animation()
 
 
