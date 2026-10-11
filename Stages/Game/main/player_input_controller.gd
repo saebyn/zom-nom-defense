@@ -82,6 +82,7 @@ func _handle_enemy_click(click_position: Vector2) -> void:
     var result = attack.perform_attack(collider)
     if result == Component_Attack.AttackResult.SUCCESS:
       attack.release_attack()
+      attack.finish_attack()
 
     # Only count as an enemy click if the collider is actually an enemy,
     # not other attackable things like scrap pickups.
