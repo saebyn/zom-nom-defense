@@ -2,7 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://b27ylmcumxx2r" path="res://Entities/Buildings/Templates/placeable_building/building.tscn" id="1_shooting"]
 [ext_resource type="Script" uid="uid://cjf3cwgo3gtsa" path="res://Entities/Buildings/Templates/ranged_building/ranged_building.gd" id="2_shooting"]
-[ext_resource type="PackedScene" uid="uid://d2nt6gtj5g3cm" path="res://Common/Components/attack/attack.tscn" id="3_shooting"]
 [ext_resource type="Shader" uid="uid://03qkf3qo6xsh" path="res://Assets/Shaders/dithered_transparency.gdshader" id="4_shader"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_wmkuw"]
@@ -18,14 +17,9 @@ shader_parameter/dither_scale = 1.00000004424012
 script = ExtResource("2_shooting")
 effect_range = 15.0
 
-[node name="Attack" parent="." index="1" unique_id=663227314 node_paths=PackedStringArray("audio_player") instance=ExtResource("3_shooting")]
-damage_amount = 150
-attack_speed = 0.5
-audio_player = NodePath("../AudioStreamPlayer3D")
-
-[node name="DetectionTimer" type="Timer" parent="." index="2" unique_id=1329069739]
+[node name="DetectionTimer" type="Timer" parent="." index="1" unique_id=1329069739]
 wait_time = 0.5
 
-[node name="RangePreview" type="MeshInstance3D" parent="." index="3" unique_id=332648695]
+[node name="RangePreview" type="MeshInstance3D" parent="." index="2" unique_id=332648695]
 mesh = SubResource("CylinderMesh_wmkuw")
 surface_material_override/0 = SubResource("ShaderMaterial_range")

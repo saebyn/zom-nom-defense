@@ -2,8 +2,14 @@
 
 [ext_resource type="PackedScene" uid="uid://cj8x0adt0k2cd" path="res://Entities/Buildings/Templates/ranged_building/ranged_building.tscn" id="1_anll1"]
 [ext_resource type="Script" uid="uid://d3pwau0rnoxtb" path="res://Entities/Buildings/Templates/shooting_building/shooting_building.gd" id="2_shooting"]
+[ext_resource type="PackedScene" uid="uid://d2nt6gtj5g3cm" path="res://Common/Components/attack/attack.tscn" id="3_tbths"]
 
 [node name="ShootingBuilding" unique_id=1158629850 instance=ExtResource("1_anll1")]
 script = ExtResource("2_shooting")
 enemy_group = "enemies"
 detection_interval = 0.5
+
+[node name="Attack" parent="." index="1" unique_id=1417265482 node_paths=PackedStringArray("audio_player") instance=ExtResource("3_tbths")]
+damage_amount = 150
+attack_speed = 0.5
+audio_player = NodePath("../AudioStreamPlayer3D")

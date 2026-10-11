@@ -160,17 +160,18 @@ aim_margin = 0.1
 attack_particle_system = NodePath("turret/TurretYaw/Top/Barrel/GPUParticles3D")
 mesh_instances = [NodePath("turret/TurretBase/Leg_000"), NodePath("turret/TurretBase/Leg_001"), NodePath("turret/TurretBase/Leg_002"), NodePath("turret/TurretBase/Screw"), NodePath("turret/TurretBase/ScrewBase"), NodePath("turret/TurretBase/Table"), NodePath("turret/TurretYaw/Top/Barrel"), NodePath("turret/TurretYaw/Top/BarrelStraps")]
 
-[node name="Attack" parent="." index="1" unique_id=663227314]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="1" unique_id=765644085]
+transform = Transform3D(1.74, 0, 0, 0, 1.74, 0, 0, 0, 1.74, 0.234956, 1.8958529, 0.0292969)
+shape = SubResource("BoxShape3D_sl1jc")
+
+[node name="Attack" parent="." index="2" unique_id=1417265482]
 damage_amount = 30.0
 attack_speed = 0.75
 damage_source = "turret"
 hit_sound = 2
+crit_sound = 2
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="2" unique_id=765644085]
-transform = Transform3D(1.74, 0, 0, 0, 1.74, 0, 0, 0, 1.74, 0.234956, 1.8958529, 0.0292969)
-shape = SubResource("BoxShape3D_sl1jc")
-
-[node name="turret" parent="." index="4" unique_id=1882957817 instance=ExtResource("3_cvjpm")]
+[node name="turret" parent="." index="3" unique_id=1882957817 instance=ExtResource("3_cvjpm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.022, -0.93759286, 0.036)
 
 [node name="TurretBase" parent="turret" index="0" unique_id=1863581079]
@@ -215,10 +216,10 @@ draw_pass_1 = SubResource("QuadMesh_3mut8")
 [node name="BarrelStraps" parent="turret/TurretYaw/Top" parent_id_path=PackedInt32Array(1882957817, 1023051705) index="1" unique_id=1971494862]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11129147, 1.1795998, 0.0047358274)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="5" unique_id=2046900780]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="4" unique_id=2046900780]
 libraries/ = SubResource("AnimationLibrary_2a5gv")
 
-[node name="AnimationTree" type="AnimationTree" parent="." index="6" unique_id=790123355]
+[node name="AnimationTree" type="AnimationTree" parent="." index="5" unique_id=790123355]
 tree_root = SubResource("AnimationNodeBlendTree_turret")
 anim_player = NodePath("../AnimationPlayer")
 parameters/BaseBlend/blend_amount = 0.0
@@ -226,7 +227,7 @@ parameters/FireOneShot/active = false
 parameters/FireOneShot/internal_active = false
 parameters/FireOneShot/request = 0
 
-[node name="Component_IdleSounds" type="Node3D" parent="." index="7" unique_id=1302254347 node_paths=PackedStringArray("audio_player")]
+[node name="Component_IdleSounds" type="Node3D" parent="." index="6" unique_id=1302254347 node_paths=PackedStringArray("audio_player")]
 script = ExtResource("4_cvjpm")
 idle_sound = 3
 audio_player = NodePath("../AudioStreamPlayer3D")
