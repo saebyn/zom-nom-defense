@@ -88,20 +88,23 @@ func release_attack() -> void:
     MyLogger.warn("Attack", "Cannot release attack; not in STARTUP state.")
     return
 
-  var health := _get_target_health_component(current_target)
+  if is_instance_valid(current_target):
+    var health := _get_target_health_component(current_target)
 
-  if health == null:
-    MyLogger.warn("Attack", "No Health component found on target. Cannot apply damage.")
-    return
+    if health:
+      var did_crit = _roll_crit()
+      var effective_damage_source = CRITICAL_DAMAGE_SOURCE if did_crit else damage_source
+      health.take_damage(calculate_damage_amount(did_crit), effective_damage_source)
+      if audio_player:
+        AudioManager.play_sound(audio_player, crit_sound if did_crit else hit_sound)
+      # Apply AoE splash to nearby enemies if radius is configured
+      if attack_effect.aoe_radius > 0.0:
+        _apply_aoe_splash(current_target, did_crit)
+    else:
+      MyLogger.warn("Attack", "No Health component found on target. Cannot apply damage.")
+  else:
+    MyLogger.info("Attack", "Current target is no longer valid. Cannot apply damage.")
 
-  var did_crit = _roll_crit()
-  var effective_damage_source = CRITICAL_DAMAGE_SOURCE if did_crit else damage_source
-  health.take_damage(calculate_damage_amount(did_crit), effective_damage_source)
-  if audio_player:
-    AudioManager.play_sound(audio_player, crit_sound if did_crit else hit_sound)
-  # Apply AoE splash to nearby enemies if radius is configured
-  if attack_effect.aoe_radius > 0.0:
-    _apply_aoe_splash(current_target, did_crit)
   _attack_state = AttackState.RECOVERY
   attack_released.emit()
 
