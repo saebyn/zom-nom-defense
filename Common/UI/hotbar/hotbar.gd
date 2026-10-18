@@ -10,21 +10,61 @@ class_name UI_Hotbar
 
 signal building_selected(building: Resource_BuildingType)
 
+const REJECTION_SOUND_COOLDOWN_MS := 350
+
 @export var max_slots: int = 6 # Maximum number of hotbar slots
 @export var spacing: int = 8 # Spacing between slots
 @export var button_scene: PackedScene # Scene for individual hotbar buttons
 
 @onready var slots_container: HBoxContainer = $SlotsContainer
 @onready var building_selection_menu: PopupMenu = $BuildingSelectionMenu
+@onready var pause_feedback: PanelContainer = $PauseFeedback
+@onready var pause_feedback_timer: Timer = $PauseFeedbackTimer
+@onready var rejection_audio: AudioStreamPlayer = $RejectionAudio
 
 var slot_building_ids: Array[String] = [] ## Building IDs for each slot
 var slot_buttons: Array[HotbarButton] = [] ## Button references for each slot
 var current_configuring_slot: int = -1 ## Track which slot was last right-clicked for configuration (-1 if none, may not be valid index or current if no menu open)
+var _last_rejection_sound_ms := -REJECTION_SOUND_COOLDOWN_MS
 
 func _ready() -> void:
   _setup_ui()
   _connect_signals()
   _populate_default_hotbar()
+  set_process(false)
+
+func _process(_delta: float) -> void:
+  # Only process while the notice is visible, including while gameplay is paused.
+  if not GameManager.is_paused() or not _can_show_pause_feedback():
+    _hide_pause_feedback()
+
+func _can_show_pause_feedback() -> bool:
+  return (GameManager.is_playing() and is_visible_in_tree()
+    and not building_selection_menu.visible and not Dialogic.Text.is_textbox_visible())
+
+func _show_pause_feedback(slot_index: int) -> void:
+  if not _can_show_pause_feedback():
+    return
+  # Hover tooltips otherwise cover the notice above the hotbar.
+  for button in slot_buttons:
+    button.hide_tooltip()
+  pause_feedback.show()
+  # Reuse one notice and timer; repeated attempts extend it without stacking effects.
+  pause_feedback_timer.start()
+  slot_buttons[slot_index].show_rejection_feedback()
+  var now := Time.get_ticks_msec()
+  if now - _last_rejection_sound_ms >= REJECTION_SOUND_COOLDOWN_MS:
+    AudioManager.play_sound(rejection_audio, Resource_SoundEffect.SoundEffect.ERROR)
+    _last_rejection_sound_ms = now
+  set_process(true)
+
+func _hide_pause_feedback() -> void:
+  pause_feedback.hide()
+  pause_feedback_timer.stop()
+  rejection_audio.stop()
+  for button in slot_buttons:
+    button.stop_rejection_feedback()
+  set_process(false)
 
 func _setup_ui() -> void:
   # Create the container if it doesn't exist
@@ -110,14 +150,15 @@ func _update_slot_visual(slot_index: int) -> void:
 
 func _on_slot_pressed(slot_index: int) -> void:
   """Handle left click on slot - select building for placement"""
+  var building = get_slot_building(slot_index)
   # Block world placement when the game is paused (speed = 0 or in-game menu)
   if GameManager.is_paused():
+    if building:
+      _show_pause_feedback(slot_index)
     return
   
-  var building_id = slot_building_ids[slot_index] if slot_index < slot_building_ids.size() else ""
-  var building = _get_building_by_id(building_id)
-  
   if building:
+    AudioManager.play_sound_2d(Resource_SoundEffect.SoundEffect.UI_CONFIRM)
     MyLogger.info("Hotbar", "Selected building: %s from slot %d" % [building.name, slot_index + 1])
     building_selected.emit(building)
 
@@ -217,25 +258,11 @@ func set_slot_building(slot_index: int, building: Resource_BuildingType) -> void
 
 func _input(event: InputEvent) -> void:
   # Handle keyboard shortcuts for hotbar slots (1-6)
-  if event is InputEventKey and event.pressed:
-    var slot_index = -1
-    
-    # Check for hotbar slot input actions
-    if Input.is_action_just_pressed("hotbar_slot_1"):
-      slot_index = 0
-    elif Input.is_action_just_pressed("hotbar_slot_2"):
-      slot_index = 1
-    elif Input.is_action_just_pressed("hotbar_slot_3"):
-      slot_index = 2
-    elif Input.is_action_just_pressed("hotbar_slot_4"):
-      slot_index = 3
-    elif Input.is_action_just_pressed("hotbar_slot_5"):
-      slot_index = 4
-    elif Input.is_action_just_pressed("hotbar_slot_6"):
-      slot_index = 5
-    
-    if slot_index >= 0:
-      _on_slot_pressed(slot_index)
+  if event is InputEventKey and event.pressed and not event.echo:
+    for slot_index in range(mini(max_slots, 6)):
+      if event.is_action_pressed("hotbar_slot_%d" % (slot_index + 1)):
+        _on_slot_pressed(slot_index)
+        break
 
 func _on_building_types_updated(added_types: Array[Resource_BuildingType], removed_types: Array[Resource_BuildingType]) -> void:
   MyLogger.info("Hotbar", "Building types updated. Added: %d, Removed: %d" % [added_types.size(), removed_types.size()])
