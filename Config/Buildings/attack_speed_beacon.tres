@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://vy1lf2kd14dr" path="res://Config/Buildings/building_type_resource.gd" id="1_bhnkn"]
 [ext_resource type="PackedScene" uid="uid://b47ma4awlxcq0" path="res://Entities/Buildings/Concrete/attack_speed_beacon.tscn" id="1_hitac"]
 [ext_resource type="Texture2D" uid="uid://vc6qrrydujmc" path="res://Assets/Icons/attack_speed_icon.png" id="1_t4pkb"]
+[ext_resource type="PackedScene" uid="uid://qtqtkjem57c2" path="res://Entities/Buildings/Concrete/attack_speed_beacon_inner.tscn" id="2_bhgw8"]
 
 [resource]
 script = ExtResource("1_bhnkn")
@@ -13,5 +14,6 @@ icon = ExtResource("1_t4pkb")
 color = Color(0, 0.3764706, 0.78431374, 1)
 cost = 10
 scene = ExtResource("1_hitac")
+preview = ExtResource("2_bhgw8")
 required_tech_ids = Array[String](["sup_cooldown_beacon"])
 metadata/_custom_type_script = "uid://vy1lf2kd14dr"

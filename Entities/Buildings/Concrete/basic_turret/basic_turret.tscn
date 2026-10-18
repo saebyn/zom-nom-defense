@@ -2,9 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://dhxe3f6ho8qma" path="res://Entities/Buildings/Templates/shooting_building/shooting_building.tscn" id="1_turret"]
 [ext_resource type="Script" uid="uid://0yy8udbhaakj" path="res://Entities/Buildings/Concrete/basic_turret/basic_turret.gd" id="2_6y5ob"]
-[ext_resource type="PackedScene" uid="uid://doxso30lh6jyq" path="res://Assets/Models/new_turret.glb" id="3_cvjpm"]
 [ext_resource type="Texture2D" uid="uid://got2ohkr26cd" path="res://Assets/Textures/fire_particle.png" id="4_2a5gv"]
 [ext_resource type="Script" uid="uid://c7bdetuss8stb" path="res://Common/Components/idle_sounds/idle_sounds.gd" id="4_cvjpm"]
+[ext_resource type="PackedScene" uid="uid://qr22cm7a0sct" path="res://Entities/Buildings/Concrete/basic_turret/basic_turret_inner.tscn" id="5_ktni2"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sl1jc"]
 size = Vector3(1.26466, 1.16345, 1.03418)
@@ -54,7 +54,7 @@ tracks/1/enabled = true
 tracks/1/path = NodePath("turret/TurretYaw/Top/Barrel")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
-tracks/1/keys = PackedFloat32Array(0, 1, 0, 1.185, 0)
+tracks/1/keys = PackedFloat32Array(0, 1, 0, 0.274, 0)
 
 [sub_resource type="Animation" id="Animation_fire"]
 resource_name = "fire"
@@ -66,7 +66,7 @@ tracks/0/enabled = true
 tracks/0/path = NodePath("turret/TurretYaw/Top/Barrel")
 tracks/0/interp = 2
 tracks/0/loop_wrap = false
-tracks/0/keys = PackedFloat32Array(0, 1, -0.111, 1.185, 0.005, 0.06666667, 1, -0.231, 1.185, 0.005, 0.18, 1, -0.111, 1.185, 0.005)
+tracks/0/keys = PackedFloat32Array(0, 1, -0.111, 0.289, 0.005, 0.066333495, 1, -0.231, 0.289, 0.005, 0.18, 1, -0.111, 0.289, 0.005)
 tracks/1/type = "method"
 tracks/1/imported = false
 tracks/1/enabled = true
@@ -116,7 +116,7 @@ tracks/1/enabled = true
 tracks/1/path = NodePath("turret/TurretYaw/Top/Barrel")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
-tracks/1/keys = PackedFloat32Array(0, 1, 0, 1.185, 0)
+tracks/1/keys = PackedFloat32Array(0, 1, 0, 0.289, 0)
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_2a5gv"]
 _data = {
@@ -139,7 +139,7 @@ animation = &"idle"
 animation = &"RESET"
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_turret"]
-graph_offset = Vector2(-374.1818, 35.392853)
+graph_offset = Vector2(-197.34114, 10.525462)
 nodes/output/position = Vector2(660, 100)
 nodes/Reset/node = SubResource("AnimationNodeAnimation_reset")
 nodes/Reset/position = Vector2(-380, 20)
@@ -158,7 +158,7 @@ script = ExtResource("2_6y5ob")
 rotation_speed = 360.0
 aim_margin = 0.1
 attack_particle_system = NodePath("turret/TurretYaw/Top/Barrel/GPUParticles3D")
-mesh_instances = [NodePath("turret/TurretBase/Leg_000"), NodePath("turret/TurretBase/Leg_001"), NodePath("turret/TurretBase/Leg_002"), NodePath("turret/TurretBase/Screw"), NodePath("turret/TurretBase/ScrewBase"), NodePath("turret/TurretBase/Table"), NodePath("turret/TurretYaw/Top/Barrel"), NodePath("turret/TurretYaw/Top/BarrelStraps")]
+mesh_instances = [NodePath("turret/TurretBase/Leg_000"), NodePath("turret/TurretBase/Leg_001"), NodePath("turret/TurretBase/Leg_002"), NodePath("turret/TurretBase/Screw"), NodePath("turret/TurretBase/Table"), NodePath("turret/TurretYaw/Top/Barrel"), NodePath("turret/TurretYaw/Top/BarrelStraps"), NodePath("turret/TurretBase/ScrewBase")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="1" unique_id=765644085]
 transform = Transform3D(1.74, 0, 0, 0, 1.74, 0, 0, 0, 1.74, 0.234956, 1.8958529, 0.0292969)
@@ -171,38 +171,13 @@ damage_source = "turret"
 hit_sound = 2
 crit_sound = 2
 
-[node name="turret" parent="." index="3" unique_id=1882957817 instance=ExtResource("3_cvjpm")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.022, -0.93759286, 0.036)
+[node name="turret" parent="." index="3" unique_id=612672850 instance=ExtResource("5_ktni2")]
 
-[node name="TurretBase" parent="turret" index="0" unique_id=1863581079]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.104838215, 0.1477918, 0)
-
-[node name="Leg_000" parent="turret/TurretBase" index="0" unique_id=133427533]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35388958, 0.81351906, 0.55059725)
-
-[node name="Leg_001" parent="turret/TurretBase" index="1" unique_id=1120402624]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55678797, 0.81351906, -0.122326374)
-
-[node name="Leg_002" parent="turret/TurretBase" index="2" unique_id=796154571]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46751213, 0.81351906, -0.5741553)
-
-[node name="Screw" parent="turret/TurretBase" index="3" unique_id=1734750195]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08880546, 0.83942974, -0.04415649)
-
-[node name="ScrewBase" parent="turret/TurretBase" index="4" unique_id=2088071304]
-transform = Transform3D(0.1132952, 0, 0, 0, 0.04595851, 0, 0, 0, 0.1132952, -0.08686017, 0.83468866, -0.04591787)
-
-[node name="Table" parent="turret/TurretBase" index="5" unique_id=668724516]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0869002, 1.6847744, -0.04360777)
-
-[node name="TurretYaw" parent="turret" index="1" unique_id=676300319]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0426648, 0)
-
-[node name="Barrel" parent="turret/TurretYaw/Top" parent_id_path=PackedInt32Array(1882957817, 1023051705) index="0" unique_id=1905556764]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.185, 0)
+[node name="Barrel" parent="turret/TurretYaw/Top" parent_id_path=PackedInt32Array(612672850, 1023051705) index="0" unique_id=1905556764]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.274, 0)
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="turret/TurretYaw/Top/Barrel" index="0" unique_id=1721422763]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.3402462, 0, 0)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.5259567, 0.56286955, 0.03126405)
 emitting = false
 amount = 90
 lifetime = 3.82
@@ -212,9 +187,6 @@ explosiveness = 1.0
 randomness = 0.15
 process_material = SubResource("ParticleProcessMaterial_cvjpm")
 draw_pass_1 = SubResource("QuadMesh_3mut8")
-
-[node name="BarrelStraps" parent="turret/TurretYaw/Top" parent_id_path=PackedInt32Array(1882957817, 1023051705) index="1" unique_id=1971494862]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11129147, 1.1795998, 0.0047358274)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." index="4" unique_id=2046900780]
 libraries/ = SubResource("AnimationLibrary_2a5gv")

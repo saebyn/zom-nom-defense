@@ -46,7 +46,7 @@ var busy: bool:
     return _preview != null
 
 var _place_building_type: Resource_BuildingType = null
-var _preview: Entity_PlaceableBuilding = null
+var _preview: Node3D = null
 var _internal_placement_status: BuildingPlacementStatus = BuildingPlacementStatus.NONE
 var _last_placement_status: BuildingPlacementStatus:
   set(value):
@@ -181,9 +181,7 @@ func _on_building_spawn_requested(building_type: Resource_BuildingType) -> void:
     _cancel_building_placement()
 
   _place_building_type = building_type
-  _preview = building_type.scene.instantiate()
-  _preview.building_type = building_type
-  _preview.is_preview = true
+  _preview = building_type.preview.instantiate()
   MyLogger.info("Placement", "Created preview for building: %s" % building_type.name)
   raycast.enabled = true
   add_child(_preview)
@@ -203,7 +201,13 @@ func _place_building() -> void:
     MyLogger.error("Placement", "Cannot place building: Insufficient funds")
     return
   
-  _preview.place(navigation_region)
+  var building := _place_building_type.scene.instantiate()
+  building.global_position = _preview.global_position
+  assert(building is Entity_PlaceableBuilding, "Instantiated building is not an Entity_PlaceableBuilding")
+  assert(get_parent() != null, "BuildingPlacement node has no parent to add the building to")
+  get_parent().add_child(building)
+  building.building_type = _place_building_type
+  building.place(navigation_region)
 
   rebake_navigation_mesh.emit()
   building_placed.emit()
@@ -217,14 +221,12 @@ func _place_building() -> void:
   AudioManager.play_sound(audio_player, Resource_SoundEffect.SoundEffect.BUILDING_COMPLETE)
 
 func _cancel_building_placement() -> void:
-  if _preview:
-    _preview.queue_free()
-    _preview = null
   _clear_building_placement()
   AudioManager.play_sound(audio_player, Resource_SoundEffect.SoundEffect.UI_CANCEL)
 
 func _clear_building_placement() -> void:
   if _preview:
+    _preview.queue_free()
     _preview = null
   _place_building_type = null
   raycast.enabled = false
@@ -243,10 +245,24 @@ func _update_visual_feedback(target_position: Vector3) -> void:
   var is_valid = _last_placement_status == BuildingPlacementStatus.NONE
   var material = valid_placement_material if is_valid else invalid_placement_material
   
-  _preview.set_preview_material(material)
+  _set_preview_material(material)
 
 func _project_placed_building(mouse_position: Vector2) -> void:
   var ray_origin = camera.project_ray_origin(mouse_position)
   var ray_direction = camera.project_ray_normal(mouse_position)
   raycast.target_position = ray_direction * raycast_length
   raycast.position = ray_origin
+
+## Sets a material override for all meshes in the placement preview node.
+## 
+## @param material The Material to apply as an override to all preview mesh surfaces.
+func _set_preview_material(material: Material) -> void:
+  if _preview == null:
+    MyLogger.warn("Placement", "Cannot set preview material - no preview node available")
+    return
+
+  for node in _preview.find_children("*", "MeshInstance3D"):
+    if node is MeshInstance3D and node.mesh != null:
+      var surface_count = node.mesh.get_surface_count()
+      for i in range(surface_count):
+        node.set_surface_override_material(i, material)

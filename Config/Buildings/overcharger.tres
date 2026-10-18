@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bda0rm6s80jqf" path="res://Assets/Icons/overcharger.png" id="1_62sk5"]
 [ext_resource type="Script" uid="uid://vy1lf2kd14dr" path="res://Config/Buildings/building_type_resource.gd" id="1_bhnkn"]
 [ext_resource type="PackedScene" uid="uid://giv7ooe62qw1" path="res://Entities/Buildings/Concrete/overcharger.tscn" id="1_t0qul"]
+[ext_resource type="PackedScene" uid="uid://coxcwxv0883sd" path="res://Entities/Buildings/Concrete/overcharger_inner.tscn" id="2_1m4if"]
 
 [resource]
 script = ExtResource("1_bhnkn")
@@ -13,5 +14,6 @@ icon = ExtResource("1_62sk5")
 color = Color(0, 0.3764706, 0.78431374, 1)
 cost = 10
 scene = ExtResource("1_t0qul")
+preview = ExtResource("2_1m4if")
 required_tech_ids = Array[String](["sup_overcharger"])
 metadata/_custom_type_script = "uid://vy1lf2kd14dr"

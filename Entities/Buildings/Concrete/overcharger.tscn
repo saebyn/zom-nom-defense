@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bjlvdmndqn0hw" path="res://Entities/Buildings/Templates/buff_building/buff_building.tscn" id="1_a8xu0"]
 [ext_resource type="Script" uid="uid://dxpmn7q530akc" path="res://Common/Effects/buff_line_effect/buff_line_effect.gd" id="1_buff_line"]
-[ext_resource type="PackedScene" uid="uid://bbcgf8oer6iog" path="res://Assets/Models/overcharger.glb" id="3_rfeoa"]
+[ext_resource type="PackedScene" uid="uid://coxcwxv0883sd" path="res://Entities/Buildings/Concrete/overcharger_inner.tscn" id="3_rfeoa"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_j4x72"]
 points = PackedVector3Array(-0.67283964, 0.007586498, -0.70823133, -0.67283964, 0.007586498, 0.69626725, -0.67283964, 0.12620868, -0.70823133, 0.73165894, 0.007586498, -0.70823133, -0.67283964, 0.12620868, 0.69626725, 0.73165894, 0.007586498, 0.69626725, -0.45051226, 0.94049186, -0.48590395, 0.73165894, 0.12620868, -0.70823133, -0.45051226, 0.94049186, 0.4739399, 0.73165894, 0.12620868, 0.69626725, 0.5093316, 0.94049186, -0.48590395, 0.5093316, 0.94049186, 0.4739399)
@@ -13,7 +13,7 @@ points = PackedVector3Array(-0.37381542, 0.8720087, 0, -0.34542066, 0.8720087, -
 [node name="Overcharger" unique_id=1733578486 node_paths=PackedStringArray("mesh_instances") instance=ExtResource("1_a8xu0")]
 buff_type = 1
 buff_amount = 0.3999999999999999
-mesh_instances = [NodePath("Overcharger/Base_Overcharger"), NodePath("Overcharger/LanternPost"), NodePath("Overcharger/LanternEnclosure"), NodePath("Overcharger/LanternCap")]
+mesh_instances = [NodePath("Overcharger/Base_Overcharger"), NodePath("Overcharger/Cylinder"), NodePath("Overcharger/Cylinder_001"), NodePath("Overcharger/LanternPost")]
 
 [node name="BuffLineEffect" type="Node3D" parent="." index="4" unique_id=613513737]
 script = ExtResource("1_buff_line")
@@ -26,10 +26,7 @@ shape = SubResource("ConvexPolygonShape3D_j4x72")
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0.02004017, 1.9356619, -0.120084964)
 shape = SubResource("ConvexPolygonShape3D_radig")
 
-[node name="Overcharger" parent="." index="7" unique_id=1009877928 instance=ExtResource("3_rfeoa")]
-transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0.87371755, 1.5004702, -0.8316126)
-
-[node name="OmniLight3D" type="OmniLight3D" parent="." index="8" unique_id=1610162620]
+[node name="OmniLight3D" type="OmniLight3D" parent="." index="7" unique_id=1610162620]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1110864, -0.102586925)
 light_color = Color(0.839216, 0.415686, 0.0392157, 1)
 light_size = 0.432
@@ -41,5 +38,8 @@ distance_fade_begin = 9.9
 distance_fade_shadow = 1.0
 omni_range = 15.398
 omni_attenuation = -0.803
+
+[node name="Overcharger" parent="." index="8" unique_id=1213939688 instance=ExtResource("3_rfeoa")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 0, 0)
 
 [editable path="Overcharger"]

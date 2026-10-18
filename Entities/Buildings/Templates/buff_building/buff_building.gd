@@ -22,15 +22,13 @@ func _ready():
   buff_timer = Timer.new()
   buff_timer.wait_time = buff_interval
   buff_timer.one_shot = false
-  # Only autostart when placed, not in preview mode
-  buff_timer.autostart = not is_preview
+  buff_timer.autostart = true
   buff_timer.timeout.connect(_apply_buffs)
   add_child(buff_timer)
 
 func place(navigation_region: NavigationRegion3D) -> void:
-  var was_preview := is_preview
   super.place(navigation_region)
-  if buff_timer and was_preview and not is_preview:
+  if buff_timer:
     buff_timer.start()
 
 func _apply_buffs():

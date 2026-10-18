@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://djngqa31swb2b"]
+
+[ext_resource type="PackedScene" uid="uid://dk8dqh6ytua8r" path="res://Assets/Models/electric_fence.glb" id="1_v3s88"]
+
+[node name="Electric Fence" unique_id=1240077099 instance=ExtResource("1_v3s88")]
+
+[node name="Cube" parent="." index="0" unique_id=368242784]
+transform = Transform3D(0.091313414, 0, 0, 0, 1, 0, 0, 0, 0.097007394, 0, -0.005410433, 0)
+
+[node name="Cube_001" parent="." index="1" unique_id=1687167959]
+transform = Transform3D(0.8861714, 0, 0, 0, 0.004861357, 0, 0, 0, 0.0009512668, 0, 0.4153185, 0)

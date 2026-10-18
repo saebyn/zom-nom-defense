@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://qtqtkjem57c2"]
+
+[ext_resource type="PackedScene" uid="uid://b5yo2sgcp4mvu" path="res://Assets/Models/attack_speed.glb" id="1_452c0"]
+
+[node name="Attack Speed" unique_id=356178538 instance=ExtResource("1_452c0")]
+
+[node name="AmmoBox" parent="." index="0" unique_id=33369392]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.029907227, -0.012254477, 0.0069675446)
+
+[node name="BeltCurve" parent="." index="1" unique_id=1462622112]
+transform = Transform3D(1.8333952, 0, 0, 0, 2.627925, 0, 0, 0, 2.627925, 0.0059690475, 0.5485709, -0.027955055)
+
+[node name="Link" parent="." index="2" unique_id=1059932457]
+transform = Transform3D(2.627925, 0, 0, 0, 2.627925, 0, 0, 0, 2.627925, 0.02195263, 1.2882488, 0.0059576035)
+
+[node name="Round" parent="." index="3" unique_id=7981758]
+transform = Transform3D(2.627925, 0, 0, 0, 2.627925, 0, 0, 0, 2.627925, 0.0019817352, 1.2949046, 0.015029907)

@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://vy1lf2kd14dr" path="res://Config/Buildings/building_type_resource.gd" id="1_bhnkn"]
 [ext_resource type="PackedScene" uid="uid://bwp5kbgy8vea1" path="res://Entities/Buildings/Concrete/range_amplifier.tscn" id="1_ejrsb"]
 [ext_resource type="Texture2D" uid="uid://ftkvgaw03s20" path="res://Assets/Icons/range_amplifier.png" id="1_u0xfx"]
+[ext_resource type="PackedScene" uid="uid://q60dq7ptchdc" path="res://Entities/Buildings/Concrete/range_amplifier_inner.tscn" id="2_vuh35"]
 
 [resource]
 script = ExtResource("1_bhnkn")
@@ -13,5 +14,6 @@ icon = ExtResource("1_u0xfx")
 color = Color(0, 0.3764706, 0.78431374, 1)
 cost = 10
 scene = ExtResource("1_ejrsb")
+preview = ExtResource("2_vuh35")
 required_tech_ids = Array[String](["sup_range_amp"])
 metadata/_custom_type_script = "uid://vy1lf2kd14dr"

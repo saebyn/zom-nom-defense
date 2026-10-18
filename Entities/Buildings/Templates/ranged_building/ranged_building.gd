@@ -39,22 +39,6 @@ func _calculate_scale(new_range: float) -> Vector3:
   # For height, we use a small value to create a thin disc showing ground coverage.
   return Vector3(new_range * 2, 0.001, new_range * 2)
 
-## Overrides the parent method to set up the effect range indicator for placement preview.
-## Scales and displays the effect_range_indicator mesh to show the effect range during placement.
-func _enter_placement_mode() -> void:
-  super._enter_placement_mode()
-
-  # Show the range indicator during placement mode
-  if effect_range_indicator:
-    effect_range_indicator.visible = true
-
-## Hides the range indicator when exiting placement mode.
-func _exit_placement_mode() -> void:
-  super._exit_placement_mode()
-
-  if effect_range_indicator:
-    effect_range_indicator.visible = false
-
 
 ## Shows the effect range indicator for this ranged building.
 ## Used during placement mode to show all existing turret ranges, or on hover.
