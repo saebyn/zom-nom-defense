@@ -66,7 +66,7 @@ tracks/0/enabled = true
 tracks/0/path = NodePath("turret/TurretYaw/Top/Barrel")
 tracks/0/interp = 2
 tracks/0/loop_wrap = false
-tracks/0/keys = PackedFloat32Array(0, 1, -0.111, 1.185, 0.005, 0.06666667, 1, -0.231, 1.185, 0.005, 0.18, 1, -0.111, 1.185, 0.005)
+tracks/0/keys = PackedFloat32Array(0, 1, -0.111, 0.289, 0.005, 0.066333495, 1, -0.231, 0.289, 0.005, 0.18, 1, -0.111, 0.289, 0.005)
 tracks/1/type = "method"
 tracks/1/imported = false
 tracks/1/enabled = true
@@ -139,7 +139,7 @@ animation = &"idle"
 animation = &"RESET"
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_turret"]
-graph_offset = Vector2(-389.58594, 2.8640034)
+graph_offset = Vector2(-197.34114, 10.525462)
 nodes/output/position = Vector2(660, 100)
 nodes/Reset/node = SubResource("AnimationNodeAnimation_reset")
 nodes/Reset/position = Vector2(-380, 20)
