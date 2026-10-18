@@ -17,6 +17,7 @@ enum BuildingCategory {
 @export var is_offensive: bool = false ## Whether the building type is offensive
 @export var cost: int = 0 ## Cost associated with the building type
 @export var scene: PackedScene ## Scene representing the building type. Should be a PlaceableBuilding.
+@export var preview: PackedScene ## Scene used for previewing the building in the world.
 
 @export_category("Tech Tree Integration")
 @export var required_tech_ids: Array[String] = [] ## Technology IDs that must be unlocked to use this building. If empty, building is available from the start.
