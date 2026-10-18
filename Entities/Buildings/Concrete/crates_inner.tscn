@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://csnjo5di1qf5w"]
+
+[ext_resource type="PackedScene" uid="uid://c3v450kp2wa4s" path="res://Assets/Models/stack_of_crates.glb" id="1_gohon"]
+
+[node name="StackOfCrates" unique_id=1697188563 instance=ExtResource("1_gohon")]
+
+[node name="Cube_002" parent="." index="0" unique_id=503854018]
+transform = Transform3D(0.5563488, 0, 0, 0, 0.5563488, 0, 0, 0, 0.5563488, -1.1645489, 0.54560983, 0)

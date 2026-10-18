@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://xilsmnlbxoyk" path="res://Entities/Buildings/Templates/placeable_building/building.gd" id="1_xhycr"]
 [ext_resource type="PackedScene" uid="uid://cxtvhj0yxxp2n" path="res://Common/Components/health/health.tscn" id="2_svflr"]
-[ext_resource type="PackedScene" uid="uid://dk8dqh6ytua8r" path="res://Assets/Models/electric_fence.glb" id="3_glp0e"]
 [ext_resource type="Script" uid="uid://c4a2vg4id0rom" path="res://Common/Components/dot_effect/dot_effect.gd" id="3_oxi2c"]
 [ext_resource type="Script" uid="uid://c7bdetuss8stb" path="res://Common/Components/idle_sounds/idle_sounds.gd" id="4_bm5ut"]
+[ext_resource type="PackedScene" uid="uid://djngqa31swb2b" path="res://Entities/Buildings/Concrete/electric_fence_inner.tscn" id="5_glp0e"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_oxi2c"]
 size = Vector3(2.45456, 1.86517, 0.288818)
@@ -27,9 +27,6 @@ hitpoints = 300
 hit_sound = 16
 death_sound = 17
 audio_player = NodePath("../AudioStreamPlayer3D")
-
-[node name="Electric Fence" parent="." unique_id=1625754991 instance=ExtResource("3_glp0e")]
-transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, -0.00085071183, 0.22522247, -0.00071103)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1798785659]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, -0.0017165783, 0.929089, 0.0020538)
@@ -59,5 +56,8 @@ audio_player = NodePath("../AudioStreamPlayer3D")
 min_idle_interval = 10.0
 max_idle_interval = 30.0
 metadata/_custom_type_script = "uid://c7bdetuss8stb"
+
+[node name="Electric Fence" parent="." unique_id=1240077099 instance=ExtResource("5_glp0e")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 0, 0)
 
 [editable path="Electric Fence"]

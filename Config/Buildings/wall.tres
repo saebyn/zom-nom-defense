@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://8bfq1plsa8he" path="res://Assets/Icons/stack_of_crates.png" id="1_4dt5d"]
 [ext_resource type="Script" uid="uid://vy1lf2kd14dr" path="res://Config/Buildings/building_type_resource.gd" id="1_cwuf0"]
+[ext_resource type="PackedScene" uid="uid://csnjo5di1qf5w" path="res://Entities/Buildings/Concrete/crates_inner.tscn" id="2_1q2ao"]
 [ext_resource type="PackedScene" uid="uid://c8ln6ujnt0mho" path="res://Entities/Buildings/Concrete/crates.tscn" id="2_vdyj0"]
 
 [resource]
@@ -13,5 +14,6 @@ icon = ExtResource("1_4dt5d")
 color = Color(1, 0.129412, 1, 1)
 cost = 1
 scene = ExtResource("2_vdyj0")
+preview = ExtResource("2_1q2ao")
 required_tech_ids = Array[String](["ob_crates"])
 metadata/_custom_type_script = "uid://vy1lf2kd14dr"

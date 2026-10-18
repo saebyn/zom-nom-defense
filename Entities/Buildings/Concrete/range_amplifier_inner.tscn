@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://q60dq7ptchdc"]
+
+[ext_resource type="PackedScene" uid="uid://bh76kpi1erb86" path="res://Assets/Models/range_amplifier.glb" id="1_3tjri"]
+
+[node name="Range Amplifier" unique_id=474465932 instance=ExtResource("1_3tjri")]
+
+[node name="Base" parent="." index="0" unique_id=1806767089]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06484032, 0.0050195456, -0.08020749)
+
+[node name="Cable_001" parent="." index="1" unique_id=380154152]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045689583, 1.8157141, 0.08087454)
+
+[node name="Cable_002" parent="." index="2" unique_id=1506049526]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.032458305, 2.8943887, 0.03920219)
+
+[node name="Dish" parent="." index="3" unique_id=8902017]
+transform = Transform3D(2.8340516, 0, 0, 0, 2.8340516, 0, 0, 0, 2.8340516, 0.06484032, 2.9138026, -0.08020749)
+
+[node name="Megaphone" parent="." index="4" unique_id=1740634884]
+transform = Transform3D(1.1383488e-06, 3.1830537, 0, -3.1830537, 1.1383488e-06, 0, 0, 0, 3.1830537, -0.27267456, 1.9186207, 0.12054574)
+
+[node name="Tower" parent="." index="5" unique_id=251705157]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06484032, 1.8379803, -0.08020749)

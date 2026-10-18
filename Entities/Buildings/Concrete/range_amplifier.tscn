@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dxpmn7q530akc" path="res://Common/Effects/buff_line_effect/buff_line_effect.gd" id="1_buff_line"]
 [ext_resource type="PackedScene" uid="uid://bjlvdmndqn0hw" path="res://Entities/Buildings/Templates/buff_building/buff_building.tscn" id="1_y00lx"]
-[ext_resource type="PackedScene" uid="uid://bh76kpi1erb86" path="res://Assets/Models/range_amplifier.glb" id="3_e7k62"]
+[ext_resource type="PackedScene" uid="uid://q60dq7ptchdc" path="res://Entities/Buildings/Concrete/range_amplifier_inner.tscn" id="3_e7k62"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_e7k62"]
 points = PackedVector3Array(-0.6999999, 0, -0.6999999, -0.6999999, 0, 0.6999999, -0.6999999, 0.04960371, -0.6999999, 0.6999999, 0, -0.6999999, -0.6999999, 0.04960371, 0.6999999, 0.6999999, 0, 0.6999999, -0.11278385, 0.6838752, -0.11442834, 0.6999999, 0.04960371, -0.6999999, -0.11278385, 0.6838752, 0.11429131, 0.6999999, 0.04960371, 0.6999999, 0.11264682, 0.6838752, -0.11442834, 0.11264682, 0.6838752, 0.11429131)
@@ -13,7 +13,7 @@ points = PackedVector3Array(-0.12617926, -1.15, -2.4706125e-05, -0.123758435, -1
 [node name="RangeAmplifier" unique_id=2002301659 node_paths=PackedStringArray("mesh_instances") instance=ExtResource("1_y00lx")]
 buff_type = 2
 buff_amount = 0.3
-mesh_instances = [NodePath("range_amplifier/Base"), NodePath("range_amplifier/Tower"), NodePath("range_amplifier/Megaphone"), NodePath("range_amplifier/Dish")]
+mesh_instances = [NodePath("Range Amplifier/Base"), NodePath("Range Amplifier/Dish"), NodePath("Range Amplifier/Megaphone"), NodePath("Range Amplifier/Tower")]
 
 [node name="Health" parent="." index="0" unique_id=1834854437]
 visible = false
@@ -21,15 +21,15 @@ visible = false
 [node name="BuffLineEffect" type="Node3D" parent="." index="4" unique_id=2046727381]
 script = ExtResource("1_buff_line")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="6" unique_id=1776466320]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="5" unique_id=1776466320]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_e7k62")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="7" unique_id=1935429305]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="6" unique_id=1935429305]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 1.8329607, 0)
 shape = SubResource("ConvexPolygonShape3D_iosu8")
 
-[node name="range_amplifier" parent="." index="8" unique_id=1269476132 instance=ExtResource("3_e7k62")]
-transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 1.9096817, 0.06850362)
+[node name="Range Amplifier" parent="." index="7" unique_id=474465932 instance=ExtResource("3_e7k62")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 0, 0, 0)
 
-[editable path="range_amplifier"]
+[editable path="Range Amplifier"]

@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bhgrtvhldk8kg" path="res://Assets/Icons/spike_barricade.png" id="1_0jtug"]
 [ext_resource type="PackedScene" uid="uid://dv7qe6gwjunkd" path="res://Entities/Buildings/Concrete/spike_barricade.tscn" id="1_p7byu"]
 [ext_resource type="Script" uid="uid://vy1lf2kd14dr" path="res://Config/Buildings/building_type_resource.gd" id="1_ui2jr"]
+[ext_resource type="PackedScene" uid="uid://ce6dcua43thub" path="res://Entities/Buildings/Concrete/spike_barricade_inner.tscn" id="2_yvsat"]
 
 [resource]
 script = ExtResource("1_ui2jr")
@@ -12,5 +13,6 @@ description = "Blocks enemy pathing and deals contact damage to zombies."
 icon = ExtResource("1_0jtug")
 cost = 30
 scene = ExtResource("1_p7byu")
+preview = ExtResource("2_yvsat")
 required_tech_ids = Array[String](["ob_spike_barricade"])
 metadata/_custom_type_script = "uid://vy1lf2kd14dr"

@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://ce6dcua43thub"]
+
+[ext_resource type="PackedScene" uid="uid://byn60ekt3bcmf" path="res://Assets/Models/spike_barricade.glb" id="1_mf87f"]
+
+[node name="SpikeBarricade" unique_id=144844970 instance=ExtResource("1_mf87f")]

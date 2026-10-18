@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://dd5321pothnh6" path="res://Entities/Buildings/Concrete/electric_fence.tscn" id="1_5kwf0"]
 [ext_resource type="Script" uid="uid://vy1lf2kd14dr" path="res://Config/Buildings/building_type_resource.gd" id="1_jonh0"]
 [ext_resource type="Texture2D" uid="uid://dl8cknondu3hd" path="res://Assets/Icons/electric_fence.png" id="1_k8ehq"]
+[ext_resource type="PackedScene" uid="uid://djngqa31swb2b" path="res://Entities/Buildings/Concrete/electric_fence_inner.tscn" id="2_cg2ks"]
 
 [resource]
 script = ExtResource("1_jonh0")
@@ -13,5 +14,6 @@ icon = ExtResource("1_k8ehq")
 is_offensive = true
 cost = 50
 scene = ExtResource("1_5kwf0")
+preview = ExtResource("2_cg2ks")
 required_tech_ids = Array[String](["ob_electric_fence"])
 metadata/_custom_type_script = "uid://vy1lf2kd14dr"

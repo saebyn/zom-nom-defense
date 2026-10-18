@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://coxcwxv0883sd"]
+
+[ext_resource type="PackedScene" uid="uid://bbcgf8oer6iog" path="res://Assets/Models/overcharger.glb" id="1_h1n47"]
+
+[node name="Overcharger" unique_id=1213939688 instance=ExtResource("1_h1n47")]
+
+[node name="Base_Overcharger" parent="." index="0" unique_id=2078784756]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.048272133, -0.0112018585, -0.009246365)
+
+[node name="Cylinder" parent="." index="1" unique_id=1313377349]
+transform = Transform3D(0.8300825, 0, 0, 0, 0.8300825, 0, 0, 0, 0.8300825, -0.23997116, 0.9653151, 0.25664502)
+
+[node name="Cylinder_001" parent="." index="2" unique_id=1645564655]
+transform = Transform3D(0.8300825, 0, 0, 0, -9.895354e-08, -0.8300825, 0, 0.8300825, -9.895354e-08, 0.050556183, 2.055846, 0.10363507)
+
+[node name="Fire" parent="." index="3" unique_id=713890860]
+transform = Transform3D(0.12473814, 0, 0, 0, 0.1924839, 0, 0, 0, 0.12473814, 0.0840168, 3.339216, -0.07625004)
+
+[node name="LanternCap" parent="." index="4" unique_id=612495197]
+transform = Transform3D(0.22554766, 0, 0, 0, 0.26229197, 0, 0, 0, 0.22554766, 0.092695236, 4.0946946, -0.0961528)
+
+[node name="LanternEnclosure" parent="." index="5" unique_id=1866779604]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.951728, -0.0112018585, -0.009246365)
+
+[node name="LanternPost" parent="." index="6" unique_id=92544879]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08105183, 1.9225192, -0.09785676)
+
+[node name="Overcharger_Wire_001" parent="." index="7" unique_id=513251812]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.01879406, 0.011250138, -0.0715278)

@@ -2,14 +2,14 @@
 
 [ext_resource type="Script" uid="uid://dxpmn7q530akc" path="res://Common/Effects/buff_line_effect/buff_line_effect.gd" id="1_buff_line"]
 [ext_resource type="PackedScene" uid="uid://bjlvdmndqn0hw" path="res://Entities/Buildings/Templates/buff_building/buff_building.tscn" id="1_lsym5"]
-[ext_resource type="PackedScene" uid="uid://b5yo2sgcp4mvu" path="res://Assets/Models/attack_speed.glb" id="2_vat18"]
+[ext_resource type="PackedScene" uid="uid://qtqtkjem57c2" path="res://Entities/Buildings/Concrete/attack_speed_beacon_inner.tscn" id="3_vat18"]
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_vat18"]
 data = PackedVector3Array(-0.6439, 0.0117999995, 0.1866, -0.6439, 0.672, -0.2015, -0.6439, 0.672, 0.1866, -0.6439, 0.0117999995, 0.1866, -0.6439, 0.0117999995, -0.2015, -0.6439, 0.672, -0.2015, -0.6439, 0.0117999995, -0.2015, 0.74979997, 0.672, -0.2015, -0.6439, 0.672, -0.2015, -0.6439, 0.0117999995, -0.2015, 0.74979997, 0.0117999995, -0.2015, 0.74979997, 0.672, -0.2015, 0.74979997, 0.0117999995, -0.2015, 0.74979997, 0.672, 0.1866, 0.74979997, 0.672, -0.2015, 0.74979997, 0.0117999995, -0.2015, 0.74979997, 0.0117999995, 0.1866, 0.74979997, 0.672, 0.1866, 0.74979997, 0.0117999995, 0.1866, -0.6439, 0.672, 0.1866, 0.74979997, 0.672, 0.1866, 0.74979997, 0.0117999995, 0.1866, -0.6439, 0.0117999995, 0.1866, -0.6439, 0.672, 0.1866, -0.6439, 0.0117999995, -0.2015, 0.74979997, 0.0117999995, 0.1866, 0.74979997, 0.0117999995, -0.2015, -0.6439, 0.0117999995, -0.2015, -0.6439, 0.0117999995, 0.1866, 0.74979997, 0.0117999995, 0.1866, -0.63809997, 0.0176, 0.18079999, -0.6368, 0.672, -0.1944, -0.63809997, 0.0176, -0.19569999, -0.63809997, 0.0176, 0.18079999, -0.6368, 0.672, 0.1795, -0.6368, 0.672, -0.1944, -0.63809997, 0.0176, -0.19569999, 0.7427, 0.672, -0.1944, 0.74399996, 0.0176, -0.19569999, -0.63809997, 0.0176, -0.19569999, -0.6368, 0.672, -0.1944, 0.7427, 0.672, -0.1944, 0.74399996, 0.0176, -0.19569999, 0.7427, 0.672, 0.1795, 0.74399996, 0.0176, 0.18079999, 0.74399996, 0.0176, -0.19569999, 0.7427, 0.672, -0.1944, 0.7427, 0.672, 0.1795, 0.74399996, 0.0176, 0.18079999, -0.6368, 0.672, 0.1795, -0.63809997, 0.0176, 0.18079999, 0.74399996, 0.0176, 0.18079999, 0.7427, 0.672, 0.1795, -0.6368, 0.672, 0.1795, -0.63809997, 0.0176, -0.19569999, 0.74399996, 0.0176, 0.18079999, -0.63809997, 0.0176, 0.18079999, -0.63809997, 0.0176, -0.19569999, 0.74399996, 0.0176, -0.19569999, 0.74399996, 0.0176, 0.18079999, -0.6439, 0.672, -0.2015, -0.6368, 0.672, 0.1795, -0.6439, 0.672, 0.1866, -0.6439, 0.672, -0.2015, -0.6368, 0.672, -0.1944, -0.6368, 0.672, 0.1795, 0.74979997, 0.672, -0.2015, -0.6368, 0.672, -0.1944, -0.6439, 0.672, -0.2015, 0.74979997, 0.672, -0.2015, 0.7427, 0.672, -0.1944, -0.6368, 0.672, -0.1944, 0.74979997, 0.672, 0.1866, 0.7427, 0.672, -0.1944, 0.74979997, 0.672, -0.2015, 0.74979997, 0.672, 0.1866, 0.7427, 0.672, 0.1795, 0.7427, 0.672, -0.1944, -0.6439, 0.672, 0.1866, 0.7427, 0.672, 0.1795, 0.74979997, 0.672, 0.1866, -0.6439, 0.672, 0.1866, -0.6368, 0.672, 0.1795, 0.7427, 0.672, 0.1795)
 
 [node name="AttackSpeedBeacon" unique_id=2030738783 node_paths=PackedStringArray("mesh_instances") instance=ExtResource("1_lsym5")]
 buff_amount = 0.25
-mesh_instances = [NodePath("attack_speed/Round"), NodePath("attack_speed/Link"), NodePath("attack_speed/AmmoBox")]
+mesh_instances = [NodePath("Attack Speed/AmmoBox"), NodePath("Attack Speed/Link"), NodePath("Attack Speed/Round")]
 
 [node name="Health" parent="." index="0" unique_id=1834854437]
 visible = false
@@ -18,10 +18,9 @@ visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.029906273, -0.003542304, 0.0069675446)
 shape = SubResource("ConcavePolygonShape3D_vat18")
 
-[node name="attack_speed" parent="." index="5" unique_id=791392861 instance=ExtResource("2_vat18")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7885796, 0)
-
-[node name="BuffLineEffect" type="Node3D" parent="." index="6" unique_id=52239612]
+[node name="BuffLineEffect" type="Node3D" parent="." index="5" unique_id=52239612]
 script = ExtResource("1_buff_line")
 
-[editable path="attack_speed"]
+[node name="Attack Speed" parent="." index="6" unique_id=356178538 instance=ExtResource("3_vat18")]
+
+[editable path="Attack Speed"]
