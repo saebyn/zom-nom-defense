@@ -34,16 +34,18 @@ func _ready() -> void:
   set_process(false)
 
 func _process(_delta: float) -> void:
-  # Only process while the notice is visible, including while gameplay is paused.
-  if not GameManager.is_paused() or not _can_show_pause_feedback():
+  # Monitor active rejection feedback, including while gameplay is paused.
+  if not _can_show_feedback() or (pause_feedback.visible and not GameManager.is_paused()):
     _hide_pause_feedback()
+  elif not pause_feedback.visible and not rejection_audio.playing:
+    set_process(false)
 
-func _can_show_pause_feedback() -> bool:
+func _can_show_feedback() -> bool:
   return (GameManager.is_playing() and is_visible_in_tree()
     and not building_selection_menu.visible and not Dialogic.Text.is_textbox_visible())
 
 func _show_pause_feedback(slot_index: int) -> void:
-  if not _can_show_pause_feedback():
+  if not _can_show_feedback():
     return
   # Hover tooltips otherwise cover the notice above the hotbar.
   for button in slot_buttons:
@@ -51,6 +53,11 @@ func _show_pause_feedback(slot_index: int) -> void:
   pause_feedback.show()
   # Reuse one notice and timer; repeated attempts extend it without stacking effects.
   pause_feedback_timer.start()
+  _show_rejection_feedback(slot_index)
+
+func _show_rejection_feedback(slot_index: int) -> void:
+  if not _can_show_feedback():
+    return
   slot_buttons[slot_index].show_rejection_feedback()
   var now := Time.get_ticks_msec()
   if now - _last_rejection_sound_ms >= REJECTION_SOUND_COOLDOWN_MS:
@@ -150,17 +157,21 @@ func _update_slot_visual(slot_index: int) -> void:
 
 func _on_slot_pressed(slot_index: int) -> void:
   """Handle left click on slot - select building for placement"""
+  if slot_index < 0 or slot_index >= slot_buttons.size():
+    return
   var building = get_slot_building(slot_index)
+  if not building:
+    _show_rejection_feedback(slot_index)
+    return
   # Block world placement when the game is paused (speed = 0 or in-game menu)
   if GameManager.is_paused():
-    if building:
-      _show_pause_feedback(slot_index)
+    _show_pause_feedback(slot_index)
     return
   
-  if building:
-    AudioManager.play_sound_2d(Resource_SoundEffect.SoundEffect.UI_CONFIRM)
-    MyLogger.info("Hotbar", "Selected building: %s from slot %d" % [building.name, slot_index + 1])
-    building_selected.emit(building)
+  slot_buttons[slot_index].show_selection_feedback()
+  AudioManager.play_sound_2d(Resource_SoundEffect.SoundEffect.UI_CONFIRM)
+  MyLogger.info("Hotbar", "Selected building: %s from slot %d" % [building.name, slot_index + 1])
+  building_selected.emit(building)
 
 func _on_slot_gui_input(event: InputEvent, slot_index: int) -> void:
   """Handle GUI input for advanced slot interactions"""
@@ -171,6 +182,9 @@ func _on_slot_gui_input(event: InputEvent, slot_index: int) -> void:
   if event is InputEventMouseButton and event.pressed:
     if event.button_index == MOUSE_BUTTON_RIGHT:
       _show_building_selection_menu(slot_index)
+    elif event.button_index == MOUSE_BUTTON_LEFT and slot_buttons[slot_index].disabled:
+      # Empty slots retain their disabled styling, so they do not emit pressed.
+      _on_slot_pressed(slot_index)
 
 func _show_building_selection_menu(slot_index: int) -> void:
   """Show popup menu with available buildings for slot assignment"""

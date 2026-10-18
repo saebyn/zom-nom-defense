@@ -111,8 +111,83 @@ func test_unpaused_mouse_and_shortcuts_select_the_requested_building() -> void:
   assert_eq(played_sounds.count(Resource_SoundEffect.SoundEffect.UI_CONFIRM), 7)
   assert_does_not_have(played_sounds, Resource_SoundEffect.SoundEffect.ERROR)
 
+func test_successful_mouse_and_keyboard_selection_press_the_whole_slot_and_return() -> void:
+  GameManager.set_game_speed(4.0)
+  var original_position = hotbar.slot_buttons[0].position
+  click_slot(0)
+  press_slot_key(1)
+  await get_tree().create_timer(0.06, true, false, true).timeout
+  for slot in [0, 1]:
+    assert_lt(hotbar.slot_buttons[slot].scale.x, 1.0,
+      "Both input paths must press the frame, icon and labels inward even at 4x speed")
+    assert_eq(hotbar.slot_buttons[slot].rotation, 0.0, "Successful selection must not shake")
+  assert_eq(hotbar.slot_buttons[2].scale, Vector2.ONE, "Other slots must stay still")
+  assert_eq(hotbar.slot_buttons[0].position, original_position, "Do not shift the container layout")
+  await get_tree().create_timer(0.2, true, false, true).timeout
+  for slot in [0, 1]:
+    assert_eq(hotbar.slot_buttons[slot].scale, Vector2.ONE)
+
+func test_empty_mouse_and_keyboard_selection_shake_without_selecting_or_pause_notice() -> void:
+  hotbar.clear_slot(0)
+  hotbar.clear_slot(1)
+  for paused in [false, true]:
+    get_tree().paused = paused
+    click_slot(0)
+    press_slot_key(1)
+    await get_tree().create_timer(0.07, true, false, true).timeout
+    for slot in [0, 1]:
+      assert_ne(hotbar.slot_buttons[slot].rotation, 0.0,
+        "Empty slots must shake for clicks and shortcuts, paused or unpaused")
+      assert_eq(hotbar.slot_buttons[slot].scale, Vector2.ONE)
+      assert_null(hotbar.get_slot_building(slot))
+    assert_eq(hotbar.slot_buttons[2].rotation, 0.0)
+    assert_false(hotbar.pause_feedback.visible, "An empty slot must not show the pause explanation")
+    await get_tree().create_timer(0.35, true, false, true).timeout
+    for slot in [0, 1]:
+      assert_eq(hotbar.slot_buttons[slot].rotation, 0.0)
+  assert_signal_not_emitted(hotbar, "building_selected")
+  assert_eq(played_sounds.count(Resource_SoundEffect.SoundEffect.ERROR), 2,
+    "Empty attempts share the rejection sound cooldown")
+  assert_does_not_have(played_sounds, Resource_SoundEffect.SoundEffect.UI_CONFIRM)
+
+func test_empty_right_click_configures_without_shake_or_press() -> void:
+  hotbar.clear_slot(0)
+  for paused in [false, true]:
+    get_tree().paused = paused
+    click_slot(0, MOUSE_BUTTON_RIGHT)
+    await get_tree().create_timer(0.07, true, false, true).timeout
+    assert_true(hotbar.building_selection_menu.visible)
+    assert_eq(hotbar.current_configuring_slot, 0)
+    assert_eq(hotbar.slot_buttons[0].rotation, 0.0)
+    assert_eq(hotbar.slot_buttons[0].scale, Vector2.ONE)
+    assert_false(hotbar.pause_feedback.visible)
+    hotbar.building_selection_menu.hide()
+    await wait_process_frames(2)
+  assert_signal_not_emitted(hotbar, "building_selected")
+  assert_does_not_have(played_sounds, Resource_SoundEffect.SoundEffect.ERROR)
+  assert_does_not_have(played_sounds, Resource_SoundEffect.SoundEffect.UI_CONFIRM)
+
+func test_switching_between_selection_and_rejection_leaves_no_transform_behind() -> void:
+  press_slot_key(0)
+  await get_tree().create_timer(0.05, true, false, true).timeout
+  GameManager.pause_game()
+  press_slot_key(0)
+  assert_eq(hotbar.slot_buttons[0].scale, Vector2.ONE, "Rejection cancels an active press")
+  await get_tree().create_timer(0.06, true, false, true).timeout
+  GameManager.resume_game()
+  press_slot_key(0)
+  assert_eq(hotbar.slot_buttons[0].rotation, 0.0, "Selection cancels an active shake")
+  await get_tree().create_timer(0.05, true, false, true).timeout
+  assert_lt(hotbar.slot_buttons[0].scale.x, 1.0)
+  press_slot_key(0)
+  await get_tree().create_timer(0.25, true, false, true).timeout
+  assert_eq(hotbar.slot_buttons[0].scale, Vector2.ONE, "Repeated presses must not accumulate scaling")
+  assert_eq(hotbar.slot_buttons[0].rotation, 0.0)
+  assert_signal_emit_count(hotbar, "building_selected", 3)
+
 func test_repeated_attempts_reuse_notice_and_ignore_key_echo() -> void:
   GameManager.pause_game()
+  hotbar.clear_slot(2)
   var child_count = hotbar.get_child_count()
   click_slot(0)
   press_slot_key(1)
@@ -168,6 +243,7 @@ func test_resume_clears_feedback_and_allows_selection() -> void:
 
 func test_menus_clear_and_suppress_feedback() -> void:
   GameManager.pause_game()
+  hotbar.clear_slot(5)
   for state in [GameManager.GameState.IN_GAME_MENU, GameManager.GameState.IN_TECH_TREE]:
     GameManager.set_game_state(GameManager.GameState.PLAYING)
     press_slot_key(0)
@@ -177,6 +253,7 @@ func test_menus_clear_and_suppress_feedback() -> void:
     assert_false(hotbar.pause_feedback.visible)
     var sound_count = played_sounds.count(Resource_SoundEffect.SoundEffect.ERROR)
     press_slot_key(0)
+    press_slot_key(5)
     assert_false(hotbar.pause_feedback.visible)
     assert_eq(played_sounds.count(Resource_SoundEffect.SoundEffect.ERROR), sound_count,
       "Menu shortcuts must stay silent")
@@ -186,12 +263,14 @@ func test_dialogue_clears_feedback_but_hidden_gameplay_wait_allows_it() -> void:
   var textbox = DialogicNode_DialogText.new()
   hud.add_child(textbox)
   GameManager.pause_game()
+  hotbar.clear_slot(5)
   press_slot_key(0)
   assert_true(hotbar.pause_feedback.visible)
   textbox.show()
   await wait_process_frames(2)
   assert_false(hotbar.pause_feedback.visible)
   press_slot_key(0)
+  press_slot_key(5)
   assert_false(hotbar.pause_feedback.visible, "Do not compete with tutorial text or choices")
   assert_true(textbox.visible, "Feedback must not dismiss dialogue")
   assert_eq(played_sounds.count(Resource_SoundEffect.SoundEffect.ERROR), 1,
@@ -223,17 +302,17 @@ func test_in_game_menu_still_blocks_configuration() -> void:
   assert_false(hotbar.building_selection_menu.visible)
   assert_eq(hotbar.current_configuring_slot, -1)
 
-func test_empty_slots_and_hidden_hotbar_do_not_show_feedback() -> void:
+func test_hidden_hotbar_does_not_show_feedback() -> void:
   GameManager.pause_game()
   hotbar.clear_slot(0)
-  press_slot_key(0)
-  assert_false(hotbar.pause_feedback.visible)
   press_slot_key(1)
   hotbar.hide()
   await wait_process_frames(2)
   assert_false(hotbar.pause_feedback.visible)
+  press_slot_key(0)
   press_slot_key(1)
   assert_false(hotbar.pause_feedback.visible)
+  assert_eq(played_sounds.count(Resource_SoundEffect.SoundEffect.ERROR), 1)
   assert_signal_not_emitted(hotbar, "building_selected")
 
 func test_notice_stays_above_slots_and_does_not_capture_mouse_input() -> void:
