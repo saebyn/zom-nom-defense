@@ -26,9 +26,8 @@ func _ready():
   if attack:
     attack.damage_source = "building"
 
-  # Set up detection timer (only when placed, not in preview mode)
-  if not is_preview:
-    _setup_detection_timer()
+  # Set up detection timer
+  _setup_detection_timer()
 
 
 func can_hit_target(target: Node3D, max_distance: float = INF) -> bool:
@@ -42,10 +41,8 @@ func can_hit_target(target: Node3D, max_distance: float = INF) -> bool:
   return distance <= effect_range
 
 func place(navigation_region: NavigationRegion3D) -> void:
-  var was_preview := is_preview
   super.place(navigation_region)
-  if was_preview and not is_preview and is_inside_tree():
-    _setup_detection_timer()
+  _setup_detection_timer()
 
 
 func _setup_detection_timer() -> void:
@@ -59,8 +56,6 @@ func _setup_detection_timer() -> void:
 
 
 func _detect_and_attack_enemies():
-  if is_preview:
-    return
   var result = _find_nearest_enemy_in_range()
   current_target = result[0]
   can_attack_current_target = result[1]

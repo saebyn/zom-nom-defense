@@ -203,7 +203,10 @@ func _place_building() -> void:
   
   var building := _place_building_type.scene.instantiate()
   building.global_position = _preview.global_position
-  add_child(building)
+  assert(building is Entity_PlaceableBuilding, "Instantiated building is not an Entity_PlaceableBuilding")
+  assert(get_parent() != null, "BuildingPlacement node has no parent to add the building to")
+  get_parent().add_child(building)
+  building.building_type = _place_building_type
   building.place(navigation_region)
 
   rebake_navigation_mesh.emit()

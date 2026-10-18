@@ -153,11 +153,12 @@ nodes/FireOneShot/node = SubResource("AnimationNodeOneShot_fire")
 nodes/FireOneShot/position = Vector2(360, 100)
 node_connections = [&"output", 0, &"FireOneShot", &"BaseBlend", 0, &"Reset", &"BaseBlend", 1, &"Idle", &"FireOneShot", 0, &"BaseBlend", &"FireOneShot", 1, &"Fire"]
 
-[node name="BasicTurret" unique_id=693839905 node_paths=PackedStringArray("attack_particle_system") instance=ExtResource("1_turret")]
+[node name="BasicTurret" unique_id=693839905 node_paths=PackedStringArray("attack_particle_system", "mesh_instances") instance=ExtResource("1_turret")]
 script = ExtResource("2_6y5ob")
 rotation_speed = 360.0
 aim_margin = 0.1
 attack_particle_system = NodePath("turret/TurretYaw/Top/Barrel/GPUParticles3D")
+mesh_instances = [NodePath("turret/TurretBase/Leg_000"), NodePath("turret/TurretBase/Leg_001"), NodePath("turret/TurretBase/Leg_002"), NodePath("turret/TurretBase/Screw"), NodePath("turret/TurretBase/Table"), NodePath("turret/TurretYaw/Top/Barrel"), NodePath("turret/TurretYaw/Top/BarrelStraps"), NodePath("turret/TurretBase/ScrewBase")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="1" unique_id=765644085]
 transform = Transform3D(1.74, 0, 0, 0, 1.74, 0, 0, 0, 1.74, 0.234956, 1.8958529, 0.0292969)

@@ -1,11 +1,8 @@
 ## Building.gd
 ## Base class for placeable buildings in the game world
-## Handles placement preview, health management, and removal/refund logic
+## Handles navigation obstacles, health management, and removal/refund logic
 ##
 ## When instantiated, this entity will:
-##  - Enter placement mode, showing a preview of the building
-##  - Disable collisions and health component during placement
-##  - Upon placement, re-enable collisions and health component
 ##  - Create a NavigationObstacle3D to affect navigation mesh
 ##  - Handle removal logic, refunding currency based on remaining health
 
@@ -23,76 +20,16 @@ class_name Entity_PlaceableBuilding
     mesh_instances = values
     update_configuration_warnings()
 
-var is_preview: bool = false
 var building_type: Resource_BuildingType
 var navigation_obstacle: NavigationObstacle3D
 var placement_preview_node: Node3D
 @onready var audio_player: AudioStreamPlayer3D = $AudioStreamPlayer3D
 
-var _saved_collision_layers: int
-var _saved_area_monitoring: Dictionary = {}
 
 func _ready():
   super._ready()
 
-  _enter_placement_mode()
 
-## Create a visual preview of the building for placement mode
-func _enter_placement_mode() -> void:
-  if not mesh_instances or mesh_instances.is_empty():
-    MyLogger.error("Building", "Could not find MeshInstance3D in building scene")
-    return
-  
-  # Create our own mesh instances based on the temporary building's meshes
-  placement_preview_node = Node3D.new()
-  add_child(placement_preview_node)
-  
-  for mesh_instance in mesh_instances:
-    if not mesh_instance or not mesh_instance.mesh:
-      MyLogger.warn("Building", "Skipping invalid MeshInstance3D in placement preview")
-      continue
-    mesh_instance.hide()
-    var preview_mesh = MeshInstance3D.new()
-    preview_mesh.mesh = mesh_instance.mesh
-    # Use global_transform to capture the mesh's full transformation including parent node scales/rotations
-    preview_mesh.global_transform = mesh_instance.global_transform
-
-    placement_preview_node.add_child(preview_mesh)
-  _saved_collision_layers = collision_layer
-  collision_layer = 0 # Disable collisions in preview mode
-
-  # Disable Area3D monitoring so damage/effect components don't interact
-  # with enemies while the building is only a placement preview.
-  _saved_area_monitoring.clear()
-  for area in find_children("*", "Area3D", true, false):
-    _saved_area_monitoring[area] = area.monitoring
-    area.monitoring = false
-
-  if health:
-    health.disabled = true
-
-## Clean up after placement mode:
-##  - Removes the placement preview node
-##  - Restores original collision layers
-##  - Re-enables the health component
-func _exit_placement_mode() -> void:
-  if placement_preview_node:
-    placement_preview_node.queue_free()
-    placement_preview_node = null
-  
-  for mesh_instance in mesh_instances:
-    mesh_instance.show()
-
-  collision_layer = _saved_collision_layers
-
-  # Restore Area3D monitoring to its state before preview mode.
-  for area in _saved_area_monitoring:
-    if is_instance_valid(area) and area.is_inside_tree():
-      area.monitoring = _saved_area_monitoring[area]
-  _saved_area_monitoring.clear()
-
-  if health:
-    health.disabled = false
 
 ## Remove this building and return currency based on remaining health
 func remove() -> int:
@@ -143,27 +80,6 @@ func remove() -> int:
   return refund_amount
 
 
-func get_aabb() -> AABB:
-  var combined_aabb = AABB()
-  for mesh_instance in mesh_instances:
-    combined_aabb = combined_aabb.merge(mesh_instance.get_aabb())
-  return combined_aabb
-
-## Sets a material override for all meshes in the placement preview node.
-## Used by the placement system to visually indicate valid or invalid placement (e.g., green/red highlight).
-## 
-## @param material The Material to apply as an override to all preview mesh surfaces.
-func set_preview_material(material: Material) -> void:
-  if not placement_preview_node:
-    MyLogger.warn("Building", "set_preview_material() called but not in placement mode.")
-    return
-
-  for mesh_instance in placement_preview_node.get_children():
-    if mesh_instance is MeshInstance3D and mesh_instance.mesh != null:
-      var surface_count = mesh_instance.mesh.get_surface_count()
-      for i in range(surface_count):
-        mesh_instance.set_surface_override_material(i, material)
-
 
 ## Finalizes placement of the building in the game world.
 ##
@@ -171,13 +87,11 @@ func set_preview_material(material: Material) -> void:
 ## 1. **Reparents the building**: Moves this node from its placement utility parent to the main scene (grandparent node).
 ##    - **Requires**: The building must have both a parent and grandparent node in the scene tree.
 ##    - **Errors**: If the scene tree structure is invalid, placement will fail and log an error.
-## 2. **Exits placement mode**: Enables collisions and the health component, and hides the placement preview.
-## 3. **Creates a NavigationObstacle3D**: Instantiates and configures a NavigationObstacle3D to affect the navigation mesh.
 ##    - The obstacle's shape is determined by the combined AABB of its mesh instances.
 ##    - The NavigationObstacle3D is added as a child of the provided `navigation_region`.
-## 4. **Adds to navigation group**: Adds this building to the group specified by `navigation_obstacle_group` for navigation mesh updates.
+## 2. **Adds to navigation group**: Adds this building to the group specified by `navigation_obstacle_group` for navigation mesh updates.
 ##
-## Call this method after the building has been positioned and is ready to be placed in the world.
+## Call this method after the building has been positioned and is placed in the world.
 ##
 ## @param navigation_region The NavigationRegion3D to which the navigation obstacle will be added.
 func place(navigation_region: NavigationRegion3D) -> void:
@@ -185,19 +99,6 @@ func place(navigation_region: NavigationRegion3D) -> void:
   if not is_inside_tree():
     MyLogger.error("Building", "PlaceableBuilding must be added to the scene tree before placing.")
     return
-
-  # Reparent to the right place in the scene tree
-  var parent_node = get_parent()
-  var grandparent_node = parent_node.get_parent() if parent_node else null
-  if not grandparent_node:
-    MyLogger.error("Building", "Failed to reparent building: parent or grandparent node missing. Scene tree structure may be invalid.")
-    return
-
-  is_preview = false
-  parent_node.remove_child(self )
-  grandparent_node.add_child(self )
-
-  _exit_placement_mode()
 
   # Create NavigationObstacle3D to affect navigation mesh
   var nav_obstacle := NavigationObstacle3D.new()
