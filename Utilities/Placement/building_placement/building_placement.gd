@@ -258,7 +258,7 @@ func _set_preview_material(material: Material) -> void:
     MyLogger.warn("Placement", "Cannot set preview material - no preview node available")
     return
 
-  for node in _preview.get_children():
+  for node in _preview.find_children("*", "MeshInstance3D"):
     if node is MeshInstance3D and node.mesh != null:
       var surface_count = node.mesh.get_surface_count()
       for i in range(surface_count):

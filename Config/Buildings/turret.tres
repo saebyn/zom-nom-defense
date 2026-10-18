@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://vy1lf2kd14dr" path="res://Config/Buildings/building_type_resource.gd" id="1_c82l7"]
 [ext_resource type="Texture2D" uid="uid://mhntcd82di12" path="res://Assets/Icons/scrap_shooter_icon.png" id="1_nu4x8"]
 [ext_resource type="PackedScene" uid="uid://bl5g2v8n3jkph" path="res://Entities/Buildings/Concrete/basic_turret/basic_turret.tscn" id="2_sp3ta"]
-[ext_resource type="PackedScene" uid="uid://doxso30lh6jyq" path="res://Assets/Models/new_turret.glb" id="2_trt1v"]
+[ext_resource type="PackedScene" uid="uid://qr22cm7a0sct" path="res://Entities/Buildings/Concrete/basic_turret/basic_turret_inner.tscn" id="2_trt1v"]
 
 [resource]
 script = ExtResource("1_c82l7")

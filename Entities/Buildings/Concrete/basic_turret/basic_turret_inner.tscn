@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://qr22cm7a0sct"]
+
+[ext_resource type="PackedScene" uid="uid://doxso30lh6jyq" path="res://Assets/Models/new_turret.glb" id="1_8yh38"]
+
+[node name="Turret" unique_id=612672850 instance=ExtResource("1_8yh38")]
+
+[node name="TurretBase" parent="." index="0" unique_id=1863581079]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.052419107, 0.13580674, 0)
+
+[node name="TurretYaw" parent="." index="1" unique_id=676300319]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.052419107, 1.0306797, 0)
