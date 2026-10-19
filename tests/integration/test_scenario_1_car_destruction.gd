@@ -47,18 +47,23 @@ func test_lethal_damage_removes_car_but_preserves_fall_and_audio() -> void:
   var audio: AudioStreamPlayer3D = health.audio_player
   watch_signals(AudioManager)
 
+  var effect: Node3D = car.get_node("DestructionEffect")
+  assert_false(effect.get_node("Debris").emitting, "Effect waits for death")
+  assert_false(effect.get_node("Flash").visible)
   health.take_damage(1, "test")
-  assert_null(scenario.get_node_or_null("CarDestructionEffect"), "Ordinary hits belong to #489")
+  assert_eq(effect.get_parent(), car, "Ordinary hits do not detach the effect")
+  assert_false(effect.get_node("Debris").emitting)
   health.take_damage(health.hitpoints, "test")
   assert_true(health.dead)
   assert_true(car.is_queued_for_deletion(), "Gameplay geometry is removed immediately")
-  var effect: Node3D = scenario.get_node("CarDestructionEffect")
+  assert_eq(effect.get_parent(), scenario)
   assert_eq(effect.global_transform, car_transform)
   assert_eq(effect.find_children("*", "CollisionObject3D").size(), 0)
   assert_signal_emitted_with_parameters(AudioManager, "sound_played", [health.death_sound])
   assert_eq(audio.get_parent(), scenario, "Death audio survives car removal")
+  effect.destroyed("duplicate")
   scenario.car_destroyed("duplicate")
-  assert_eq(scenario.find_children("CarDestructionEffect*", "Node3D", false, false).size(), 1)
+  assert_eq(scenario.find_children("DestructionEffect*", "Node3D", false, false).size(), 1)
 
   await wait_process_frames(2)
   assert_false(is_instance_valid(car))
@@ -71,8 +76,9 @@ func test_lethal_damage_removes_car_but_preserves_fall_and_audio() -> void:
   assert_false(is_instance_valid(effect), "One-shot debris cleans up the entire effect")
 
 func test_scenario_removal_cleans_up_active_effect() -> void:
-  scenario.car_destroyed("test")
-  var effect: Node3D = scenario.get_node("CarDestructionEffect")
+  var effect: Node3D = scenario.car.get_node("DestructionEffect")
+  scenario.car.get_node("Health").take_damage(5000, "test")
+  assert_eq(effect.get_parent(), scenario)
   scenario.queue_free()
   await wait_process_frames(2)
   assert_false(is_instance_valid(effect))
