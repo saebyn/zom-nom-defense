@@ -28,8 +28,9 @@ func _start_intro_dialog() -> void:
 
 
 func car_destroyed(damage_source: String):
+  if not is_instance_valid(car) or car.is_queued_for_deletion():
+    return
   MyLogger.info("Scenario1", "Car destroyed by " + damage_source)
-  # Remove the car from the scene since it's destroyed
   car.queue_free()
   # Then we need to make the survivor fall down
   var tween = get_tree().create_tween()

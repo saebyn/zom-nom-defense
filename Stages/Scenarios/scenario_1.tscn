@@ -13,6 +13,8 @@
 [ext_resource type="Texture2D" uid="uid://c4mugepdahndc" path="res://Assets/Textures/road.png" id="11_pnunk"]
 [ext_resource type="PackedScene" uid="uid://dmaheitw7drsh" path="res://Entities/Scrap/pile_of_boxes.tscn" id="12_ebqns"]
 
+[ext_resource type="PackedScene" path="res://Common/Effects/destruction_effect/destruction_effect.tscn" id="13_destruction"]
+
 [sub_resource type="PlaneMesh" id="PlaneMesh_3f6pf"]
 size = Vector2(10, 100)
 
@@ -120,9 +122,12 @@ transform = Transform3D(100, 0, 0, 0, 64.28409, 76.59997, 0, -76.59997, 64.28409
 hitpoints = 5000
 hit_sound = 16
 death_sound = 17
-audio_player = NodePath("../AudioStreamPlayer3D")
+audio_player = NodePath("../../CarAudio")
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="MuscleCar" unique_id=2009202380]
+[node name="DestructionEffect" parent="MuscleCar" instance=ExtResource("13_destruction")]
+
+[node name="CarAudio" type="AudioStreamPlayer3D" parent="." unique_id=2009202380]
+position = Vector3(-9.960177, 0, -9.729578)
 bus = &"Sound Effects"
 
 [node name="Road" type="Node3D" parent="." unique_id=1732223280]
@@ -230,6 +235,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2382793, 0.008174896, -14.
 transform = Transform3D(0.79272604, 0, 0.609578, 0, 1, 0, -0.609578, 0, 0.79272604, -7.5853558, 0.008174896, -15.2588)
 
 [connection signal="died" from="MuscleCar/Health" to="." method="car_destroyed"]
+[connection signal="died" from="MuscleCar/Health" to="MuscleCar/DestructionEffect" method="destroyed"]
 
 [editable path="Survivor1"]
 [editable path="MuscleCar"]
