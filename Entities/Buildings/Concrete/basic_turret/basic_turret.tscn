@@ -173,7 +173,7 @@ crit_sound = 2
 
 [node name="turret" parent="." index="3" unique_id=612672850 instance=ExtResource("5_ktni2")]
 
-[node name="Barrel" parent="turret/TurretYaw/Top" parent_id_path=PackedInt32Array(612672850, 1023051705) index="0" unique_id=1905556764]
+[node name="Barrel" parent="turret/TurretYaw/Top" parent_id_path=PackedInt32Array(612672850, 757271399) index="0" unique_id=817625150]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.274, 0)
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="turret/TurretYaw/Top/Barrel" index="0" unique_id=1721422763]
