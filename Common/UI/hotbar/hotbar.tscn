@@ -14,4 +14,36 @@ layout_mode = 1
 
 [node name="BuildingSelectionMenu" type="PopupMenu" parent="." unique_id=329315378]
 
+[node name="PauseFeedback" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchor_right = 1.0
+offset_top = -60.0
+offset_bottom = -8.0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="PauseFeedback"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="Label" type="Label" parent="PauseFeedback/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+text = "Game paused — resume to place buildings."
+autowrap_mode = 2
+
+[node name="PauseFeedbackTimer" type="Timer" parent="."]
+wait_time = 2.5
+one_shot = true
+ignore_time_scale = true
+
+[node name="RejectionAudio" type="AudioStreamPlayer" parent="."]
+bus = &"Sound Effects"
+
 [connection signal="id_pressed" from="BuildingSelectionMenu" to="." method="_on_building_menu_item_selected"]
+[connection signal="timeout" from="PauseFeedbackTimer" to="." method="_hide_pause_feedback"]

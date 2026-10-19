@@ -8,6 +8,8 @@ extends Button
 var _tooltip_panel: PanelContainer
 var _tooltip_label: Label
 var _custom_tooltip_text: String = ""
+var _rejection_tween: Tween
+var _selection_tween: Tween
 
 const TOOLTIP_OFFSET := Vector2(10, 10)
 
@@ -16,7 +18,7 @@ func _ready() -> void:
   _setup_custom_tooltip()
   set_process(false)
   mouse_entered.connect(_on_mouse_entered)
-  mouse_exited.connect(_on_mouse_exited)
+  mouse_exited.connect(hide_tooltip)
 
 
 func _setup_custom_tooltip() -> void:
@@ -37,6 +39,8 @@ func _setup_custom_tooltip() -> void:
 
 
 func _on_mouse_entered() -> void:
+  # Click audio is chosen by the hotbar after checking whether placement is allowed.
+  AudioManager.play_sound_2d(Resource_SoundEffect.SoundEffect.UI_HOVER)
   if _custom_tooltip_text.is_empty():
     return
   _tooltip_label.text = _custom_tooltip_text
@@ -45,15 +49,53 @@ func _on_mouse_entered() -> void:
   set_process(true)
 
 
-func _on_mouse_exited() -> void:
+func hide_tooltip() -> void:
   _tooltip_panel.visible = false
   set_process(false)
+
+
+## A small, pause-safe shake that does not fight the slot container's layout.
+func show_rejection_feedback() -> void:
+  if _rejection_tween and _rejection_tween.is_running():
+    return
+  stop_selection_feedback()
+  pivot_offset = size / 2.0
+  _rejection_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).set_ignore_time_scale(true)
+  _rejection_tween.tween_property(self, "rotation", -0.06, 0.05)
+  _rejection_tween.tween_property(self, "rotation", 0.06, 0.07)
+  _rejection_tween.tween_property(self, "rotation", -0.03, 0.05)
+  _rejection_tween.tween_property(self, "rotation", 0.0, 0.05)
+
+
+func stop_rejection_feedback() -> void:
+  if _rejection_tween:
+    _rejection_tween.kill()
+  rotation = 0.0
+
+
+## Press the whole slot inward, including its frame, icon and labels.
+func show_selection_feedback() -> void:
+  stop_rejection_feedback()
+  stop_selection_feedback()
+  pivot_offset = size / 2.0
+  _selection_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).set_ignore_time_scale(true)
+  _selection_tween.set_trans(Tween.TRANS_SINE)
+  _selection_tween.tween_property(self, "scale", Vector2(0.94, 0.94), 0.08).set_ease(Tween.EASE_OUT)
+  _selection_tween.tween_property(self, "scale", Vector2.ONE, 0.12).set_ease(Tween.EASE_IN_OUT)
+
+
+func stop_selection_feedback() -> void:
+  if _selection_tween:
+    _selection_tween.kill()
+  scale = Vector2.ONE
 
 
 func _notification(what: int) -> void:
   if what == NOTIFICATION_VISIBILITY_CHANGED:
     if not is_visible_in_tree() and is_instance_valid(_tooltip_panel):
       _tooltip_panel.visible = false
+      stop_rejection_feedback()
+      stop_selection_feedback()
 
 
 func _process(_delta: float) -> void:

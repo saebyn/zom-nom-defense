@@ -13,6 +13,7 @@ focus_mode = 0
 icon = SubResource("PlaceholderTexture2D_4cyc4")
 expand_icon = true
 script = ExtResource("1_jcoy4")
+metadata/skip_audio_manager = true
 
 [node name="SlotLabel" type="Label" parent="." unique_id=334936764]
 layout_mode = 1
