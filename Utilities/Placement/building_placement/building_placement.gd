@@ -202,10 +202,11 @@ func _place_building() -> void:
     return
   
   var building := _place_building_type.scene.instantiate()
-  building.global_position = _preview.global_position
   assert(building is Entity_PlaceableBuilding, "Instantiated building is not an Entity_PlaceableBuilding")
   assert(get_parent() != null, "BuildingPlacement node has no parent to add the building to")
   get_parent().add_child(building)
+  building.global_position = _preview.global_position
+  building.global_rotation = _preview.global_rotation
   building.building_type = _place_building_type
   building.place(navigation_region)
 
