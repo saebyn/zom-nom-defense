@@ -120,9 +120,10 @@ transform = Transform3D(100, 0, 0, 0, 64.28409, 76.59997, 0, -76.59997, 64.28409
 hitpoints = 5000
 hit_sound = 16
 death_sound = 17
-audio_player = NodePath("../AudioStreamPlayer3D")
+audio_player = NodePath("../../CarAudio")
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="MuscleCar" unique_id=2009202380]
+[node name="CarAudio" type="AudioStreamPlayer3D" parent="." unique_id=2009202380]
+position = Vector3(-9.960177, 0, -9.729578)
 bus = &"Sound Effects"
 
 [node name="Road" type="Node3D" parent="." unique_id=1732223280]

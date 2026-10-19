@@ -8,6 +8,7 @@ extends Stage_Scenario
 
 ## Dialogic timeline path
 const TIMELINE := "res://Dialogic/Timelines/scenario_1_tut_welcome.dtl"
+const CAR_DESTRUCTION_EFFECT := preload("res://Stages/Scenarios/car_destruction_effect.tscn")
 
 
 func _ready() -> void:
@@ -28,8 +29,13 @@ func _start_intro_dialog() -> void:
 
 
 func car_destroyed(damage_source: String):
+  if not is_instance_valid(car) or car.is_queued_for_deletion():
+    return
   MyLogger.info("Scenario1", "Car destroyed by " + damage_source)
-  # Remove the car from the scene since it's destroyed
+  # The effect has no collision and lives independently of the destroyed car.
+  var effect := CAR_DESTRUCTION_EFFECT.instantiate() as Node3D
+  effect.transform = car.transform
+  add_child(effect)
   car.queue_free()
   # Then we need to make the survivor fall down
   var tween = get_tree().create_tween()
