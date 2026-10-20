@@ -10,19 +10,19 @@ class_name UI_UnitFrameLayout
 
 @export_group("Layout")
 @export_range(0.0, 32.0, 1.0) var collision_padding: float = 6.0
+@export_range(0.0, 64.0, 1.0) var horizontal_stagger: float = 24.0
 @export_range(1, 32, 1) var collision_iterations: int = 24
-@export_range(0.0, 1.0, 0.01) var anchor_pull: float = 0.08
 @export_range(0.0, 500.0, 1.0) var max_displacement: float = 160.0
 @export_range(0.0, 64.0, 1.0) var viewport_margin: float = 8.0
 
 @export_group("Leader Lines")
 @export_range(0.0, 100.0, 1.0) var leader_line_threshold: float = 10.0
+@export_range(0.0, 64.0, 1.0) var leader_target_clearance: float = 20.0
 @export_range(0.5, 8.0, 0.5) var leader_line_width: float = 1.5
 @export var leader_line_color: Color = Color(0.922, 0.843, 0.702, 0.65)
 
 var _selection_elapsed: float = 0.0
 var _selected_frames: Array[Component_Health] = []
-var _current_offsets: Dictionary = {}
 var _line_segments: Array[PackedVector2Array] = []
 
 
@@ -77,14 +77,12 @@ func _refresh_selection() -> void:
 
   var all_frames: Array[Component_Health] = []
   var candidates: Array[Component_Health] = []
-  var live_frame_ids: Dictionary = {}
   for node in get_tree().get_nodes_in_group(Component_Health.UNIT_FRAME_GROUP):
     if not node is Component_Health or not is_instance_valid(node):
       continue
 
     var frame := node as Component_Health
     all_frames.append(frame)
-    live_frame_ids[frame.get_instance_id()] = true
     if frame.is_unit_frame_requested() and _is_frame_on_screen(frame):
       candidates.append(frame)
 
@@ -102,11 +100,6 @@ func _refresh_selection() -> void:
     frame.set_unit_frame_layout_allowed(is_selected)
     if not is_selected:
       frame.sprite.offset = Vector2.ZERO
-      _current_offsets.erase(frame_id)
-
-  for frame_id in _current_offsets.keys():
-    if not live_frame_ids.has(frame_id):
-      _current_offsets.erase(frame_id)
 
 
 func _select_candidates(
@@ -164,7 +157,6 @@ func _update_layout(_delta: float) -> void:
   var frames: Array[Component_Health] = []
   var desired_centers: Array[Vector2] = []
   var card_sizes: Array[Vector2] = []
-  var current_centers: Array[Vector2] = []
 
   for frame in _selected_frames:
     if not is_instance_valid(frame) or not frame.sprite.visible:
@@ -173,8 +165,6 @@ func _update_layout(_delta: float) -> void:
     var desired_center := camera.unproject_position(frame.sprite.global_position)
     desired_centers.append(desired_center)
     card_sizes.append(_get_card_screen_size(frame))
-    var current_offset: Vector2 = _current_offsets.get(frame.get_instance_id(), Vector2.ZERO)
-    current_centers.append(desired_center + current_offset)
 
   _line_segments.clear()
   if frames.is_empty():
@@ -184,15 +174,12 @@ func _update_layout(_delta: float) -> void:
   var resolved_centers := _resolve_card_positions(
     desired_centers,
     card_sizes,
-    get_viewport().get_visible_rect(),
-    current_centers
+    get_viewport().get_visible_rect()
   )
 
   for index in range(frames.size()):
     var frame := frames[index]
-    var frame_id := frame.get_instance_id()
     var target_offset: Vector2 = resolved_centers[index] - desired_centers[index]
-    _current_offsets[frame_id] = target_offset
     _set_frame_screen_offset(frame, target_offset)
 
     if target_offset.length() < leader_line_threshold:
@@ -204,9 +191,13 @@ func _update_layout(_delta: float) -> void:
     )
     var line_start := _get_leader_line_start(frame)
     if not card_rect.has_point(line_start):
+      var line_end := _closest_point_on_rect(card_rect, line_start)
+      line_start = _clear_leader_target(line_start, line_end)
+      if line_start.is_equal_approx(line_end):
+        continue
       _line_segments.append(PackedVector2Array([
         line_start,
-        _closest_point_on_rect(card_rect, line_start),
+        line_end,
       ]))
 
   queue_redraw()
@@ -215,13 +206,10 @@ func _update_layout(_delta: float) -> void:
 func _resolve_card_positions(
   desired_centers: Array[Vector2],
   card_sizes: Array[Vector2],
-  viewport_rect: Rect2,
-  initial_centers: Array[Vector2] = []
+  viewport_rect: Rect2
 ) -> Array[Vector2]:
   var positions: Array[Vector2] = desired_centers.duplicate()
   var overlap_clusters := _find_overlap_clusters(desired_centers, card_sizes)
-  if initial_centers.size() == desired_centers.size():
-    positions = initial_centers.duplicate()
   if positions.size() < 2:
     if positions.size() == 1:
       positions[0] = _constrain_card_position(
@@ -229,8 +217,7 @@ func _resolve_card_positions(
       )
     return positions
 
-  for index in range(positions.size()):
-    positions[index] = positions[index].lerp(desired_centers[index], anchor_pull)
+  _apply_horizontal_stagger(positions, desired_centers, overlap_clusters)
 
   for _iteration in range(collision_iterations):
     _resolve_overlaps_once(positions, desired_centers, card_sizes, viewport_rect)
@@ -254,6 +241,39 @@ func _resolve_card_positions(
     )
 
   return positions
+
+
+func _apply_horizontal_stagger(
+  positions: Array[Vector2],
+  desired_centers: Array[Vector2],
+  overlap_clusters: Array
+) -> void:
+  if is_zero_approx(horizontal_stagger):
+    return
+
+  for cluster in overlap_clusters:
+    if cluster.size() < 2:
+      continue
+
+    var ordered: Array = cluster.duplicate()
+    ordered.sort_custom(func(a: int, b: int) -> bool:
+      if desired_centers[a].y != desired_centers[b].y:
+        return desired_centers[a].y < desired_centers[b].y
+      if desired_centers[a].x != desired_centers[b].x:
+        return desired_centers[a].x < desired_centers[b].x
+      return a < b
+    )
+    for order_index in range(ordered.size()):
+      var index: int = ordered[order_index]
+      positions[index].x = desired_centers[index].x + _get_horizontal_stagger_offset(
+        order_index, ordered.size()
+      )
+
+
+func _get_horizontal_stagger_offset(order_index: int, count: int) -> float:
+  if count % 2 == 1 and order_index == 0:
+    return 0.0
+  return (-0.5 if order_index % 2 == 0 else 0.5) * horizontal_stagger
 
 
 func _resolve_overlaps_once(
@@ -389,6 +409,8 @@ func _arrange_cluster_grid(
     maximum_card_size.x + float(columns - 1) * cell_size.x,
     maximum_card_size.y + float(rows - 1) * cell_size.y
   )
+  if columns == 1 and ordered.size() > 1:
+    grid_size.x += horizontal_stagger
   var minimum_center := viewport_rect.position + grid_size * 0.5 + Vector2.ONE * viewport_margin
   var maximum_center := viewport_rect.end - grid_size * 0.5 - Vector2.ONE * viewport_margin
   if minimum_center.x <= maximum_center.x:
@@ -399,8 +421,11 @@ func _arrange_cluster_grid(
   for order_index in range(ordered.size()):
     var column: int = order_index % columns
     var row := floori(float(order_index) / float(columns))
+    var stagger := 0.0
+    if columns == 1:
+      stagger = _get_horizontal_stagger_offset(order_index, ordered.size())
     positions[ordered[order_index]] = cluster_center + Vector2(
-      (float(column) - float(columns - 1) * 0.5) * cell_size.x,
+      (float(column) - float(columns - 1) * 0.5) * cell_size.x + stagger,
       (float(row) - float(rows - 1) * 0.5) * cell_size.y
     )
 
@@ -493,6 +518,13 @@ func _get_leader_line_start(frame: Component_Health) -> Vector2:
   if entity:
     anchor = entity.global_position.lerp(anchor, 0.5)
   return camera.unproject_position(anchor)
+
+
+func _clear_leader_target(target: Vector2, card_edge: Vector2) -> Vector2:
+  var direction := card_edge - target
+  if direction.length() <= leader_target_clearance:
+    return card_edge
+  return target + direction.normalized() * leader_target_clearance
 
 
 func _closest_point_on_rect(rect: Rect2, point: Vector2) -> Vector2:
