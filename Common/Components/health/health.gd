@@ -1,6 +1,9 @@
 extends Node3D
 class_name Component_Health
 
+const UNIT_FRAME_GROUP: StringName = &"unit_frames"
+const UNIT_FRAME_LAYOUT_MANAGER_GROUP: StringName = &"unit_frame_layout_managers"
+
 ## Opacity applied when HP is at or above the high-health threshold (nearly invisible)
 const HIGH_HP_OPACITY: float = 0.10
 ## Maximum opacity, applied at or below the low-health threshold
@@ -46,12 +49,12 @@ const NAME_LABEL_LIGHTEN_WEIGHT: float = 0.55
 @export var audio_player: AudioStreamPlayer3D
 
 
-@onready var health_bar := $SubViewportContainer/SubViewport/VBoxContainer/BarOverlay/HealthBar
-@onready var health_label := $SubViewportContainer/SubViewport/VBoxContainer/BarOverlay/HealthLabel
-@onready var name_label := $SubViewportContainer/SubViewport/VBoxContainer/NameLabel
-@onready var background := $SubViewportContainer/SubViewport/Background
-@onready var subviewport := $SubViewportContainer/SubViewport
-@onready var sprite := $Sprite3D
+@onready var health_bar: ProgressBar = $SubViewportContainer/SubViewport/VBoxContainer/BarOverlay/HealthBar
+@onready var health_label: Label = $SubViewportContainer/SubViewport/VBoxContainer/BarOverlay/HealthLabel
+@onready var name_label: Label = $SubViewportContainer/SubViewport/VBoxContainer/NameLabel
+@onready var background: NinePatchRect = $SubViewportContainer/SubViewport/Background
+@onready var subviewport: SubViewport = $SubViewportContainer/SubViewport
+@onready var sprite: Sprite3D = $Sprite3D
 
 var max_hitpoints: int
 var dead: bool = false
@@ -60,6 +63,11 @@ var dead: bool = false
 var _hovered: bool = false
 ## Seconds remaining before the unit frame auto-hides after damage
 var _damage_reveal_timer: float = 0.0
+## Whether pausing the game is temporarily revealing this frame.
+var _paused_reveal: bool = false
+## Whether the shared layout manager has allocated a visible slot to this frame.
+## Defaults to true so the component keeps working in scenes without a manager.
+var _layout_allowed: bool = true
 
 var damage_numbers: Component_DamageNumbers
 
@@ -98,6 +106,7 @@ func take_damage(amount: float, damage_source: String = "unknown"):
 
 func _ready():
   visible = true
+  add_to_group(UNIT_FRAME_GROUP)
 
   # Store the initial hitpoints as max_hitpoints
   max_hitpoints = hitpoints
@@ -120,15 +129,18 @@ func _ready():
   _bar_fill_style = StyleBoxFlat.new()
   health_bar.add_theme_stylebox_override("fill", _bar_fill_style)
   subviewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+  _paused_reveal = GameManager.is_paused()
   _update_display()
+
+  var layout_manager := get_tree().get_first_node_in_group(UNIT_FRAME_LAYOUT_MANAGER_GROUP)
+  if layout_manager and layout_manager.has_method("register_unit_frame"):
+    layout_manager.register_unit_frame(self)
 
   GameManager.speed_changed.connect(_on_game_speed_changed)
 
 func _on_game_speed_changed(new_speed: float):
-  if new_speed <= 0:
-    show_unit_frame()
-  else:
-    hide_unit_frame()
+  _paused_reveal = new_speed <= 0
+  _update_display()
 
 func _process(delta: float) -> void:
   if _damage_reveal_timer > 0.0:
@@ -141,12 +153,7 @@ func _update_display():
   if not is_node_ready():
     return
   
-  # Survivors always show their unit frame so the name and HP
-  # are permanently readable; other entities only show on hover or recent damage.
-  var parent = get_parent()
-  var is_survivor: bool = parent != null and parent.is_in_group("survivors")
-  var unit_frame_visible: bool = unit_frame_enabled and (is_survivor or _hovered or _damage_reveal_timer > 0.0)
-  sprite.visible = (not disabled) and unit_frame_visible
+  sprite.visible = _layout_allowed and is_unit_frame_requested()
 
   # Set up health display UI
   health_bar.max_value = max_hitpoints
@@ -163,6 +170,27 @@ func _update_display():
 ## so the label reflects the latest values immediately.
 func refresh_display() -> void:
   _update_display()
+
+## Return whether the component's own rules currently request a unit frame.
+func is_unit_frame_requested() -> bool:
+  var parent = get_parent()
+  var is_survivor: bool = parent != null and parent.is_in_group("survivors")
+  return (not disabled) and unit_frame_enabled and (is_survivor or _hovered or _damage_reveal_timer > 0.0 or _paused_reveal)
+
+## Hovered and recently damaged frames can displace a distance-ranked frame.
+func is_unit_frame_urgent() -> bool:
+  return _hovered or _damage_reveal_timer > 0.0
+
+## Apply the shared layout manager's visibility quota without changing local rules.
+func set_unit_frame_layout_allowed(allowed: bool) -> void:
+  if _layout_allowed == allowed:
+    return
+
+  _layout_allowed = allowed
+  _update_display()
+
+func is_unit_frame_layout_allowed() -> bool:
+  return _layout_allowed
 
 ## Called by external hover detection to make the unit frame visible.
 func show_unit_frame() -> void:
