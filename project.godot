@@ -54,7 +54,8 @@ directories/dtl_directory={
 }
 layout/style_directory={
 "": "res://Dialogic/Style.tres",
-"Style": "res://Dialogic/Style.tres"
+"Style": "res://Dialogic/Style.tres",
+"Tutorial": "res://Dialogic/Tutorial.tres"
 }
 extensions_folder="res://addons/dialogic_additions"
 text/letter_speed=0.01
@@ -89,7 +90,7 @@ audio/channel_defaults={
 "volume": 0.0
 }
 }
-layout/style_list=["res://Dialogic/Style.tres"]
+layout/style_list=["res://Dialogic/Style.tres", "res://Dialogic/Tutorial.tres"]
 layout/default_style="res://Dialogic/Style.tres"
 glossary/default_case_sensitive=true
 portraits/default_portrait="res://addons/dialogic/Modules/Character/default_portrait.tscn"
