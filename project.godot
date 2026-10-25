@@ -115,6 +115,7 @@ theme/custom="uid://b8k2vgj8hxk5r"
 [importer_defaults]
 
 scene={
+&"animation/import_rest_as_RESET": true,
 &"blender/nodes/cameras": false,
 &"blender/nodes/punctual_lights": false,
 &"blender/nodes/visible": 1,
