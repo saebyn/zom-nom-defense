@@ -25,11 +25,11 @@ var health: Component_Health
 var damage_numbers: Component_DamageNumbers
 var is_dead: bool = false
 
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var animation_player: AnimationPlayer = $Model/AnimationPlayer
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var animation_state: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/Locomotion/playback")
 
-@onready var mesh_instance: MeshInstance3D = $characterMedium
+@onready var mesh_instance: MeshInstance3D = $Model/Root/Skeleton3D/character
 
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 
