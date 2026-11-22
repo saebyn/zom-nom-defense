@@ -3,8 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://bwhean8gy2rcd" path="res://Entities/Enemies/Templates/base_enemy/enemy.tscn" id="1_ipqdc"]
 [ext_resource type="Script" uid="uid://d0xs34vvq4y5v" path="res://Config/AttackEffect/resource_attack_effect.gd" id="1_v6710"]
 [ext_resource type="Script" uid="uid://veme7gd0dvne" path="res://Config/Enemies/enemy_type_resource.gd" id="1_ygfi5"]
-[ext_resource type="PackedScene" uid="uid://crngc516wfv4x" path="res://Assets/Models/zombie1.glb" id="2_cri2p"]
-[ext_resource type="Material" uid="uid://c5t2estxun6yh" path="res://Assets/Textures/zombieC.tres" id="3_x0neu"]
+[ext_resource type="PackedScene" uid="uid://cyxhhhn30e4i" path="res://Assets/Models/zombie2.glb" id="2_cri2p"]
+[ext_resource type="Material" uid="uid://03n1c0xfiepn" path="res://Assets/Materials/zombie2_skin.material" id="5_k7oag"]
 
 [sub_resource type="Curve" id="Curve_cri2p"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.6229508, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -25,9 +25,8 @@ description = "Absorb damage, protect other zombies"
 scene = ExtResource("1_ipqdc")
 hitpoints = 1500
 speed = 10.0
-damage_amount = 150
 scrap_reward = 30
 attack_effect = SubResource("Resource_k7oag")
-skin_material = ExtResource("3_x0neu")
+skin_material = ExtResource("5_k7oag")
 model_scene = ExtResource("2_cri2p")
 metadata/_custom_type_script = "uid://veme7gd0dvne"
