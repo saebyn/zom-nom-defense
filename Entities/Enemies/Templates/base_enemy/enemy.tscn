@@ -114,9 +114,9 @@ navigation_agent = NodePath("../NavigationAgent3D")
 metadata/_custom_type_script = "uid://dd6iai4hse0g5"
 
 [node name="AnimationTree" type="AnimationTree" parent="." unique_id=2014435379]
-root_node = NodePath("../Model")
+root_node = NodePath("../Zombie")
 tree_root = SubResource("AnimationNodeBlendTree_r8k8w")
-anim_player = NodePath("../Model/AnimationPlayer")
+anim_player = NodePath("../Zombie/AnimationPlayer")
 parameters/Locomotion/Walk/TimeScale/scale = 1.0
 parameters/AttackOneShot/active = false
 parameters/AttackOneShot/internal_active = false
@@ -128,11 +128,11 @@ parameters/HitReactionOneShot/active = false
 parameters/HitReactionOneShot/internal_active = false
 parameters/HitReactionOneShot/request = 0
 
-[node name="Model" parent="." unique_id=617345750 instance=ExtResource("9_4dxql")]
+[node name="Zombie" parent="." unique_id=617345750 instance=ExtResource("9_4dxql")]
 
 [connection signal="attack_accepted" from="Attack" to="." method="_trigger_attack_animation"]
 [connection signal="damaged" from="Health" to="." method="_on_health_damaged"]
 [connection signal="damaged" from="Health" to="ShakeEffect" method="damage_taken"]
 [connection signal="died" from="Health" to="." method="_on_died"]
 
-[editable path="Model"]
+[editable path="Zombie"]

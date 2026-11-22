@@ -1,7 +1,9 @@
 [gd_resource type="Resource" script_class="Resource_EnemyType" format=3 uid="uid://cbpou633u3f5i"]
 
 [ext_resource type="Script" uid="uid://veme7gd0dvne" path="res://Config/Enemies/enemy_type_resource.gd" id="1_6ugdl"]
+[ext_resource type="PackedScene" uid="uid://crngc516wfv4x" path="res://Assets/Models/zombie1.glb" id="1_r5323"]
 [ext_resource type="PackedScene" uid="uid://bwhean8gy2rcd" path="res://Entities/Enemies/Templates/base_enemy/enemy.tscn" id="1_var14"]
+[ext_resource type="Material" uid="uid://ykcpib4c37ph" path="res://Assets/Materials/zombie1_skin.material" id="4_fmwbk"]
 
 [resource]
 script = ExtResource("1_6ugdl")
@@ -13,4 +15,6 @@ hitpoints = 250
 speed = 30.0
 damage_amount = 50
 scrap_reward = 8
+skin_material = ExtResource("4_fmwbk")
+model_scene = ExtResource("1_r5323")
 metadata/_custom_type_script = "uid://veme7gd0dvne"

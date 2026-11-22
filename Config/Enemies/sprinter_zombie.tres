@@ -2,6 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://ck56onavfxobh" path="res://Entities/Enemies/Concrete/sprinter_zombie.tscn" id="1_2sqgu"]
 [ext_resource type="Script" uid="uid://veme7gd0dvne" path="res://Config/Enemies/enemy_type_resource.gd" id="1_8r2xe"]
+[ext_resource type="PackedScene" uid="uid://crngc516wfv4x" path="res://Assets/Models/zombie1.glb" id="1_v1m3l"]
+[ext_resource type="Material" uid="uid://ykcpib4c37ph" path="res://Assets/Materials/zombie1_skin.material" id="4_5f0fe"]
 
 [resource]
 script = ExtResource("1_8r2xe")
@@ -13,4 +15,6 @@ hitpoints = 500
 speed = 40.0
 damage_amount = 100
 scrap_reward = 15
+skin_material = ExtResource("4_5f0fe")
+model_scene = ExtResource("1_v1m3l")
 metadata/_custom_type_script = "uid://veme7gd0dvne"
