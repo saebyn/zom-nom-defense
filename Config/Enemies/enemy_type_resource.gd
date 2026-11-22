@@ -8,7 +8,6 @@ extends Resource
 @export var scene: PackedScene ## Scene representing the enemy type.
 
 @export_category("Gameplay Properties")
-@export var scale_multiplier: float = 1.0 ## Scale multiplier for the enemy
 @export var hitpoints: int = 100 ## Health of the enemy
 @export var speed: float = 2.0 ## Movement speed of the enemy
 @export var damage_amount: float = 10.0 ## Damage dealt by the enemy
@@ -21,3 +20,5 @@ extends Resource
 
 @export_category("Visual Properties")
 @export var skin_material: Material ## Material used for the enemy's skin
+@export var model_scene: PackedScene ## Scene representing the enemy's model
+@export var scale_multiplier: float = 1.0 ## Scale multiplier for the enemy

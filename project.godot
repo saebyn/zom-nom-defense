@@ -97,7 +97,7 @@ variables={}
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dialogic/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/tech_tree_editor/plugin.cfg", "res://addons/twitcher/plugin.cfg")
+enabled=PackedStringArray("res://addons/dialogic/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/model_import_animation_fix/plugin.cfg", "res://addons/tech_tree_editor/plugin.cfg", "res://addons/twitcher/plugin.cfg")
 
 [global_group]
 
@@ -115,9 +115,11 @@ theme/custom="uid://b8k2vgj8hxk5r"
 [importer_defaults]
 
 scene={
+&"animation/import_rest_as_RESET": true,
 &"blender/nodes/cameras": false,
 &"blender/nodes/punctual_lights": false,
 &"blender/nodes/visible": 1,
+&"import_script/path": "uid://c0fbmhxkeyso0",
 &"materials/extract": 1,
 &"materials/extract_format": 2,
 &"materials/extract_path": "res://Assets/Materials"

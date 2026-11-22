@@ -11,3 +11,5 @@ sprint_speed_multiplier = 3.0
 sprint_chance = 0.5
 sprint_duration = 0.525
 metadata/_custom_type_script = "uid://bgi7t40lxwufo"
+
+[editable path="Zombie"]

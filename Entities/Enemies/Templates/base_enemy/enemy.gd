@@ -25,11 +25,8 @@ var health: Component_Health
 var damage_numbers: Component_DamageNumbers
 var is_dead: bool = false
 
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var animation_state: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/Locomotion/playback")
-
-@onready var mesh_instance: MeshInstance3D = $characterMedium
 
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 
@@ -71,15 +68,10 @@ func load_resource(resource: Resource_EnemyType) -> void:
     scrap_reward = resource.scrap_reward
     enemy_type = resource.enemy_type
 
-    # Update skin material if specified
-    if resource.skin_material and mesh_instance:
-      mesh_instance.set_surface_override_material(0, resource.skin_material)
+    _load_visual_properties(resource)
 
     # Update navigation agent desired distance
     navigation_agent.target_desired_distance = target_desired_distance
-
-    # Update scale
-    scale = Vector3.ONE * resource.scale_multiplier
 
     # Update health
     if health:
@@ -97,6 +89,23 @@ func load_resource(resource: Resource_EnemyType) -> void:
         attack.attack_effect = resource.attack_effect
 
   , Object.CONNECT_ONE_SHOT)
+
+
+func _load_visual_properties(resource: Resource_EnemyType) -> void:
+  assert($Zombie is Node3D)
+  assert(resource.model_scene != null)
+  assert(resource.skin_material != null)
+
+  # replace $Zombie with instance of resource.model_scene
+  var model_instance := resource.model_scene.instantiate() as Node3D
+  remove_child($Zombie)
+  add_child(model_instance)
+
+  # override skin material
+  $Zombie/Root/Skeleton3D/character.set_surface_override_material(0, resource.skin_material)
+
+  # Update scale
+  scale = Vector3.ONE * resource.scale_multiplier
 
 
 func _update_locomotion_animation() -> void:
