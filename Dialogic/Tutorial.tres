@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DialogicStyle" format=3]
+[gd_resource type="Resource" script_class="DialogicStyle" format=3 uid="uid://dug5qnwg43cul"]
 
 [ext_resource type="Resource" uid="uid://b0ioopslspam2" path="res://Dialogic/Style.tres" id="1_style"]
 [ext_resource type="Script" uid="uid://bwg6yncmh2cml" path="res://addons/dialogic/Resources/dialogic_style_layer.gd" id="2_layer"]
@@ -23,3 +23,4 @@ layer_info = {
 "": SubResource("Resource_base"),
 "18": SubResource("Resource_textbox")
 }
+metadata/_latest_layer = ""

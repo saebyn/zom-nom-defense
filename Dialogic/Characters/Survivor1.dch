@@ -22,20 +22,23 @@
 "suffix": ""
 },
 &"default_portrait": "Portrait 2",
-&"description": "A survivor who guides the player through Scenario 1",
-&"display_name": "Survivor",
+&"description": "A survivor",
+&"display_name": "{intro_survivor_name}",
 &"mirror": false,
 &"nicknames": [""],
 &"offset": Vector2(0, 0),
 &"portraits": {
 "Portrait 2": {
 "export_overrides": {
-"image": "\"res://Assets/Textures/bot_sprite.png\""
+"character_material_file": "\"\"",
+"character_scene_file": "\"\"",
+"image": "\"\""
 },
+"ignore_char_scale": false,
 "mirror": false,
 "offset": Vector2(0, 0),
 "scale": 1,
-"scene": "res://addons/dialogic/Modules/HighlightPortrait/simple_highlight_portrait.tscn"
+"scene": "res://Dialogic/character_portrait.tscn"
 }
 },
 &"scale": 1.0

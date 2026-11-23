@@ -1,54 +1,54 @@
-[style name="Style"]
+[style name="BaseStyle"]
 do GameManager.pause_game()
-survivor: Another day, another horde of the undead...
-survivor: They just keep coming. First a few stragglers, then entire waves.
-survivor: I can't hold them off alone. Whatever you do — keep them away from me.
+Survivor1: Another day, another horde of the undead...
+Survivor1: They just keep coming. First a few stragglers, then entire waves.
+Survivor1: I can't hold them off alone. Whatever you do — keep them away from me.
 if {SettingsManager.tutorial_enabled} == true:
-	survivor: Hey! You look new around here. Want me to walk you through the basics real quick?
+	[style name="Tutorial"]
+	system: Hey! You look new around here. Want me to walk you through the basics real quick?
 	- Yes, show me the ropes!
-		[style name="Tutorial"]
 		do GameManager.pause_game()
-		survivor: Good! Let me point out a few things on the screen.
+		system: Good! Let me point out a few things on the screen.
 		do CurrencyManager.pulse_display("scrap", 3.0)
-		survivor: Top-left is your [b]Scrap[/b] counter — that's your currency for building. Defeat zombies to earn more!
+		system: Top-left is your [b]Scrap[/b] counter — that's your currency for building. Defeat zombies to earn more!
 		do CurrencyManager.pulse_display("level", 3.0)
-		survivor: Your [b]Level[/b] is shown there too. Level up to unlock better defenses!
-		survivor: And the [b]wave counter[/b] up top tells you how many waves are left. Stay sharp!
+		system: Your [b]Level[/b] is shown there too. Level up to unlock better defenses!
+		system: And the [b]wave counter[/b] up top tells you how many waves are left. Stay sharp!
 		do GameManager.resume_game()
 		if GameManager.has_enemy_appeared == false:
 			[zomnom_wait_main_signal]
 		[wait time="1.0"]
 		do GameManager.pause_game()
-		survivor: See that zombie? [b]Left-click[/b] on that walking corpse to hit it!
-		survivor: Go on, give it a try. I'll wait right here.
+		system: See that zombie? [b]Left-click[/b] on that walking corpse to hit it!
+		system: Go on, give it a try. I'll wait right here.
 		do GameManager.resume_game()
 		[zomnom_wait_main_signal signal="enemy_attacked"]
 		do GameManager.pause_game()
-		survivor: Good job! Lots more where that one came from though... [i]Here's a tip\: you can click the zombie fast enough to keep it from moving forward so you can quickly defeat it![/i]
+		system: Good job! Lots more where that one came from though... [i]Here's a tip\: you can click the zombie fast enough to keep it from moving forward so you can quickly defeat it![/i]
 		do GameManager.resume_game()
 		# Wait for the player to defeat the first wave here before moving on
 		[zomnom_wait_main_signal signal="wave_cleared"]
 		do GameManager.pause_game()
-		survivor: Excellent! But your fingers are going to get tired at this rate.
-		survivor: Let's set up some defenses to help out. You'll need to build some structures to keep the zombies at bay.
-		survivor: Press [b]Y[/b] to open the [b]Tech Tree[/b] or click the [b]Tech Tree button[/b] in the bottom-right corner of the screen.
-		survivor: From there, you can research new buildings and upgrades to help you survive. Check out the [b]Scrap Shooter[/b] — it's a great starting point for your defenses!
+		system: Excellent! But your fingers are going to get tired at this rate.
+		system: Let's set up some defenses to help out. You'll need to build some structures to keep the zombies at bay.
+		system: Press [b]Y[/b] to open the [b]Tech Tree[/b] or click the [b]Tech Tree button[/b] in the bottom-right corner of the screen.
+		system: From there, you can research new buildings and upgrades to help you survive. Check out the [b]Scrap Shooter[/b] — it's a great starting point for your defenses!
 		system: Unlock the Scrap Shooter in the Tech Tree to continue the tutorial.
 		do GameManager.resume_game()
 		[zomnom_wait_tech_unlocked tech="tur_scrap_shooter"]
 		do GameManager.pause_game()
-		survivor: Very good, next let's place one of those Scrap Shooters on the field to start defending ourselves.
-		survivor: [b]Select a building[/b] from the hotbar at the bottom of the screen.
-		survivor: Then [b]left-click on the ground[/b] to place it. Give it a try!
+		system: Very good, next let's place one of those Scrap Shooters on the field to start defending ourselves.
+		system: [b]Select a building[/b] from the hotbar at the bottom of the screen.
+		system: Then [b]left-click on the ground[/b] to place it. Give it a try!
 		do GameManager.resume_game()
 		[zomnom_wait_main_signal signal="building_placed"]
 		do GameManager.pause_game()
-		survivor: Use {SettingsManager.get_keybind('camera_move_left')} and {SettingsManager.get_keybind('camera_move_right')} to move the camera left and right, and {SettingsManager.get_keybind('camera_move_up')}/{SettingsManager.get_keybind('camera_move_down')} for up and down.
-		survivor: Use your scoll wheel or  {SettingsManager.get_keybind('camera_zoom_in_key')}/{SettingsManager.get_keybind('camera_zoom_out_key')} to zoom.
-		survivor: And you can rotate the camera with {SettingsManager.get_keybind('camera_rotate_left')} and {SettingsManager.get_keybind('camera_rotate_right')}.
+		system: Use {SettingsManager.get_keybind('camera_move_left')} and {SettingsManager.get_keybind('camera_move_right')} to move the camera left and right, and {SettingsManager.get_keybind('camera_move_up')}/{SettingsManager.get_keybind('camera_move_down')} for up and down.
+		system: Use your scoll wheel or  {SettingsManager.get_keybind('camera_zoom_in_key')}/{SettingsManager.get_keybind('camera_zoom_out_key')} to zoom.
+		system: And you can rotate the camera with {SettingsManager.get_keybind('camera_rotate_left')} and {SettingsManager.get_keybind('camera_rotate_right')}.
 		[style name="Style"]
-		survivor: Alright, that's most of the important stuff. Now get out there and defend me!
-		survivor: Unpause the game to start confronting the horde. Good luck!
+		system: Alright, that's most of the important stuff. Now get out there and defend me!
+		system: Unpause the game to start confronting the horde. Good luck!
 	- No thanks, I've got this.
 		set {SettingsManager.tutorial_enabled} = false
 		do SettingsManager.save_settings()
