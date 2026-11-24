@@ -22,6 +22,8 @@ func _start_intro_dialog() -> void:
     return
 
   Dialogic.process_mode = Node.PROCESS_MODE_ALWAYS
+  survivor.get_node("Marker3D").add_to_group("dialogic_portrait_Survivor1")
+  Dialogic.VAR.set_variable("intro_survivor_name", survivor.survivor_name)
   var layout: Node = Dialogic.start(TIMELINE)
   if layout:
     layout.process_mode = Node.PROCESS_MODE_ALWAYS

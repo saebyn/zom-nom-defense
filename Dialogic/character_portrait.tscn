@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://gtppc2ithk54"]
+
+[ext_resource type="Script" uid="uid://bn16puvomncgq" path="res://Dialogic/character_portrait.gd" id="1_3kpow"]
+
+[node name="CharacterPortrait" type="Marker2D" unique_id=1169686378]
+script = ExtResource("1_3kpow")
+character_marker = null
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=2110414500]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -256.0
+offset_top = -512.0
+offset_right = 256.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=586689137]
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport" unique_id=708601034]
+transform = Transform3D(0.95445055, 0, 0.29836908, 0, 1, 0, -0.29836908, 0, 0.95445055, 1.0944948, 2.8112426, 2.8844237)

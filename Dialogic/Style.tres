@@ -65,6 +65,7 @@ overrides = {
 
 [resource]
 script = ExtResource("11_lews4")
+name = "BaseStyle"
 layer_list = Array[String](["10", "11", "12", "18", "14", "15", "16", "17"])
 layer_info = {
 "": SubResource("Resource_mi6xp"),

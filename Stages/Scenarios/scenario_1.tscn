@@ -12,7 +12,6 @@
 [ext_resource type="PackedScene" uid="uid://cxtvhj0yxxp2n" path="res://Common/Components/health/health.tscn" id="10_ffud3"]
 [ext_resource type="Texture2D" uid="uid://c4mugepdahndc" path="res://Assets/Textures/road.png" id="11_pnunk"]
 [ext_resource type="PackedScene" uid="uid://dmaheitw7drsh" path="res://Entities/Scrap/pile_of_boxes.tscn" id="12_ebqns"]
-
 [ext_resource type="PackedScene" path="res://Common/Effects/destruction_effect/destruction_effect.tscn" id="13_destruction"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_3f6pf"]
@@ -105,7 +104,10 @@ shape = SubResource("ConcavePolygonShape3D_ebqns")
 transform = Transform3D(0.8162794, 0, -0.5776592, 0, 1, 0, 0.5776592, 0, 0.8162794, -9.937922, 3.2032154, -9.683429)
 skin_material = ExtResource("7_vi6mr")
 
-[node name="Component_PanicBehavior" parent="Survivor1" index="6" unique_id=749990093]
+[node name="Marker3D" type="Marker3D" parent="Survivor1" unique_id=1285030783]
+transform = Transform3D(0.8162775, 0, 0.5776578, 0, 1, 0, -0.5776578, 0, 0.8162775, 2.3039732, 2.741463, 3.7111845)
+
+[node name="Component_PanicBehavior" parent="Survivor1" index="7" unique_id=749990093]
 panic_move_radius = 0.0
 
 [node name="MuscleCar" parent="." unique_id=1065602798 groups=["buildings"] instance=ExtResource("9_5hngp")]
@@ -124,10 +126,10 @@ hit_sound = 16
 death_sound = 17
 audio_player = NodePath("../../CarAudio")
 
-[node name="DestructionEffect" parent="MuscleCar" instance=ExtResource("13_destruction")]
+[node name="DestructionEffect" parent="MuscleCar" unique_id=289155805 instance=ExtResource("13_destruction")]
 
 [node name="CarAudio" type="AudioStreamPlayer3D" parent="." unique_id=2009202380]
-position = Vector3(-9.960177, 0, -9.729578)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.960177, 0, -9.729578)
 bus = &"Sound Effects"
 
 [node name="Road" type="Node3D" parent="." unique_id=1732223280]

@@ -18,26 +18,15 @@
 "volume_variance": 0.0
 }
 },
-"style": "Style",
+"style": "",
 "suffix": ""
 },
-&"default_portrait": "New portrait",
+&"default_portrait": "",
 &"description": "",
-&"display_name": "System",
+&"display_name": "Tutorial",
 &"mirror": false,
 &"nicknames": [""],
 &"offset": Vector2(0, 0),
-&"portraits": {
-"New portrait": {
-"export_overrides": {
-"image": "\"res://Assets/Textures/bot_sprite.png\""
-},
-"mirror": false,
-"offset": Vector2(0, 0),
-"scale": 1,
-"scene": "res://addons/dialogic/Modules/HighlightPortrait/simple_highlight_portrait.tscn",
-"sound_mood": "Mood 1"
-}
-},
+&"portraits": {},
 &"scale": 1.0
 }
