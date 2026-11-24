@@ -304,3 +304,17 @@ tracks/42/path = NodePath("Root/Skeleton3D:RightKneeCtrl")
 tracks/42/interp = 0
 tracks/42/loop_wrap = true
 tracks/42/keys = PackedFloat32Array(0, 1, 0.7071066, -1.2513317e-07, -0.70710695, 1.2513316e-07)
+tracks/43/type = "method"
+tracks/43/imported = false
+tracks/43/enabled = true
+tracks/43/path = NodePath("..")
+tracks/43/interp = 1
+tracks/43/loop_wrap = true
+tracks/43/keys = {
+"times": PackedFloat32Array(3.2964845),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"queue_free"
+}]
+}
