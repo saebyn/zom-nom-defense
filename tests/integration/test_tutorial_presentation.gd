@@ -104,7 +104,7 @@ func _choose_tutorial(choice: int = 1) -> void:
   await _start()
   if not await _advance_until(func(): return Dialogic.current_state == Dialogic.States.AWAITING_CHOICE):
     return
-  assert_eq(Dialogic.Styles.get_current_style(), "Style", "Opt-in stays in the conversation layout")
+  assert_eq(Dialogic.Styles.get_current_style(), "Tutorial", "Opt-in uses the tutorial panel")
   assert_true(GameManager.is_paused())
   assert_false(_textbox().continue_button.visible, "Choices hide Continue")
   await wait_seconds(0.25)
@@ -154,7 +154,7 @@ func test_scenario_one_styles_pauses_and_all_gameplay_waits() -> void:
   GameManager.building_placed.emit()
   await _settle()
   assert_true(GameManager.is_paused())
-  if not await _advance_until(func(): return Dialogic.Styles.get_current_style() == "Style"):
+  if not await _advance_until(func(): return Dialogic.Styles.get_current_style() == "BaseStyle"):
     return
   assert_false(_textbox().tutorial_side_panel, "Closing conversation restores the bottom textbox")
   assert_false(_textbox().is_in_group("dialogic_input"))
@@ -164,11 +164,11 @@ func test_scenario_one_styles_pauses_and_all_gameplay_waits() -> void:
   assert_true(GameManager.is_paused(), "The existing final manual unpause is preserved")
 
 
-func test_declining_keeps_conversation_style_and_resumes_gameplay() -> void:
+func test_declining_keeps_tutorial_style_and_resumes_gameplay() -> void:
   await _choose_tutorial(2)
   assert_false(SettingsManager.tutorial_enabled)
   assert_false(GameManager.is_paused())
-  assert_eq(Dialogic.Styles.get_current_style(), "Style")
+  assert_eq(Dialogic.Styles.get_current_style(), "Tutorial", "The decline response stays in the tutorial panel")
   await _advance()
   assert_null(Dialogic.current_timeline)
 
@@ -177,7 +177,7 @@ func test_disabled_tutorial_only_plays_the_existing_intro() -> void:
   SettingsManager.tutorial_enabled = false
   await _start()
   for line in range(3):
-    assert_eq(Dialogic.Styles.get_current_style(), "Style")
+    assert_eq(Dialogic.Styles.get_current_style(), "BaseStyle")
     await _advance()
   assert_null(Dialogic.current_timeline)
 
@@ -243,9 +243,9 @@ func test_style_round_trip_keeps_choices_and_resets_geometry() -> void:
   var timeline := DialogicTimeline.new()
   timeline.events = [
     '[style name="Tutorial"]',
-    'survivor: Tutorial question?',
+    'system: Tutorial question?',
     '- Continue the test',
-    '\t[style name="Style"]',
+    '\t[style name="BaseStyle"]',
     '\tsystem: Back to conversation.',
   ]
   await _start(timeline)
@@ -255,7 +255,7 @@ func test_style_round_trip_keeps_choices_and_resets_geometry() -> void:
   await wait_seconds(0.25)
   Dialogic.Choices.select_choice(1)
   await _settle()
-  assert_eq(Dialogic.Styles.get_current_style(), "Style")
+  assert_eq(Dialogic.Styles.get_current_style(), "BaseStyle")
   assert_eq(_textbox().box_size, Vector2(600, 160))
   assert_false(_textbox().get_node("Anchor/Panel/HBox").vertical)
   assert_true(_textbox().continue_button.visible)
@@ -286,16 +286,16 @@ func test_mouse_continue_then_keyboard_after_style_switch() -> void:
   var timeline := DialogicTimeline.new()
   timeline.events = [
     '[style name="Tutorial"]',
-    'survivor: Last tutorial instruction.',
-    '[style name="Style"]',
-    'survivor: Back to conversation.',
-    'survivor: Next conversation line.',
+    'system: Last tutorial instruction.',
+    '[style name="BaseStyle"]',
+    'Survivor1: Back to conversation.',
+    'Survivor1: Next conversation line.',
   ]
   await _start(timeline)
   Dialogic.Text.skip_text_reveal()
   Dialogic.Inputs.input_block_timer.stop()
   await _click(_textbox().continue_button.get_global_rect().get_center())
-  assert_eq(Dialogic.Styles.get_current_style(), "Style")
+  assert_eq(Dialogic.Styles.get_current_style(), "BaseStyle")
   Dialogic.Text.skip_text_reveal()
   Dialogic.Inputs.input_block_timer.stop()
   var current_index: int = Dialogic.current_event_idx

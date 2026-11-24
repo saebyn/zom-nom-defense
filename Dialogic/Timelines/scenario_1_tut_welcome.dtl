@@ -46,7 +46,7 @@ if {SettingsManager.tutorial_enabled} == true:
 		system: Use {SettingsManager.get_keybind('camera_move_left')} and {SettingsManager.get_keybind('camera_move_right')} to move the camera left and right, and {SettingsManager.get_keybind('camera_move_up')}/{SettingsManager.get_keybind('camera_move_down')} for up and down.
 		system: Use your scoll wheel or  {SettingsManager.get_keybind('camera_zoom_in_key')}/{SettingsManager.get_keybind('camera_zoom_out_key')} to zoom.
 		system: And you can rotate the camera with {SettingsManager.get_keybind('camera_rotate_left')} and {SettingsManager.get_keybind('camera_rotate_right')}.
-		[style name="Style"]
+		[style name="BaseStyle"]
 		system: Alright, that's most of the important stuff. Now get out there and defend me!
 		system: Unpause the game to start confronting the horde. Good luck!
 	- No thanks, I've got this.
