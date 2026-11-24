@@ -121,8 +121,6 @@ func test_scenario_one_styles_pauses_and_all_gameplay_waits() -> void:
   assert_true(_textbox().continue_button.is_visible_in_tree())
   assert_true(GameManager.is_paused(), "Instructions still pause gameplay")
   assert_eq(Dialogic.Styles.get_layout_node().process_mode, Node.PROCESS_MODE_ALWAYS)
-  var portrait: Control = _textbox().get_node("Anchor/Panel/HBox/PortraitPanel/PortraitBackgroundColor/DialogicNode_PortraitContainer")
-  assert_gt(portrait.get_child_count(), 0, "The existing speaker portrait is reused")
 
   for signal_name in ["enemy_appeared", "enemy_attacked", "wave_cleared"]:
     if not await _advance_until(func(): return _main_wait(signal_name)):
@@ -176,6 +174,13 @@ func test_declining_keeps_tutorial_style_and_resumes_gameplay() -> void:
 func test_disabled_tutorial_only_plays_the_existing_intro() -> void:
   SettingsManager.tutorial_enabled = false
   await _start()
+  var has_survivor_portrait := func() -> bool:
+    return _textbox().find_children("*", "", true, false).any(
+      func(portrait: Node) -> bool:
+        return portrait.scene_file_path == "res://Dialogic/character_portrait.tscn"
+    )
+  await wait_until(has_survivor_portrait, 1.0)
+  assert_true(has_survivor_portrait.call(), "The survivor's custom portrait loads for the intro")
   for line in range(3):
     assert_eq(Dialogic.Styles.get_current_style(), "BaseStyle")
     await _advance()
