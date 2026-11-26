@@ -254,7 +254,7 @@ graph TB
 - **Game Over and abandoned attempts**: Save lifetime stats and achievements only. Restart, Return to Main Menu, and Quit from the pause menu all count as abandonment. In-scenario tech choices and survivor profile changes roll back.
 - **Main-menu Tech Tree**: Saves explicit tech choices immediately without writing unrelated progression.
 - **No in-progress checkpoints**: A new attempt starts with the configured starting scrap and a fresh battlefield. No timer writes the slot during play; a crash or forced exit can lose the current attempt's activity.
-- **Corruption Recovery**: Falls back to backup if primary corrupted
+- **Corruption Recovery**: The slot picker and loader use the backup if the primary is missing or invalid. Only a valid primary can replace the backup.
 
 ---
 

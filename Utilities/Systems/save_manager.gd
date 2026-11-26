@@ -114,31 +114,15 @@ func load_save_slot(slot_number: int) -> bool:
   
   load_started.emit()
   
-  var slot_path = SAVE_SLOT_PATH % slot_number
-  
-  # Check if slot exists
-  if not FileAccess.file_exists(slot_path):
+  if not _slot_files_exist(slot_number):
     MyLogger.warn("SaveManager", "Save slot %d does not exist" % slot_number)
     load_failed.emit("Save slot does not exist")
     return false
-  
-  # Try to load the slot
-  var save_data = _load_json_file(slot_path)
-  if save_data == null:
-    # Try backup
-    MyLogger.warn("SaveManager", "Primary save corrupted, attempting backup restore")
-    var backup_path = SAVE_SLOT_BACKUP_PATH % slot_number
-    save_data = _load_json_file(backup_path)
-    
-    if save_data == null:
-      MyLogger.error("SaveManager", "Failed to load slot %d (both primary and backup corrupted)" % slot_number)
-      load_failed.emit("Save file corrupted")
-      return false
-  
-  # Validate save data structure
-  if not _validate_save_data(save_data):
-    MyLogger.error("SaveManager", "Invalid save data structure in slot %d" % slot_number)
-    load_failed.emit("Invalid save data")
+
+  var save_data := _read_slot(slot_number)
+  if save_data.is_empty():
+    MyLogger.error("SaveManager", "No usable primary or backup for slot %d" % slot_number)
+    load_failed.emit("Save file corrupted")
     return false
   
   # Load data into each managed system
@@ -171,9 +155,7 @@ func initialize_default_slot() -> bool:
     MyLogger.info("SaveManager", "Save slot already loaded: %d" % current_save_slot)
     return true
   
-  var slot_path = SAVE_SLOT_PATH % DEFAULT_SLOT
-  
-  if FileAccess.file_exists(slot_path):
+  if _slot_files_exist(DEFAULT_SLOT):
     MyLogger.info("SaveManager", "Loading existing save from default slot %d" % DEFAULT_SLOT)
     return load_save_slot(DEFAULT_SLOT)
   else:
@@ -229,14 +211,11 @@ func _save_slot_sections(systems: Array) -> bool:
     return false
 
   save_started.emit()
-  var save_data = _load_json_file(SAVE_SLOT_PATH % current_save_slot)
-  var primary_valid := _validate_save_data(save_data)
-  if not primary_valid:
-    save_data = _load_json_file(SAVE_SLOT_BACKUP_PATH % current_save_slot)
-    if not _validate_save_data(save_data):
-      MyLogger.error("SaveManager", "Cannot update slot %d without a valid save" % current_save_slot)
-      save_failed.emit("Cannot update slot without a valid save")
-      return false
+  var save_data := _read_slot(current_save_slot)
+  if save_data.is_empty():
+    MyLogger.error("SaveManager", "Cannot update slot %d without a valid save" % current_save_slot)
+    save_failed.emit("Cannot update slot without a valid save")
+    return false
 
   for system in systems:
     save_data[system.get_save_key()] = system.get_save_data()
@@ -244,14 +223,13 @@ func _save_slot_sections(systems: Array) -> bool:
   metadata["playtime"] = slot_playtime
   metadata["timestamp"] = Time.get_unix_time_from_system()
   save_data["metadata"] = metadata
-  # Do not replace the recovery copy with a damaged primary.
-  return _write_current_slot(save_data, false, primary_valid)
+  return _write_current_slot(save_data, false)
 
-func _write_current_slot(save_data: Dictionary, capture_screenshot: bool, rotate_backup: bool = true) -> bool:
+func _write_current_slot(save_data: Dictionary, capture_screenshot: bool) -> bool:
   var slot_path = SAVE_SLOT_PATH % current_save_slot
   var backup_path = SAVE_SLOT_BACKUP_PATH % current_save_slot
   
-  if not _save_json_file_atomic(slot_path, backup_path, save_data, rotate_backup):
+  if not _save_json_file_atomic(slot_path, backup_path, save_data):
     MyLogger.error("SaveManager", "Failed to save slot %d" % current_save_slot)
     save_failed.emit("File write failed")
     return false
@@ -303,13 +281,11 @@ func get_slot_metadata(slot_number: int) -> Dictionary:
   if not _is_valid_slot_number(slot_number):
     return {"exists": false, "slot_number": slot_number}
   
-  var slot_path = SAVE_SLOT_PATH % slot_number
-  
-  if not FileAccess.file_exists(slot_path):
+  if not _slot_files_exist(slot_number):
     return {"exists": false, "slot_number": slot_number}
-  
-  var save_data = _load_json_file(slot_path)
-  if save_data == null or not save_data is Dictionary:
+
+  var save_data := _read_slot(slot_number)
+  if save_data.is_empty():
     return {"exists": false, "slot_number": slot_number, "corrupted": true}
   
   var metadata = save_data.get("metadata", {})
@@ -325,62 +301,32 @@ func delete_save_slot(slot_number: int) -> bool:
     MyLogger.error("SaveManager", "Invalid slot number: %d (must be 1-%d)" % [slot_number, MAX_SAVE_SLOTS])
     return false
   
-  var slot_path = SAVE_SLOT_PATH % slot_number
-  var backup_path = SAVE_SLOT_BACKUP_PATH % slot_number
-  
-  # If current slot is being deleted, unload it
-  if current_save_slot == slot_number:
-    current_save_slot = -1
-  
-  # If slot doesn't exist, consider it a success (idempotent operation)
-  if not FileAccess.file_exists(slot_path):
+  if not _slot_files_exist(slot_number):
     MyLogger.debug("SaveManager", "Slot %d doesn't exist, nothing to delete" % slot_number)
     return true
-  
-  var dir = DirAccess.open("user://saves/")
-  if not dir:
-    MyLogger.error("SaveManager", "Could not access save directory")
-    return false
-  
-  var success = true
-  var primary_deleted = false
-  
-  # Delete primary save
-  var filename = "save_slot_%d.save" % slot_number
-  var delete_result = dir.remove(filename)
-  if delete_result != OK:
-    MyLogger.error("SaveManager", "Failed to delete save file: %s (error %d)" % [filename, delete_result])
-    success = false
-  else:
-    MyLogger.debug("SaveManager", "Deleted save file: %s" % filename)
-    primary_deleted = true
-  
-  # Only delete backup and screenshot if primary was successfully deleted
-  if primary_deleted:
-    # Delete backup
-    if FileAccess.file_exists(backup_path):
-      var backup_filename = "save_slot_%d.save.bak" % slot_number
-      if dir.remove(backup_filename) != OK:
-        MyLogger.warn("SaveManager", "Failed to delete backup file: %s" % backup_filename)
-      else:
-        MyLogger.debug("SaveManager", "Deleted backup file: %s" % backup_filename)
-    
-    # Delete screenshot
-    _delete_screenshot(slot_number)
-  
-  if success:
-    MyLogger.info("SaveManager", "Deleted save slot %d" % slot_number)
-    slot_deleted.emit(slot_number)
-  
-  return success
+
+  # Both copies must be gone; a backup alone is enough to load the slot.
+  for path in [SAVE_SLOT_PATH % slot_number, SAVE_SLOT_BACKUP_PATH % slot_number]:
+    if not FileAccess.file_exists(path):
+      continue
+    var delete_result := DirAccess.remove_absolute(path)
+    if delete_result != OK:
+      MyLogger.error("SaveManager", "Failed to delete save file: %s (error %d)" % [path, delete_result])
+      return false
+
+  _delete_screenshot(slot_number)
+  if current_save_slot == slot_number:
+    current_save_slot = -1
+  MyLogger.info("SaveManager", "Deleted save slot %d" % slot_number)
+  slot_deleted.emit(slot_number)
+  return true
 
 ## Get list of all slot numbers that have save data
 func get_available_slots() -> Array[int]:
   var slots: Array[int] = []
   
   for i in range(1, MAX_SAVE_SLOTS + 1):
-    var slot_path = SAVE_SLOT_PATH % i
-    if FileAccess.file_exists(slot_path):
+    if _slot_files_exist(i):
       slots.append(i)
   
   return slots
@@ -417,15 +363,30 @@ func _ensure_save_directory() -> void:
       dir.make_dir("saves")
       MyLogger.info("SaveManager", "Created save directory: user://saves/")
 
+func _slot_files_exist(slot_number: int) -> bool:
+  return FileAccess.file_exists(SAVE_SLOT_PATH % slot_number) or \
+    FileAccess.file_exists(SAVE_SLOT_BACKUP_PATH % slot_number)
+
+## Read the primary if usable, otherwise fall back to the previous save.
+func _read_slot(slot_number: int) -> Dictionary:
+  var primary := _read_valid_save(SAVE_SLOT_PATH % slot_number)
+  if not primary.is_empty():
+    return primary
+
+  var backup := _read_valid_save(SAVE_SLOT_BACKUP_PATH % slot_number)
+  if not backup.is_empty():
+    MyLogger.warn("SaveManager", "Using backup for slot %d: primary save is missing or invalid" % slot_number)
+  return backup
+
+func _read_valid_save(path: String) -> Dictionary:
+  var data = _load_json_file(path)
+  if _validate_save_data(data):
+    return data
+  return {}
+
 ## Helper: Validate save data structure
 func _validate_save_data(data) -> bool:
-  if not data is Dictionary:
-    return false
-  
-  if not data.has("version"):
-    return false
-  
-  return true
+  return data is Dictionary and data.has("version") and data.get("metadata", {}) is Dictionary
 
 ## Helper: Load JSON file
 ## Returns parsed Dictionary or null on error
@@ -453,7 +414,7 @@ func _load_json_file(path: String):
 ## Helper: Save JSON file atomically with backup
 ## Writes to temp file first, then renames. Keeps backup of previous save.
 ## Returns true on success, false on failure
-func _save_json_file_atomic(primary_path: String, backup_path: String, data: Dictionary, rotate_backup: bool = true) -> bool:
+func _save_json_file_atomic(primary_path: String, backup_path: String, data: Dictionary) -> bool:
   var temp_path = primary_path + ".tmp"
   
   # Extract filenames once at the beginning for clarity
@@ -485,8 +446,8 @@ func _save_json_file_atomic(primary_path: String, backup_path: String, data: Dic
       MyLogger.warn("SaveManager", "Failed to cleanup temp file (error %d): %s" % [cleanup_result, temp_path])
     return false
   
-  # Create backup of existing save before overwriting
-  if rotate_backup and FileAccess.file_exists(primary_path):
+  # Never copy a damaged primary over the recovery copy.
+  if not _read_valid_save(primary_path).is_empty():
     # Copy primary to backup - this is a best-effort operation
     # We log errors but don't fail the save since the backup is for recovery, not primary storage
     # 
