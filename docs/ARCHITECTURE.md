@@ -206,7 +206,7 @@ graph TB
     end
     
     subgraph "Save File Structure"
-        SlotFile["user://saves/save_slot_N.save<br/>{<br/>  version: 1,<br/>  metadata: {timestamp, playtime, player_level, last_scenario, slot_name},<br/>  player_progression: {...},<br/>  stats: {...},<br/>  tech_tree: {...},<br/>  achievements: {...},<br/>  level_progression: {...},<br/>  survivor_names: {...}<br/>}"]
+        SlotFile["user://saves/save_slot_N.save<br/>{<br/>  version: 1,<br/>  metadata: {timestamp, playtime, player_level, last_scenario},<br/>  player_progression: {...},<br/>  stats: {...},<br/>  tech_tree: {...},<br/>  achievements: {...},<br/>  level_progression: {...},<br/>  survivor_names: {...}<br/>}"]
         SlotBackup[save_slot_N.save.bak]
     end
     

@@ -82,13 +82,13 @@ See [tests/README.md](tests/README.md) for more details.
 
 ## 📚 Documentation
 
-In-depth docs live in the [`docs/`](docs/) directory, including:
+Project documentation and authoring guides:
 
 - **[Game Design Document](docs/zom_nom_defense_gdd.md)** - Full game vision
 - **[Ubiquitous Language](docs/UBIQUITOUS_LANGUAGE.md)** - Canonical domain terminology for code and docs
 - **[Architecture](docs/ARCHITECTURE.md)** - System architecture, camera boundaries, spawn areas
 - **[Class Hierarchy](docs/CLASS_HIERARCHY.md)** - Naming conventions and complete class reference
-- **[Tech Tree Design](docs/tech_tree_design.md)** - Node catalog, exclusive branches, balance notes
+- **[Tech Tree Editor](addons/tech_tree_editor/README.md)** - How to author and validate tech nodes in Godot
 - **[Visual Style Guide](docs/visual_style_guide.md)** - Art direction, color palette, and UI theme
 - **[Logging](docs/LOGGING.md)** - `MyLogger` API reference
 - **[Adding Settings](docs/adding_settings.md)** - How-to guide for new settings

@@ -41,25 +41,25 @@ Since this is an EditorPlugin, it requires manual testing in the Godot Editor.
 
 #### 4. Node Selection
 - [ ] Clicking a node selects it
-- [ ] Inspector panel appears when node selected
-- [ ] Inspector shows all node properties
+- [ ] The selected tech node resource opens in Godot's Inspector dock
+- [ ] Inspector shows the tech node properties
 - [ ] Clicking empty space deselects node
-- [ ] Inspector panel hides when node deselected
+- [ ] Inspector clears the tech node resource when the node is deselected
 
 #### 5. Node Inspector Editing
-For each field, test editing:
+Test editing each field in Godot's Inspector:
 - [ ] Display Name - text changes
-- [ ] Description - multiline text changes
-- [ ] Branch - dropdown selection works
-- [ ] Level Requirement - number spinner (1-10)
-- [ ] Scrap Cost - number spinner (0-9999)
-- [ ] Prerequisites - comma-separated list
-- [ ] Achievements - comma-separated list
-- [ ] Mutually Exclusive - comma-separated list
-- [ ] Unlocked Buildings - comma-separated list
-- [ ] Branch Completion - comma-separated list
-- [ ] Save Changes button persists changes
-- [ ] Changes reflected in graph after save
+- [ ] Description - text changes
+- [ ] Branch - branch name changes
+- [ ] Level Requirement - Player Level requirement changes
+- [ ] Scrap Cost - number changes
+- [ ] Prerequisites - array of tech IDs
+- [ ] Achievements - array of achievement IDs
+- [ ] Mutually Exclusive - array of tech IDs
+- [ ] Unlocked Buildings - array of building IDs
+- [ ] Branch Completion - array of branch names
+- [ ] Inspector edits are saved automatically to the node's `.tres` file and persist after refreshing from disk
+- [ ] Edits to displayed properties (such as Display Name) update the graph without a manual save
 
 #### 6. Node Creation
 - [ ] Click "Add Node" button opens dialog

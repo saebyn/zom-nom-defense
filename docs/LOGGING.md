@@ -6,7 +6,7 @@ This document describes the logging framework implemented for the Tower Defense 
 
 The logging framework provides:
 - **Scoped Logging**: Messages organized by scope (e.g., "Economy", "Combat", "UI")
-- **Log Levels**: DEBUG, INFO, WARN, ERROR, NONE
+- **Log Levels**: TRACE, DEBUG, INFO, WARN, ERROR
 - **Runtime Configuration**: Change log levels and scopes at runtime through the `MyLogger` API
 - **Rich Output**: Colored, timestamped log messages
 - **Project Settings Integration**: Configure defaults in project settings
@@ -33,13 +33,15 @@ MyLogger.info("UI.Health", "Updating health display")
 
 ## Log Levels
 
-| Level | Description | When to Use |
-|-------|-------------|-------------|
-| `DEBUG` | Detailed diagnostic information | Development debugging, verbose tracing |
-| `INFO` | General informational messages | Important game events, state changes |
-| `WARN` | Warning conditions | Recoverable errors, deprecated usage |
-| `ERROR` | Error conditions | Unrecoverable errors, critical failures |
-| `NONE` | Disable all logging | Production builds, performance testing |
+| Level | Value | Description | When to Use |
+|-------|-------|-------------|-------------|
+| `TRACE` | `0` | Most detailed messages | Tracing frequent operations |
+| `DEBUG` | `1` | Detailed diagnostic information | Development debugging |
+| `INFO` | `2` | General informational messages | Important game events, state changes |
+| `WARN` | `3` | Warning conditions | Recoverable errors, deprecated usage |
+| `ERROR` | `4` | Error conditions | Unrecoverable errors, critical failures |
+
+`NONE` (`5`) exists in the enum but is not supported by the logger configuration. To suppress all log output, set `logging/enabled_scopes` to an empty string.
 
 ## Scope Filtering
 
@@ -73,14 +75,16 @@ MyLogger.set_enabled_scopes(["*"])
 
 ## Project Settings Configuration
 
-Add these settings to your `project.godot`:
+Set `zom_nom_defense/logging/log_level` and `zom_nom_defense/logging/enabled_scopes` in Project Settings, or use this configuration in `project.godot`:
 
 ```ini
-[logging]
+[zom_nom_defense]
 
-log_level=1  # 0=DEBUG, 1=INFO, 2=WARN, 3=ERROR, 4=NONE
-enabled_scopes="*"  # Comma-separated scopes or "*" for all
+logging/log_level=2
+logging/enabled_scopes="*"
 ```
+
+`logging/enabled_scopes` accepts comma-separated scopes or `*` for all scopes.
 
 ## Runtime Configuration
 

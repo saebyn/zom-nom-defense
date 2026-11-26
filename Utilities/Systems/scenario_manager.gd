@@ -30,21 +30,18 @@ var scenario_metadata: Dictionary = {
     "name": "Car Defense",
     "scene_path": "res://Stages/Scenarios/scenario_1.tscn",
     "description": "Defend a person on top of a car.",
-    "thumbnail": "", # Optional icon path
     "prerequisite": null, # No prerequisite for the first scenario
   },
   "scenario_2": {
     "name": "Campfire Survivors",
     "scene_path": "res://Stages/Scenarios/scenario_2.tscn",
     "description": "Protect two survivors next to a campfire.",
-    "thumbnail": "",
     "prerequisite": "scenario_1" # Must complete scenario_1 to unlock
   },
   "scenario_4": {
     "name": "Pool Party",
     "scene_path": "res://Stages/Scenarios/scenario_pool_party.tscn",
     "description": "Defend survivors in an inflatable pool.",
-    "thumbnail": "",
     "prerequisite": "scenario_2",
   },
 
@@ -52,7 +49,6 @@ var scenario_metadata: Dictionary = {
     "name": "Test Scenario",
     "scene_path": "res://Stages/Scenarios/scenario_test.tscn",
     "description": "A test scenario for debugging purposes.",
-    "thumbnail": "",
     "prerequisite": null # No prerequisite
   },
 }

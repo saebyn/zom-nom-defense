@@ -22,7 +22,6 @@ class_name Entity_PlaceableBuilding
 
 var building_type: Resource_BuildingType
 var navigation_obstacle: NavigationObstacle3D
-var placement_preview_node: Node3D
 @onready var audio_player: AudioStreamPlayer3D = $AudioStreamPlayer3D
 
 

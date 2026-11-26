@@ -7,7 +7,7 @@ extends Node3D
 @export var camera_move_speed: float = 5.0
 @export var camera_zoom_speed: float = 50.0
 @export var camera_zoom_step: float = 2.0 # Fixed zoom amount per wheel tick
-@export var camera_zoom_fast_multiplier: float = 3.0 # Fast zoom multiplier when Shift is held
+@export var camera_zoom_fast_multiplier: float = 3.0 # Zoom multiplier unless zoom_slow is held
 @export var camera_min_size: float = 5.0 # Minimum zoom (closest)
 @export var camera_max_size: float = 100.0 # Maximum zoom (farthest)
 @export var camera_zoom_duration: float = 0.2 # Duration for smooth zoom transitions
