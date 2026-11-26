@@ -128,6 +128,31 @@ func test_save_and_load_slot():
   assert_eq(mock_system.loaded_data.get("value"), 100, "Loaded value should match saved")
   assert_eq(mock_system.loaded_data.get("name"), "updated", "Loaded name should match saved")
 
+func test_full_save_preserves_backup_when_primary_is_invalid():
+  var system := MockSaveableSystem.new("test_system")
+  SaveManager.register_system(system)
+  SaveManager.create_new_game(TEST_SLOT)
+  system.save_data = {"value": 42}
+  assert_true(SaveManager.save_current_slot(false))
+  system.save_data = {"value": 100}
+  assert_true(SaveManager.save_current_slot(false), "Saving a new primary keeps the previous progress as a backup")
+
+  # JSON that parses but is not a usable save must not become the next backup.
+  var path := SaveManager.SAVE_SLOT_PATH % TEST_SLOT
+  var primary := FileAccess.open(path, FileAccess.WRITE)
+  primary.store_string("{}")
+  primary.close()
+  system.save_data = {"value": 200}
+  assert_true(SaveManager.save_current_slot(false))
+  assert_true(SaveManager.load_save_slot(TEST_SLOT))
+  assert_eq(system.loaded_data.get("value"), 200.0, "The full save still writes fresh progress")
+
+  primary = FileAccess.open(path, FileAccess.WRITE)
+  primary.store_string("not JSON")
+  primary.close()
+  assert_true(SaveManager.load_save_slot(TEST_SLOT), "The previous backup remains usable")
+  assert_eq(system.loaded_data.get("value"), 42.0, "Recovery loads the previous good backup")
+
 ## Test: Load non-existent slot fails
 func test_load_nonexistent_slot_fails():
   var success = SaveManager.load_save_slot(99)
@@ -156,20 +181,23 @@ func test_get_slot_metadata_nonexistent_slot():
   assert_eq(metadata.get("slot_number"), 99, "Slot number should match")
 
 ## Test: Delete save slot
-func test_delete_save_slot():
+func test_delete_save_slot(backup_only = use_parameters([false, true])):
   var mock_system = MockSaveableSystem.new("test_system")
   SaveManager.register_system(mock_system)
   
   # Create a save
   SaveManager.create_new_game(TEST_SLOT)
   var slot_path = SaveManager.SAVE_SLOT_PATH % TEST_SLOT
-  assert_true(FileAccess.file_exists(slot_path), "Save file should exist before delete")
+  if backup_only:
+    var backup_path = SaveManager.SAVE_SLOT_BACKUP_PATH % TEST_SLOT
+    assert_eq(DirAccess.rename_absolute(slot_path, backup_path), OK)
+  assert_true(SaveManager.load_save_slot(TEST_SLOT), "Slot is loadable before deletion")
   
   # Delete it
   var success = SaveManager.delete_save_slot(TEST_SLOT)
   
   assert_true(success, "Delete should succeed")
-  assert_false(FileAccess.file_exists(slot_path), "Save file should not exist after delete")
+  assert_false(SaveManager.load_save_slot(TEST_SLOT), "No copy remains loadable after deletion")
 
 ## Test: Get available slots
 func test_get_available_slots():
@@ -180,13 +208,16 @@ func test_get_available_slots():
   SaveManager.create_new_game(1)
   SaveManager.create_new_game(3)
   SaveManager.create_new_game(5)
+  assert_eq(DirAccess.rename_absolute(SaveManager.SAVE_SLOT_PATH % 5, SaveManager.SAVE_SLOT_BACKUP_PATH % 5), OK)
   
   var available = SaveManager.get_available_slots()
   
   assert_eq(available.size(), 3, "Should have 3 available slots")
   assert_true(available.has(1), "Should include slot 1")
   assert_true(available.has(3), "Should include slot 3")
-  assert_true(available.has(5), "Should include slot 5")
+  assert_true(available.has(5), "Should include a slot that only has its backup")
+  for slot_number in [1, 3, 5]:
+    SaveManager.delete_save_slot(slot_number)
 
 ## Test: Invalid slot numbers are rejected
 func test_invalid_slot_numbers_rejected():
@@ -272,7 +303,7 @@ func test_save_directory_created():
   assert_true(dir.dir_exists("saves"), "Save directory should exist")
 
 ## Test: Initialize default slot loads existing save
-func test_initialize_default_slot_loads_existing():
+func test_initialize_default_slot_loads_existing(backup_only = use_parameters([false, true])):
   # File operations may generate engine errors in headless mode - ignore them
   
   var mock_system = MockSaveableSystem.new("test_system", {"value": 42})
@@ -282,6 +313,9 @@ func test_initialize_default_slot_loads_existing():
   SaveManager.create_new_game(SaveManager.DEFAULT_SLOT)
   mock_system.save_data = {"value": 100}
   SaveManager.save_current_slot()
+  if backup_only:
+    var slot := SaveManager.DEFAULT_SLOT
+    assert_eq(DirAccess.rename_absolute(SaveManager.SAVE_SLOT_PATH % slot, SaveManager.SAVE_SLOT_BACKUP_PATH % slot), OK)
   
   # Reset state
   SaveManager.current_save_slot = -1
