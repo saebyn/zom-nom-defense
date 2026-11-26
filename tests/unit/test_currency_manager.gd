@@ -100,6 +100,12 @@ func test_reset_scrap_sets_to_starting_amount():
   # Assert
   assert_eq(CurrencyManager.current_scrap, starting_scrap, "Scrap should reset to starting_scrap value")
 
+func test_legacy_save_keeps_xp_and_ignores_scrap():
+  CurrencyManager.load_data({"current_level": 2, "current_xp": 30, "current_scrap": 500})
+  assert_eq(CurrencyManager.get_level(), 2)
+  assert_eq(CurrencyManager.get_xp(), 30)
+  assert_eq(CurrencyManager.get_scrap(), CurrencyManager.starting_scrap)
+
 func test_convert_remaining_scrap_to_xp_with_valid_scrap():
   # Arrange - use 198 scrap so XP (99) doesn't trigger level up (needs 100)
   CurrencyManager.current_scrap = 198

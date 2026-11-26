@@ -1,15 +1,12 @@
 extends Node
 
-## SaveManager - Centralized save system with multi-slot support
-##
-## Orchestrates all game persistence, replacing decentralized save/load in individual managers.
-## Provides atomic saves, multi-slot support, and separation between per-slot and global data.
+## Atomic, multi-slot saves.
 ##
 ## Current Implementation:
 ##   - Automatically uses slot 1 by default (initialize_default_slot())
 ##   - Loads existing save from slot 1 if available, or creates new game
-##   - Called from main menu and scenario select on game start
-##   - Future: Will add slot selection UI for multiple save slots
+##   - The main menu initializes the default slot; the slot picker can switch slots
+##   - Scenario outcomes and main-menu tech choices save without a timer
 ##
 ## Data Safety Features:
 ##   - Atomic saves using temp file + rename pattern
@@ -20,7 +17,7 @@ extends Node
 ##
 ## Known Edge Cases:
 ##   - Playtime tracking: Only saved when save_current_slot() is called, 
-##     so crashes will lose playtime since last save
+##     or a partial save writes the slot, so crashes lose playtime since last save
 ##   - Screenshot capture: Happens after save completes, so save can succeed
 ##     even if screenshot fails (intentional - screenshot is non-critical)
 ##   - Backup creation: May fail on very rapid consecutive saves due to
@@ -50,23 +47,16 @@ const SAVE_SLOT_DIR = "user://saves/"
 const SAVE_SLOT_PATH = "user://saves/save_slot_%d.save"
 const SAVE_SLOT_BACKUP_PATH = "user://saves/save_slot_%d.save.bak"
 const SAVE_SLOT_SCREENSHOT_PATH = "user://saves/save_slot_%d_screenshot.png"
-const GLOBAL_SAVE_PATH = "user://global.save"
-const GLOBAL_SAVE_BACKUP_PATH = "user://global.save.bak"
 const SAVE_VERSION = 1
 
 # Screenshot configuration
 const SCREENSHOT_WIDTH = 320 # Thumbnail width
 const SCREENSHOT_HEIGHT = 180 # Thumbnail height (16:9 aspect ratio)
 
-# Auto-save configuration
-const AUTO_SAVE_INTERVAL = 300.0 # 5 minutes in seconds
-var auto_save_timer: float = 0.0
-
 # Current state
 var current_save_slot: int = -1 # -1 = no slot loaded
 var managed_systems: Array = [] # Array of objects implementing SaveableSystem interface
 var slot_playtime: float = 0.0 # Total playtime for current slot in seconds
-var slot_start_time: float = 0.0 # Time when slot was loaded/created
 
 # Signals
 signal save_started()
@@ -87,14 +77,6 @@ func _process(delta: float) -> void:
   # Track playtime for current slot
   if current_save_slot > 0:
     slot_playtime += delta
-  
-  # Auto-save timer (only when a slot is loaded)
-  if current_save_slot > 0:
-    auto_save_timer += delta
-    if auto_save_timer >= AUTO_SAVE_INTERVAL:
-      auto_save_timer = 0.0
-      MyLogger.debug("SaveManager", "Auto-save triggered")
-      save_current_slot()
 
 ## Register a system that implements the SaveableSystem interface
 ## Required interface methods:
@@ -172,23 +154,10 @@ func load_save_slot(slot_number: int) -> bool:
   
   # Update current slot
   current_save_slot = slot_number
-  auto_save_timer = 0.0 # Reset auto-save timer
   
   # Restore playtime from metadata
   var metadata = save_data.get("metadata", {})
   slot_playtime = metadata.get("playtime", 0.0)
-  slot_start_time = Time.get_ticks_msec() / 1000.0
-  
-  # Restore current scenario from metadata (if available)
-  var last_scenario = metadata.get("last_scenario", "")
-  if last_scenario.is_empty():
-    # No scenario to restore
-    pass
-  elif not ScenarioManager or not ScenarioManager.has_method("set_current_scenario_id"):
-    MyLogger.warn("SaveManager", "Cannot restore scenario: ScenarioManager not available")
-  else:
-    ScenarioManager.set_current_scenario_id(last_scenario)
-    MyLogger.info("SaveManager", "Restored current scenario: %s" % last_scenario)
   
   MyLogger.info("SaveManager", "Successfully loaded save slot %d" % slot_number)
   load_completed.emit()
@@ -245,11 +214,44 @@ func save_current_slot(capture_screenshot: bool = true) -> bool:
     else:
       MyLogger.warn("SaveManager", "System returned invalid data: %s" % save_key)
   
-  # Write to slot
+  return _write_current_slot(save_data, capture_screenshot)
+
+## Save lifetime activity without committing changes from an unsuccessful attempt.
+func save_attempt_activity() -> bool:
+  return _save_slot_sections([StatsManager, AchievementManager])
+
+## Save an explicit Tech Tree choice made outside a scenario attempt.
+func save_menu_tech_choices() -> bool:
+  return _save_slot_sections([TechTreeManager])
+
+func _save_slot_sections(systems: Array) -> bool:
+  if not _is_valid_slot_number(current_save_slot):
+    return false
+
+  save_started.emit()
+  var save_data = _load_json_file(SAVE_SLOT_PATH % current_save_slot)
+  var primary_valid := _validate_save_data(save_data)
+  if not primary_valid:
+    save_data = _load_json_file(SAVE_SLOT_BACKUP_PATH % current_save_slot)
+    if not _validate_save_data(save_data):
+      MyLogger.error("SaveManager", "Cannot update slot %d without a valid save" % current_save_slot)
+      save_failed.emit("Cannot update slot without a valid save")
+      return false
+
+  for system in systems:
+    save_data[system.get_save_key()] = system.get_save_data()
+  var metadata: Dictionary = save_data.get("metadata", {})
+  metadata["playtime"] = slot_playtime
+  metadata["timestamp"] = Time.get_unix_time_from_system()
+  save_data["metadata"] = metadata
+  # Do not replace the recovery copy with a damaged primary.
+  return _write_current_slot(save_data, false, primary_valid)
+
+func _write_current_slot(save_data: Dictionary, capture_screenshot: bool, rotate_backup: bool = true) -> bool:
   var slot_path = SAVE_SLOT_PATH % current_save_slot
   var backup_path = SAVE_SLOT_BACKUP_PATH % current_save_slot
   
-  if not _save_json_file_atomic(slot_path, backup_path, save_data):
+  if not _save_json_file_atomic(slot_path, backup_path, save_data, rotate_backup):
     MyLogger.error("SaveManager", "Failed to save slot %d" % current_save_slot)
     save_failed.emit("File write failed")
     return false
@@ -264,8 +266,7 @@ func save_current_slot(capture_screenshot: bool = true) -> bool:
   save_completed.emit()
   return true
 
-## Create a new game in the specified slot
-## Resets all per-slot data, keeps global data
+## Start a fresh game in the given slot.
 func create_new_game(slot_number: int) -> void:
   if not _is_valid_slot_number(slot_number):
     MyLogger.error("SaveManager", "Invalid slot number: %d (must be 1-%d)" % [slot_number, MAX_SAVE_SLOTS])
@@ -280,11 +281,9 @@ func create_new_game(slot_number: int) -> void:
   
   # Set current slot
   current_save_slot = slot_number
-  auto_save_timer = 0.0
   
   # Reset playtime for new game
   slot_playtime = 0.0
-  slot_start_time = Time.get_ticks_msec() / 1000.0
   
   # Save the fresh state without capturing screenshot (we're still in UI, not in game)
   if not save_current_slot(false):
@@ -332,7 +331,6 @@ func delete_save_slot(slot_number: int) -> bool:
   # If current slot is being deleted, unload it
   if current_save_slot == slot_number:
     current_save_slot = -1
-    auto_save_timer = 0.0
   
   # If slot doesn't exist, consider it a success (idempotent operation)
   if not FileAccess.file_exists(slot_path):
@@ -387,66 +385,6 @@ func get_available_slots() -> Array[int]:
   
   return slots
 
-## Save global settings data (persists across all save slots)
-## 
-## NOTE: Currently a placeholder for future global data expansion.
-## SettingsManager handles its own persistence separately.
-## This method is ready for use but not currently utilized.
-## Future use cases: cross-slot achievements, global statistics, etc.
-func save_global_data() -> void:
-  save_started.emit()
-  
-  # Collect global data (currently just settings)
-  var global_data = {
-    "version": SAVE_VERSION,
-  }
-  
-  # Add data from systems marked as global (SettingsManager would go here)
-  # For now, we'll let SettingsManager handle its own persistence
-  # This is a placeholder for future global data expansion
-  
-  if _save_json_file_atomic(GLOBAL_SAVE_PATH, GLOBAL_SAVE_BACKUP_PATH, global_data):
-    MyLogger.info("SaveManager", "Successfully saved global data")
-    save_completed.emit()
-  else:
-    MyLogger.error("SaveManager", "Failed to save global data")
-    save_failed.emit("Global data write failed")
-
-## Load global settings data
-##
-## NOTE: Currently a placeholder for future global data expansion.
-## Returns true if global data was loaded successfully, false otherwise.
-func load_global_data() -> bool:
-  load_started.emit()
-  
-  if not FileAccess.file_exists(GLOBAL_SAVE_PATH):
-    MyLogger.info("SaveManager", "No global save file found")
-    load_failed.emit("No global save file")
-    return false
-  
-  var global_data = _load_json_file(GLOBAL_SAVE_PATH)
-  if global_data == null:
-    # Try backup
-    global_data = _load_json_file(GLOBAL_SAVE_BACKUP_PATH)
-    if global_data == null:
-      MyLogger.error("SaveManager", "Failed to load global data")
-      load_failed.emit("Global data corrupted")
-      return false
-  
-  MyLogger.info("SaveManager", "Successfully loaded global data")
-  load_completed.emit()
-  return true
-
-## Manual quick-save (triggered by F5 or similar)
-## Returns true if save succeeded, false otherwise
-func quick_save() -> bool:
-  if current_save_slot > 0:
-    MyLogger.info("SaveManager", "Quick save triggered")
-    return save_current_slot()
-  else:
-    MyLogger.warn("SaveManager", "Quick save failed: no slot loaded")
-    return false
-
 ## Helper: Generate metadata for current game state
 func _generate_slot_metadata() -> Dictionary:
   var metadata = {
@@ -463,7 +401,7 @@ func _generate_slot_metadata() -> Dictionary:
   else:
     MyLogger.warn("SaveManager", "CurrencyManager not available for metadata generation")
   
-  # Try to get last scenario from ScenarioManager (with null check)
+  # The last scenario is display metadata, not a checkpoint.
   if ScenarioManager and ScenarioManager.has_method("get_current_scenario_id"):
     metadata["last_scenario"] = ScenarioManager.get_current_scenario_id()
   else:
@@ -515,7 +453,7 @@ func _load_json_file(path: String):
 ## Helper: Save JSON file atomically with backup
 ## Writes to temp file first, then renames. Keeps backup of previous save.
 ## Returns true on success, false on failure
-func _save_json_file_atomic(primary_path: String, backup_path: String, data: Dictionary) -> bool:
+func _save_json_file_atomic(primary_path: String, backup_path: String, data: Dictionary, rotate_backup: bool = true) -> bool:
   var temp_path = primary_path + ".tmp"
   
   # Extract filenames once at the beginning for clarity
@@ -548,7 +486,7 @@ func _save_json_file_atomic(primary_path: String, backup_path: String, data: Dic
     return false
   
   # Create backup of existing save before overwriting
-  if FileAccess.file_exists(primary_path):
+  if rotate_backup and FileAccess.file_exists(primary_path):
     # Copy primary to backup - this is a best-effort operation
     # We log errors but don't fail the save since the backup is for recovery, not primary storage
     # 

@@ -142,45 +142,6 @@ func test_scenario_stats_stored_for_victory():
   assert_eq(stats.xp_gained_from_conversion, 150, "Should gain 150 XP (300 / 2.0)")
   assert_true(stats.has("is_new_record"), "Stats should include is_new_record flag")
 
-func test_game_over_stats_stored():
-  # Arrange
-  CurrencyManager.current_scrap = 100
-  ScenarioManager.set_current_scenario_id("scenario_1")
-  
-  # Simulate what happens in on_survivor_died when game over
-  var elapsed_time = 95.3 # Survived for 1 minute 35 seconds
-  
-  # Mock reclaim data
-  var reclaim_data = {
-    "building_count": 2,
-    "total_refund": 100
-  }
-  
-  # Add reclaimed scrap
-  CurrencyManager.current_scrap += reclaim_data.total_refund
-  
-  # Convert remaining scrap to XP
-  var conversion_data = CurrencyManager.convert_remaining_scrap_to_xp()
-  
-  # Store stats
-  ScenarioManager.last_scenario_stats = {
-    "scenario_id": "scenario_1",
-    "elapsed_time": elapsed_time,
-    "buildings_reclaimed": reclaim_data.building_count,
-    "scrap_reclaimed": reclaim_data.total_refund,
-    "scrap_converted": conversion_data.scrap_converted,
-    "xp_gained_from_conversion": conversion_data.xp_gained,
-  }
-  
-  # Assert
-  var stats = ScenarioManager.last_scenario_stats
-  assert_false(stats.is_empty(), "Stats should not be empty")
-  assert_eq(stats.elapsed_time, 95.3, "Elapsed time should be stored")
-  assert_eq(stats.buildings_reclaimed, 2, "Should track 2 buildings reclaimed")
-  assert_eq(stats.scrap_reclaimed, 100, "Should track 100 scrap reclaimed")
-  assert_eq(stats.scrap_converted, 200, "Should convert total 200 scrap")
-  assert_eq(stats.xp_gained_from_conversion, 100, "Should gain 100 XP")
-
 func test_reset_scrap_sets_to_starting_amount():
   # Arrange
   CurrencyManager.current_scrap = 500

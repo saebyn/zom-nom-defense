@@ -28,15 +28,6 @@ func _ready():
   
   scrap_changed.emit(current_scrap)
   xp_changed.emit(current_xp)
-  GameManager.game_state_changed.connect(_on_game_state_changed)
-
-func _on_game_state_changed(new_state: GameManager.GameState) -> void:
-  # Save progression only on victory (not on death/game over)
-  if new_state == GameManager.GameState.VICTORY:
-    SaveManager.save_current_slot()
-  
-  # Note: We no longer reset progression on MAIN_MENU - progression persists across sessions
-  # Starting scrap for each level is handled by game logic, not here
 
 ## Add scrap to the player's total
 func earn_scrap(amount: int) -> void:
@@ -169,14 +160,13 @@ func get_save_data() -> Dictionary:
   return {
     "current_level": current_level,
     "current_xp": current_xp,
-    "current_scrap": current_scrap
   }
 
 ## Load data from saved state
 func load_data(data: Dictionary) -> void:
   current_level = data.get("current_level", 1)
   current_xp = data.get("current_xp", 0)
-  current_scrap = data.get("current_scrap", starting_scrap)
+  current_scrap = starting_scrap # Legacy saves may contain attempt-local scrap.
   
   # Emit signals to update UI
   scrap_changed.emit(current_scrap)

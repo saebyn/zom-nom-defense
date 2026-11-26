@@ -43,6 +43,7 @@ func before_each():
   GameManager.set_game_state(GameManager.GameState.PLAYING)
 
 func after_each():
+  GameManager.resume_game()
   ScenarioManager.clear_current_scenario()
   GameManager.set_game_state(GameManager.GameState.MAIN_MENU)
 

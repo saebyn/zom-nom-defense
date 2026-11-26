@@ -14,7 +14,7 @@ extends Node
 
 const DEFAULT_SCENARIO_ID: String = "scenario_1" ## Default scenario to start with
 
-# Runtime state (resets each session)
+# Runtime state (resets each attempt)
 var current_scenario_id: String = "" # Currently active scenario (e.g., "scenario_1")
 var current_wave: int = 0 # Current wave number within the active scenario
 var last_scenario_stats: Dictionary = {} # Stats from the last completed/failed scenario for UI display
@@ -123,6 +123,11 @@ func clear_current_scenario() -> void:
     current_wave = 0
     scenario_ended.emit(old_scenario)
     MyLogger.info("ScenarioManager", "Cleared current scenario: %s" % old_scenario)
+
+## Reset attempt-local state, including on a replay of the same scenario.
+func reset_attempt() -> void:
+  current_wave = 0
+  last_scenario_stats.clear()
 
 ## Set the current wave number (within the current scenario)
 func set_current_wave(wave: int) -> void:

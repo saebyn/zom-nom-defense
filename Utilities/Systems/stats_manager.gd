@@ -39,7 +39,6 @@ signal building_placed(building_type: String)
 signal max_scrap_held_updated(new_max: int)
 signal stats_updated()
 signal stats_loaded()
-signal stats_saved()
 
 func _ready():
   MyLogger.info("StatsManager", "Stats tracking system initialized")
@@ -59,20 +58,13 @@ func _ready():
   else:
     MyLogger.error("StatsManager", "CurrencyManager not found!")
 
-  if GameManager:
-    GameManager.game_state_changed.connect(_on_game_state_changed)
-  else:
-    MyLogger.error("StatsManager", "GameManager not found!")
-
   if ScenarioManager:
     ScenarioManager.wave_changed.connect(_on_wave_changed)
   else:
     MyLogger.error("StatsManager", "ScenarioManager not found!")
 
-func _on_game_state_changed(new_state: GameManager.GameState) -> void:
-  # Reset wave completion count on new game start
-  if new_state == GameManager.GameState.MAIN_MENU:
-    waves_completed = 0
+func reset_attempt() -> void:
+  waves_completed = 0
 
 ## Track an enemy defeat
 func track_enemy_defeated(enemy_type: String, defeated_by_hand: bool = false) -> void:
@@ -209,6 +201,7 @@ func get_stats_summary() -> Dictionary:
 
 ## Reset all stats (for new game, testing, etc.)
 func reset_stats() -> void:
+  reset_attempt()
   enemies_defeated_total = 0
   enemies_defeated_by_type.clear()
   enemies_defeated_by_hand = 0
@@ -266,19 +259,3 @@ func load_data(data: Dictionary) -> void:
 ## Reset to default state (for new game)
 func reset_data() -> void:
   reset_stats()
-
-## Legacy Methods (deprecated, kept for backward compatibility)
-
-## Manual save method for external use (now delegates to SaveManager)
-func save_stats_now() -> void:
-  SaveManager.save_current_slot()
-
-## Check if save file exists (checks SaveManager instead)
-func has_saved_stats() -> bool:
-  return SaveManager.current_save_slot > 0
-
-## Delete save file (delegates to SaveManager)
-func delete_saved_stats() -> bool:
-  if SaveManager.current_save_slot > 0:
-    return SaveManager.delete_save_slot(SaveManager.current_save_slot)
-  return true

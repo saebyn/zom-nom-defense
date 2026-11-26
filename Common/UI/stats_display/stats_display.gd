@@ -11,7 +11,6 @@ func _ready():
   if StatsManager:
     StatsManager.stats_updated.connect(_update_display)
     StatsManager.stats_loaded.connect(_on_stats_loaded)
-    StatsManager.stats_saved.connect(_on_stats_saved)
     # Initialize display with current stats
     _update_display()
   else:
@@ -20,9 +19,6 @@ func _ready():
 func _on_stats_loaded():
   MyLogger.info("StatsDisplay", "Stats loaded from persistent storage")
   _update_display()
-
-func _on_stats_saved():
-  MyLogger.debug("StatsDisplay", "Stats saved to persistent storage")
 
 func _update_display():
   if not stats_label:
@@ -36,12 +32,6 @@ func _update_display():
   var stats = StatsManager.get_stats_summary()
   
   var text = "[center][b]Game Statistics[/b][/center]\n"
-  
-  # Persistence indicator
-  if StatsManager.has_saved_stats():
-    text += "[center][color=green][i]📊 Persistent stats across sessions[/i][/color][/center]\n\n"
-  else:
-    text += "[center][color=yellow][i]📊 Stats will be saved automatically[/i][/color][/center]\n\n"
   
   # Enemy defeat stats
   text += "[b]Enemies Defeated[/b]\n"

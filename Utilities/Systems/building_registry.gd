@@ -20,8 +20,8 @@ func _ready() -> void:
   TechTreeManager.tech_unlocked.connect(_on_tech_unlocked)
   MyLogger.info("BuildingRegistry", "Connected to TechTreeManager")
   
-  # Connect to SaveManager to update buildings after save data is loaded
-  SaveManager.load_completed.connect(_on_save_loaded)
+  # Refresh after loading a slot or rolling back an unsuccessful attempt.
+  TechTreeManager.progression_loaded.connect(_update_available_buildings)
   
   # Do initial update of available buildings
   # This will be updated again when save data loads
@@ -93,12 +93,6 @@ func _is_building_unlocked(building_type: Resource_BuildingType) -> bool:
 ## Called when a tech is unlocked
 func _on_tech_unlocked(tech_id: String) -> void:
   MyLogger.debug("BuildingRegistry", "Tech unlocked: %s - checking for new buildings" % tech_id)
-  _update_available_buildings()
-
-
-## Called when save data is loaded - refresh building availability
-func _on_save_loaded() -> void:
-  MyLogger.info("BuildingRegistry", "Save data loaded - updating available buildings")
   _update_available_buildings()
 
 

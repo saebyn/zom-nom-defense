@@ -250,6 +250,8 @@ func _on_confirmation_accepted() -> void:
 ## Actually unlock the tech
 func _unlock_tech(tech_id: String) -> void:
   if TechTreeManager.unlock_tech(tech_id):
+    if GameManager.current_state == GameManager.GameState.MAIN_MENU:
+      SaveManager.save_menu_tech_choices()
     MyLogger.info("TechTree", "Successfully unlocked tech: %s" % tech_id)
     # UI will update via signals
   else:

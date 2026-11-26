@@ -94,6 +94,8 @@ func _on_wave_completed(wave: System_Wave) -> void:
 
 
 func _on_all_waves_completed() -> void:
+  if not GameManager.is_playing() or survivor_count <= 0:
+    return
   MyLogger.info("Scenario", "All waves completed. Processing scenario completion...")
   
   # Play scenario complete sound
@@ -141,14 +143,11 @@ func _on_all_waves_completed() -> void:
   else:
     MyLogger.error("Scenario", "Cannot mark scenario complete - no scenario ID set in ScenarioManager!")
   
-  # Transition to victory state (UI will respond to this)
-  assert(survivor_count > 0) # Shouldn't be here if all survivors are dead
-  GameManager.set_game_state(GameManager.GameState.VICTORY)
+  GameManager.finish_scenario_attempt(GameManager.GameState.VICTORY)
 
 
 func on_survivor_died(_survivor: Node3D, _damage_source: String) -> void:
-  if survivor_count <= 0:
-    MyLogger.warn("Scenario", "All survivors already dead, ignoring survivor death.")
+  if not GameManager.is_playing() or survivor_count <= 0:
     return
 
   survivor_count -= 1
@@ -159,24 +158,14 @@ func on_survivor_died(_survivor: Node3D, _damage_source: String) -> void:
     # Stop timer on game over (but don't save the time)
     var elapsed_time = _stop_timer()
     
-    # Reclaim all placed buildings and get refund (same as victory)
-    var reclaim_data = _reclaim_all_buildings()
-    
-    # Convert remaining scrap to XP (same as victory)
-    var conversion_data = CurrencyManager.convert_remaining_scrap_to_xp()
-    
     # Store stats for game over screen
     var scenario_id = ScenarioManager.get_current_scenario_id()
     ScenarioManager.last_scenario_stats = {
       "scenario_id": scenario_id,
       "elapsed_time": elapsed_time,
-      "buildings_reclaimed": reclaim_data.building_count,
-      "scrap_reclaimed": reclaim_data.total_refund,
-      "scrap_converted": conversion_data.scrap_converted,
-      "xp_gained_from_conversion": conversion_data.xp_gained,
     }
-    
-    GameManager.set_game_state(GameManager.GameState.GAME_OVER)
+
+    GameManager.finish_scenario_attempt(GameManager.GameState.GAME_OVER)
 
 
 ## Scenario Timer Methods

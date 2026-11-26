@@ -213,7 +213,6 @@ The **AchievementManager** (implemented in `Utilities/Systems/achievement_manage
 - Loads all achievements from this directory
 - Connects to StatsManager and CurrencyManager signals
 - Tracks progress and unlocks achievements
-- Persists achievement state to save file
 - Emits signals when achievements unlock or progress updates
 
 ## Sample Achievements
@@ -261,11 +260,8 @@ var unlocked = AchievementManager.get_unlocked_achievements()
 
 ### Persistence
 
-Achievement states are automatically saved to `user://achievements.save` when unlocked. To manually save:
-
-```gdscript
-AchievementManager.save_achievements_now()
-```
+`SaveManager` writes `achievements` to `user://saves/save_slot_N.save` on
+Victory, Game Over, or abandonment—not on unlock.
 
 ## Technical Notes
 

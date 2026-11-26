@@ -1,7 +1,6 @@
 FROM barichello/godot-ci:4.6.1
 
-# Pre-install Blender so it's baked into the image
+# Blender's glTF exporter needs NumPy.
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends blender && \
+    apt-get install -y --no-install-recommends blender python3-numpy && \
     rm -rf /var/lib/apt/lists/*
-
