@@ -50,13 +50,11 @@ func test_currency_manager_save_load():
   
   # Create fresh game
   SaveManager.create_new_game(TEST_SLOT_1)
-  var initial_scrap = CurrencyManager.get_scrap()
   
   # Modify currency data
   CurrencyManager.earn_scrap(500)
   CurrencyManager.earn_xp(250)
   
-  var expected_scrap = CurrencyManager.get_scrap()
   var expected_xp = CurrencyManager.get_xp()
   var expected_level = CurrencyManager.get_level()
   
@@ -71,7 +69,7 @@ func test_currency_manager_save_load():
   var success = SaveManager.load_save_slot(TEST_SLOT_1)
   
   assert_true(success, "Load should succeed")
-  assert_eq(CurrencyManager.get_scrap(), expected_scrap, "Scrap should be restored")
+  assert_eq(CurrencyManager.get_scrap(), CurrencyManager.starting_scrap, "Scrap should not persist")
   assert_eq(CurrencyManager.get_xp(), expected_xp, "XP should be restored")
   assert_eq(CurrencyManager.get_level(), expected_level, "Level should be restored")
 
@@ -246,7 +244,6 @@ func test_all_managers_save_load():
   StatsManager.track_enemy_defeated("zombie", false)
   ScenarioManager.mark_scenario_complete("scenario_1")
   
-  var expected_scrap = CurrencyManager.get_scrap()
   var expected_enemies = StatsManager.get_enemies_defeated_total()
   var expected_levels = ScenarioManager.completed_scenarios.size()
   
@@ -260,7 +257,7 @@ func test_all_managers_save_load():
   SaveManager.load_save_slot(TEST_SLOT_1)
   
   # Verify all restored
-  assert_eq(CurrencyManager.get_scrap(), expected_scrap, "Scrap restored")
+  assert_eq(CurrencyManager.get_scrap(), CurrencyManager.starting_scrap, "Attempt-local scrap was discarded")
   assert_eq(StatsManager.get_enemies_defeated_total(), expected_enemies, "Stats restored")
   assert_eq(ScenarioManager.completed_scenarios.size(), expected_levels, "Scenarios restored")
 
@@ -269,32 +266,20 @@ func test_save_slot_switching():
   # File operations may generate engine errors in headless mode - ignore them
   
   # This test verifies that different save slots maintain independent state
-  # Create slot 1 with specific scrap amount
   SaveManager.create_new_game(TEST_SLOT_1)
-  var base_scrap = CurrencyManager.get_scrap()
-  CurrencyManager.earn_scrap(100)
+  CurrencyManager.earn_xp(10)
   SaveManager.save_current_slot()
-  var scrap_slot1 = CurrencyManager.get_scrap()
   
-  # Create slot 2 with different scrap amount
   SaveManager.create_new_game(TEST_SLOT_2)
-  CurrencyManager.earn_scrap(500)
+  CurrencyManager.earn_xp(50)
   SaveManager.save_current_slot()
-  var scrap_slot2 = CurrencyManager.get_scrap()
-  
-  assert_true(scrap_slot2 > scrap_slot1, "Slot 2 should have more scrap than slot 1")
-  assert_true(scrap_slot1 > base_scrap, "Slot 1 should have more than base scrap")
   
   # Verify slots are independent by loading each
   SaveManager.load_save_slot(TEST_SLOT_1)
-  var loaded_slot1_scrap = CurrencyManager.get_scrap()
+  assert_eq(CurrencyManager.get_xp(), 10)
   
   SaveManager.load_save_slot(TEST_SLOT_2)
-  var loaded_slot2_scrap = CurrencyManager.get_scrap()
-  
-  # The loaded values should differ (proving slots are independent)
-  assert_true(loaded_slot2_scrap != loaded_slot1_scrap, "Slots should have different scrap values")
-  assert_true(loaded_slot2_scrap > loaded_slot1_scrap, "Slot 2 should have more scrap")
+  assert_eq(CurrencyManager.get_xp(), 50)
 
 ## Test: Metadata is accurate
 func test_save_metadata():
@@ -320,14 +305,13 @@ func test_save_metadata():
   assert_eq(metadata.get("last_scenario"), "scenario_2", "Last scenario should match")
   assert_true(metadata.has("timestamp"), "Should have timestamp")
 
-## Test: Current scenario ID is restored when loading save
-func test_restore_current_scenario_on_load():
+## Last scenario is informational, not an active attempt to restore.
+func test_loading_does_not_restore_an_active_scenario():
   # File operations may generate engine errors in headless mode - ignore them
   
   # Create fresh game and set a scenario
   SaveManager.create_new_game(TEST_SLOT_1)
   ScenarioManager.set_current_scenario_id("scenario_2")
-  var expected_scenario = "scenario_2"
   
   # Save
   SaveManager.save_current_slot()
@@ -340,6 +324,6 @@ func test_restore_current_scenario_on_load():
   # Load the original save
   var success = SaveManager.load_save_slot(TEST_SLOT_1)
   
-  # Verify scenario was restored
   assert_true(success, "Load should succeed")
-  assert_eq(ScenarioManager.get_current_scenario_id(), expected_scenario, "Current scenario should be restored from save")
+  assert_eq(ScenarioManager.get_current_scenario_id(), "")
+  assert_eq(SaveManager.get_slot_metadata(TEST_SLOT_1).get("last_scenario"), "scenario_2")

@@ -45,7 +45,6 @@ func before_each():
   # Clear registered systems for isolated unit testing
   SaveManager.managed_systems.clear()
   SaveManager.current_save_slot = -1
-  SaveManager.auto_save_timer = 0.0
 
 func after_each():
   # Clean up test saves after each test

@@ -75,7 +75,7 @@ func _toggle_tech_tree() -> void:
   MyLogger.info("UI", "Toggling Tech Tree UI")
   if GameManager.current_state == GameManager.GameState.IN_TECH_TREE:
     GameManager.set_game_state(GameManager.GameState.PLAYING)
-  else:
+  elif GameManager.is_playing():
     GameManager.pause_game()
     GameManager.set_game_state(GameManager.GameState.IN_TECH_TREE)
 
@@ -120,4 +120,3 @@ func building_placement_status(status: Utility_BuildingPlacement.BuildingPlaceme
       cursor_tooltip_label.text = "Cannot place building here: Insufficient clearance."
     Utility_BuildingPlacement.BuildingPlacementStatus.INSUFFICIENT_FUNDS:
       cursor_tooltip_label.text = "Cannot place building here: Insufficient funds."
-

@@ -16,6 +16,9 @@ const DIALOG_BLOCKING_STATES := [GameState.IN_GAME_MENU, GameState.IN_TECH_TREE]
 var current_state: GameState = GameState.MAIN_MENU
 var current_speed_multiplier: float = 1.0
 var _dialogic_paused_by_game_state := false
+var _attempt_active := false
+var _attempt_start_tech: Dictionary = {}
+var _attempt_start_survivors: Dictionary = {}
 
 signal game_state_changed(new_state: GameState)
 signal speed_changed(new_speed: float)
@@ -103,31 +106,53 @@ func toggle_in_game_menu():
             pause_game()
             set_game_state(GameState.IN_GAME_MENU)
 
-## Restarts the current scenario from scratch, reloading all save state
-## so that currency, tech tree, and other managed systems are fully reset
-## back to what they were at the start of the session.
+## Called before the new scenario enters the tree and assigns survivor profiles.
+func begin_scenario_attempt() -> void:
+  _attempt_start_tech = TechTreeManager.get_save_data().duplicate(true)
+  _attempt_start_survivors = SurvivorNameManager.get_save_data()
+  _attempt_active = true
+  ScenarioManager.reset_attempt()
+  StatsManager.reset_attempt()
+  CurrencyManager.reset_scrap()
+
+## An unsuccessful attempt keeps only lifetime activity. Restore attempt-local
+## changes from memory even if writing the save fails or no slot is loaded.
+func abandon_scenario_attempt() -> void:
+  if not _attempt_active:
+    return
+  _attempt_active = false
+  TechTreeManager.load_data(_attempt_start_tech)
+  SurvivorNameManager.load_data(_attempt_start_survivors)
+  _attempt_start_tech.clear()
+  _attempt_start_survivors.clear()
+  CurrencyManager.reset_scrap()
+  AchievementManager.refresh_progress()
+  SaveManager.save_attempt_activity()
+
+## Called after scenario rewards and records are finalized.
+func finish_scenario_attempt(result: GameState) -> void:
+  if result == GameState.VICTORY:
+    _attempt_active = false
+    _attempt_start_tech.clear()
+    _attempt_start_survivors.clear()
+    AchievementManager.refresh_progress()
+    if SaveManager.current_save_slot > 0:
+      SaveManager.save_current_slot()
+  else:
+    abandon_scenario_attempt()
+  set_game_state(result)
+  pause_game()
+
+## Restarts the current scenario from scratch without losing lifetime activity.
 func restart_scenario() -> void:
   MyLogger.info("GameManager", "Restarting current scenario")
-  resume_game() # Ensure the game is unpaused before reloading
-  set_game_state(GameState.PLAYING)
-
-  # Preserve the scenario the player is currently in
   var scenario_id = ScenarioManager.get_current_scenario_id()
-
-  # Reload the save slot — this calls reset_data() or load_data() on every
-  # registered SaveableSystem (CurrencyManager, TechTreeManager, etc.) so
-  # the in-memory state is fully restored to what was on disk.
-  if SaveManager.current_save_slot > 0:
-    SaveManager.load_save_slot(SaveManager.current_save_slot)
-  else:
-    # Fallback: manually reset all managed systems
-    for system in SaveManager.managed_systems:
-      system.reset_data()
-
-  # Restore the scenario ID after the slot reload (load_save_slot may
-  # overwrite it with the value stored in metadata).
-  if not scenario_id.is_empty():
-    ScenarioManager.set_current_scenario_id(scenario_id)
+  abandon_scenario_attempt()
+  ScenarioManager.clear_current_scenario()
+  ScenarioManager.set_current_scenario_id(scenario_id)
+  reset_tutorial_flags()
+  resume_game()
+  set_game_state(GameState.PLAYING)
 
   # Reload the game scene so all scene-level nodes are freshly instantiated
   var game_scene_path = "res://Stages/Game/main/main.tscn"
@@ -135,11 +160,15 @@ func restart_scenario() -> void:
   if error != OK:
     MyLogger.error("GameManager", "Failed to reload game scene: %s (Error: %d)" % [game_scene_path, error])
 
-  reset_tutorial_flags()
+## Quitting through the game's menu keeps lifetime activity, not a live attempt.
+func quit_game() -> void:
+  abandon_scenario_attempt()
+  get_tree().quit()
 
 ## Returns to the main menu from any game state
 func return_to_main_menu():
   MyLogger.info("GameManager", "Returning to main menu")
+  abandon_scenario_attempt()
   resume_game() # Ensure the game is unpaused
   set_game_state(GameState.MAIN_MENU)
   

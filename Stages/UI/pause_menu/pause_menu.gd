@@ -76,5 +76,4 @@ func _on_main_menu_pressed():
   GameManager.return_to_main_menu()
 
 func _on_quit_pressed():
-  # Quit the game
-  get_tree().quit()
+  GameManager.quit_game()

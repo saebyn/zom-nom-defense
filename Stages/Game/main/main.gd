@@ -63,6 +63,7 @@ func _load_scenario() -> void:
     MyLogger.error("Main", "Failed to instantiate scenario: %s" % scenario_id)
     return
 
+  GameManager.begin_scenario_attempt()
   add_child(current_scenario)
 
   # Send the scenario's full world-space AABB to the minimap immediately.

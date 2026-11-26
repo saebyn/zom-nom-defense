@@ -6,6 +6,7 @@ extends Node
 
 signal tech_unlocked(tech_id: String) ## Emitted when a tech is successfully unlocked
 signal tech_locked(tech_id: String) ## Emitted when a tech becomes permanently locked due to mutual exclusivity
+signal progression_loaded()
 
 var unlocked_tech_ids: Array[String] = []
 var locked_tech_ids: Array[String] = []
@@ -203,6 +204,7 @@ func reset_tech_tree() -> void:
   unlocked_tech_ids.clear()
   locked_tech_ids.clear()
   MyLogger.info("TechTreeManager", "Tech tree reset")
+  progression_loaded.emit()
 
 ## SaveableSystem Interface Implementation
 
@@ -234,6 +236,7 @@ func load_data(data: Dictionary) -> void:
       locked_tech_ids.append(tech_id)
   
   MyLogger.info("TechTreeManager", "Tech tree loaded - Unlocked: %d, Locked: %d" % [unlocked_tech_ids.size(), locked_tech_ids.size()])
+  progression_loaded.emit()
 
 ## Reset to default state (for new game)
 func reset_data() -> void:

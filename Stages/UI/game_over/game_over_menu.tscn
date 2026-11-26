@@ -55,35 +55,9 @@ horizontal_alignment = 1
 [node name="HSeparator2" type="HSeparator" parent="Panel/MarginContainer/VBoxContainer" unique_id=1189442840]
 layout_mode = 2
 
-[node name="BuildingsReclaimedLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=594907066]
+[node name="OutcomeNote" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Buildings Reclaimed: 0"
-horizontal_alignment = 1
-
-[node name="ScrapReclaimedLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=939408053]
-layout_mode = 2
-text = "Scrap Reclaimed: +0"
-horizontal_alignment = 1
-
-[node name="HSeparator3" type="HSeparator" parent="Panel/MarginContainer/VBoxContainer" unique_id=1615437526]
-layout_mode = 2
-
-[node name="RemainingScrapLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=1008754341]
-layout_mode = 2
-text = "Remaining Scrap: 0"
-horizontal_alignment = 1
-
-[node name="ConvertedToXPLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=330924006]
-layout_mode = 2
-text = "Converted to XP: +0 ✨"
-horizontal_alignment = 1
-
-[node name="HSeparator4" type="HSeparator" parent="Panel/MarginContainer/VBoxContainer" unique_id=661297822]
-layout_mode = 2
-
-[node name="CurrentLevelLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=96226839]
-layout_mode = 2
-text = "Current Level: 1 (0 / 100 XP)"
+text = "Stats and achievements count.\nXP is awarded on Victory only."
 horizontal_alignment = 1
 
 [node name="HSeparator5" type="HSeparator" parent="Panel/MarginContainer/VBoxContainer" unique_id=1452019639]

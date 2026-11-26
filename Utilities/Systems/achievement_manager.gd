@@ -102,7 +102,7 @@ func _load_achievements() -> void:
 func _connect_to_systems() -> void:
   # Connect to StatsManager for stat-based achievements
   if StatsManager:
-    StatsManager.stats_updated.connect(_check_all_achievements)
+    StatsManager.stats_updated.connect(refresh_progress)
     MyLogger.debug("AchievementManager", "Connected to StatsManager")
   else:
     MyLogger.error("AchievementManager", "StatsManager not found!")
@@ -117,7 +117,7 @@ func _connect_to_systems() -> void:
     MyLogger.error("AchievementManager", "CurrencyManager not found!")
 
 ## Check all achievements for progress and unlocks
-func _check_all_achievements() -> void:
+func refresh_progress() -> void:
   for achievement_id in achievements:
     _check_achievement(achievement_id)
 
@@ -260,13 +260,13 @@ func _unlock_achievement(achievement_id: String) -> void:
 ## Event handlers for stat changes
 
 func _on_level_up(_new_level: int) -> void:
-  _check_all_achievements()
+  refresh_progress()
 
 func _on_scrap_earned(_amount: int) -> void:
-  _check_all_achievements()
+  refresh_progress()
 
 func _on_xp_earned(_amount: int) -> void:
-  _check_all_achievements()
+  refresh_progress()
 
 ## Public API methods
 
@@ -346,10 +346,6 @@ func reset_data() -> void:
   MyLogger.info("AchievementManager", "Achievement states reset")
 
 ## Legacy Methods (deprecated, kept for backward compatibility)
-
-## Manual save method for external use (now delegates to SaveManager)
-func save_achievements_now() -> void:
-  SaveManager.save_current_slot()
 
 ## Check if save file exists (checks SaveManager instead)
 func has_saved_achievements() -> bool:
