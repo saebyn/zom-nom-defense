@@ -33,11 +33,6 @@ func _update_display():
   
   var text = "[center][b]Game Statistics[/b][/center]\n"
   
-  if SaveManager.current_save_slot > 0:
-    text += "[center][color=green][i]📊 Persistent stats across sessions[/i][/color][/center]\n\n"
-  else:
-    text += "[center][color=yellow][i]📊 Stats will be saved automatically[/i][/color][/center]\n\n"
-  
   # Enemy defeat stats
   text += "[b]Enemies Defeated[/b]\n"
   text += "Total: %d\n" % stats.enemies_defeated_total

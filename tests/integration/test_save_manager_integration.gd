@@ -107,14 +107,6 @@ func test_stats_manager_save_load():
   assert_eq(StatsManager.get_buildings_placed_total(), expected_buildings, "Building count should be restored")
   assert_eq(StatsManager.get_clicks_performed(), expected_clicks, "clicks_performed should be restored after load")
 
-func test_stats_display_shows_persistence_for_active_slot():
-  var display := preload("res://Common/UI/stats_display/stats_display.tscn").instantiate() as UI_StatsDisplay
-  add_child_autofree(display)
-  assert_string_contains(display.stats_label.text, "Stats will be saved automatically")
-
-  SaveManager.create_new_game(TEST_SLOT_1)
-  StatsManager.track_enemy_defeated("basic_zombie")
-  assert_string_contains(display.stats_label.text, "Persistent stats across sessions")
 
 ## Test: clicks_performed resets on new game
 func test_clicks_performed_resets_on_new_game():
