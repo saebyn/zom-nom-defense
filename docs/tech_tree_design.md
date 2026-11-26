@@ -299,7 +299,7 @@ When the player clicks an exclusive node:
 
 ## 10) Balance Notes & Next Steps
 
-* **Progression Model**: Tech unlocks are **persistent per save slot**. Each new save starts with zero unlocked techs, forcing players to unlock even starter techs. This introduces the tech tree mechanic early and creates a sense of progression across levels within a save.
+* **Progression Model**: Tech unlocks are **persistent per save slot**. Each new save starts with zero unlocked techs. Main-menu choices save immediately; in-scenario unlocks and branch locks apply immediately but are only saved on Victory.
 * Tech tree unlocking requires **Scrap** (via `scrap_cost`) in addition to level and achievement gates. This makes Scrap a meaningful resource both for placement during gameplay and for long-term progression. Cost values will be balanced in a dedicated pass.
 * Gate high-impact combos behind both **level** and **achievements** (e.g., `ob_electric_fence` requires level 3 + achievement).
 * **Advanced tier nodes** require branch completion, creating natural progression gates for late-game content.

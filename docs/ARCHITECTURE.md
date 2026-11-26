@@ -184,7 +184,6 @@ graph TB
     subgraph "SaveManager (Orchestrator)"
         SM[SaveManager<br/>Autoload Singleton]
         SaveSlots[Multi-Slot System<br/>10 slots max]
-        AutoSave[Auto-Save Timer<br/>Every 5 minutes]
         AtomicWrite[Atomic Writes<br/>temp + rename]
         Backup[Automatic Backups<br/>.save.bak files]
     end
@@ -194,11 +193,12 @@ graph TB
     end
     
     subgraph "Registered Systems (Per-Slot Data)"
-        Currency[CurrencyManager<br/>scrap, XP, level]
+        Currency[CurrencyManager<br/>XP, Player Level]
         Stats[StatsManager<br/>defeats, placements]
         Tech[TechTreeManager<br/>unlocks, locked branches]
         Achievements[AchievementManager<br/>in-game progress]
         Scenarios[ScenarioManager<br/>completed scenarios, scores]
+        Survivors[SurvivorNameManager<br/>survivor profiles]
     end
     
     subgraph "Global Data (Cross-Slot)"
@@ -211,7 +211,6 @@ graph TB
     end
     
     SM --> SaveSlots
-    SM --> AutoSave
     SM --> AtomicWrite
     SM --> Backup
     
@@ -219,13 +218,15 @@ graph TB
     Interface -.implemented by.-> Stats
     Interface -.implemented by.-> Tech
     Interface -.implemented by.-> Achievements
-    Interface -.implemented by.-> Levels
+    Interface -.implemented by.-> Scenarios
+    Interface -.implemented by.-> Survivors
     
     SM -.register_system.-> Currency
     SM -.register_system.-> Stats
     SM -.register_system.-> Tech
     SM -.register_system.-> Achievements
-    SM -.register_system.-> Levels
+    SM -.register_system.-> Scenarios
+    SM -.register_system.-> Survivors
     
     SM -- save_current_slot --> SlotFile
     SlotFile -- backup --> SlotBackup
@@ -237,7 +238,8 @@ graph TB
     SM -- "create_new_game<br/>(calls reset_data)" --> Stats
     SM -- "create_new_game<br/>(calls reset_data)" --> Tech
     SM -- "create_new_game<br/>(calls reset_data)" --> Achievements
-    SM -- "create_new_game<br/>(calls reset_data)" --> Levels
+    SM -- "create_new_game<br/>(calls reset_data)" --> Scenarios
+    SM -- "create_new_game<br/>(calls reset_data)" --> Survivors
     
     style SM fill:#ffe1f5
     style Interface fill:#e1f5ff
@@ -248,7 +250,10 @@ graph TB
 - **Atomic Writes**: Write to temp file, then rename (prevents corruption)
 - **Automatic Backups**: Keep `.bak` files for recovery
 - **Per-Slot Reset**: `reset_data()` called on new game
-- **Auto-Save**: Every 5 minutes + scenario completion
+- **Victory**: Saves all progression after rewards and records are applied. This is the only outcome that awards XP.
+- **Game Over and abandoned attempts**: Save lifetime stats and achievements only. Restart, Return to Main Menu, and Quit from the pause menu all count as abandonment. In-scenario tech choices and survivor profile changes roll back.
+- **Main-menu Tech Tree**: Saves explicit tech choices immediately without writing unrelated progression.
+- **No in-progress checkpoints**: A new attempt starts with the configured starting scrap and a fresh battlefield. No timer writes the slot during play; a crash or forced exit can lose the current attempt's activity.
 - **Corruption Recovery**: Falls back to backup if primary corrupted
 
 ---

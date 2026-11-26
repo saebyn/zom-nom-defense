@@ -50,7 +50,10 @@ PC (Steam), with optional Twitch integration for live playthroughs and audience 
 
 **Save System**:
 - **Multiple save slots** (minimum 3, like Factorio) allow parallel playthroughs.
-- Each save slot maintains independent progression: tech tree choices, in-game achievements, scenario completion, currency.
+- Each save slot maintains independent progression: tech tree choices, in-game achievements, lifetime stats, scenario completion and records, XP, and survivor profiles.
+- Victory awards XP from reclaimed and leftover scrap plus the scenario completion bonus, and saves the result. Scrap itself never carries into a new attempt.
+- Game Over, Restart, and leaving through the pause menu preserve lifetime stats and achievements, but not XP, in-scenario tech choices, survivor changes, or a scenario clear.
+- Main-menu tech choices save immediately. There are no timed saves or mid-scenario resumes.
 - Global data (Steam achievements, settings) persists across all saves.
 - Players can explore different tech tree paths in different save slots.
 
@@ -58,7 +61,7 @@ PC (Steam), with optional Twitch integration for live playthroughs and audience 
 
 - Branching structure with **mutually exclusive choices**.
 - At key decision points, players choose between competing specializations (e.g., Rapid Fire vs Heavy Damage).
-- **Exclusive choices are permanent per save slot** - choosing one branch locks out the alternative.
+- **Exclusive choices are permanent per save slot once saved** - main-menu choices save immediately; in-scenario choices save on Victory.
 - Some unlocks require both a minimum level **and** achievement.
 - Advanced tiers may require completing an entire branch before unlocking.
 - No unlock tickets or upgrade tokens.
@@ -155,4 +158,3 @@ See `docs/visual_style_guide.md` for comprehensive visual specifications.
 ## Tags
 
 Zombies, Tower Defense, Indie, Clicker, Survival, Strategy, Comedy, Twitch Integration
-
