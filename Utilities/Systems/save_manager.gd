@@ -1,9 +1,6 @@
 extends Node
 
-## SaveManager - Centralized save system with multi-slot support
-##
-## Orchestrates all game persistence, replacing decentralized save/load in individual managers.
-## Provides atomic saves, multi-slot support, and separation between per-slot and global data.
+## Atomic, multi-slot saves.
 ##
 ## Current Implementation:
 ##   - Automatically uses slot 1 by default (initialize_default_slot())
@@ -50,8 +47,6 @@ const SAVE_SLOT_DIR = "user://saves/"
 const SAVE_SLOT_PATH = "user://saves/save_slot_%d.save"
 const SAVE_SLOT_BACKUP_PATH = "user://saves/save_slot_%d.save.bak"
 const SAVE_SLOT_SCREENSHOT_PATH = "user://saves/save_slot_%d_screenshot.png"
-const GLOBAL_SAVE_PATH = "user://global.save"
-const GLOBAL_SAVE_BACKUP_PATH = "user://global.save.bak"
 const SAVE_VERSION = 1
 
 # Screenshot configuration
@@ -271,8 +266,7 @@ func _write_current_slot(save_data: Dictionary, capture_screenshot: bool, rotate
   save_completed.emit()
   return true
 
-## Create a new game in the specified slot
-## Resets all per-slot data, keeps global data
+## Start a fresh game in the given slot.
 func create_new_game(slot_number: int) -> void:
   if not _is_valid_slot_number(slot_number):
     MyLogger.error("SaveManager", "Invalid slot number: %d (must be 1-%d)" % [slot_number, MAX_SAVE_SLOTS])
@@ -390,56 +384,6 @@ func get_available_slots() -> Array[int]:
       slots.append(i)
   
   return slots
-
-## Save global settings data (persists across all save slots)
-## 
-## NOTE: Currently a placeholder for future global data expansion.
-## SettingsManager handles its own persistence separately.
-## This method is ready for use but not currently utilized.
-## Future use cases: cross-slot achievements, global statistics, etc.
-func save_global_data() -> void:
-  save_started.emit()
-  
-  # Collect global data (currently just settings)
-  var global_data = {
-    "version": SAVE_VERSION,
-  }
-  
-  # Add data from systems marked as global (SettingsManager would go here)
-  # For now, we'll let SettingsManager handle its own persistence
-  # This is a placeholder for future global data expansion
-  
-  if _save_json_file_atomic(GLOBAL_SAVE_PATH, GLOBAL_SAVE_BACKUP_PATH, global_data):
-    MyLogger.info("SaveManager", "Successfully saved global data")
-    save_completed.emit()
-  else:
-    MyLogger.error("SaveManager", "Failed to save global data")
-    save_failed.emit("Global data write failed")
-
-## Load global settings data
-##
-## NOTE: Currently a placeholder for future global data expansion.
-## Returns true if global data was loaded successfully, false otherwise.
-func load_global_data() -> bool:
-  load_started.emit()
-  
-  if not FileAccess.file_exists(GLOBAL_SAVE_PATH):
-    MyLogger.info("SaveManager", "No global save file found")
-    load_failed.emit("No global save file")
-    return false
-  
-  var global_data = _load_json_file(GLOBAL_SAVE_PATH)
-  if global_data == null:
-    # Try backup
-    global_data = _load_json_file(GLOBAL_SAVE_BACKUP_PATH)
-    if global_data == null:
-      MyLogger.error("SaveManager", "Failed to load global data")
-      load_failed.emit("Global data corrupted")
-      return false
-  
-  MyLogger.info("SaveManager", "Successfully loaded global data")
-  load_completed.emit()
-  return true
 
 ## Helper: Generate metadata for current game state
 func _generate_slot_metadata() -> Dictionary:

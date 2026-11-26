@@ -177,7 +177,7 @@ graph TB
 
 ## Save System Architecture
 
-The centralized save system uses a SaveableSystem interface pattern for coordinating persistence across all game systems.
+Save slots use `SaveableSystem`. `SettingsManager` saves settings separately.
 
 ```mermaid
 graph TB
