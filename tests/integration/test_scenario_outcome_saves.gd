@@ -3,6 +3,7 @@ extends GutTest
 const TEST_SLOT := 9
 const SCENARIO_ID := "scenario_1"
 const BYPASS_TECH := "zom_nom_defense/debug/bypass_tech_requirements"
+const TechTreeScene := preload("res://Stages/UI/tech_tree/tech_tree.tscn")
 var _original_bypass_tech: bool
 
 func before_each() -> void:
@@ -137,3 +138,29 @@ func test_game_over_can_save_activity_after_loading_a_backup() -> void:
   primary.store_string("not JSON")
   primary.close()
   assert_true(SaveManager.load_save_slot(TEST_SLOT), "Backup is still usable")
+
+func test_branch_locks_always_read_permanent_and_menu_choices_persist() -> void:
+  ProjectSettings.set_setting(BYPASS_TECH, true)
+  var tech_tree := TechTreeScene.instantiate() as UI_TechTree
+  add_child_autofree(tech_tree)
+  tech_tree.tech_node_cards["tur_boom_barrel"].selected.emit()
+  tech_tree.unlock_button.pressed.emit()
+  tech_tree.confirmation_dialog.confirmed.emit()
+  tech_tree.confirmation_dialog.hide()
+
+  assert_true(SaveManager.load_save_slot(TEST_SLOT))
+  assert_true(TechTreeManager.is_tech_unlocked("tur_boom_barrel"))
+  assert_false(ScenarioManager.is_scenario_completed(SCENARIO_ID))
+
+  _start_attempt()
+  GameManager.set_game_state(GameManager.GameState.IN_TECH_TREE)
+  tech_tree.tech_node_cards["tur_molotov_mortar"].selected.emit()
+  assert_eq(tech_tree.unlock_button.text, "Permanently Locked")
+
+  tech_tree.tech_node_cards["clk_double_tap"].selected.emit()
+  tech_tree.unlock_button.pressed.emit()
+  tech_tree.confirmation_dialog.confirmed.emit()
+  tech_tree.confirmation_dialog.hide()
+  tech_tree.tech_node_cards["clk_shock_click"].selected.emit()
+  assert_eq(tech_tree.unlock_button.text, "Permanently Locked")
+  GameManager.abandon_scenario_attempt()

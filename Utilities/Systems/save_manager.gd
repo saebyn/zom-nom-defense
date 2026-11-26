@@ -225,6 +225,10 @@ func save_current_slot(capture_screenshot: bool = true) -> bool:
 func save_attempt_activity() -> bool:
   return _save_slot_sections([StatsManager, AchievementManager])
 
+## Save an explicit Tech Tree choice made outside a scenario attempt.
+func save_menu_tech_choices() -> bool:
+  return _save_slot_sections([TechTreeManager])
+
 func _save_slot_sections(systems: Array) -> bool:
   if not _is_valid_slot_number(current_save_slot):
     return false
