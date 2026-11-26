@@ -7,7 +7,7 @@ This document describes the logging framework implemented for the Tower Defense 
 The logging framework provides:
 - **Scoped Logging**: Messages organized by scope (e.g., "Economy", "Combat", "UI")
 - **Log Levels**: DEBUG, INFO, WARN, ERROR, NONE
-- **Runtime Configuration**: Change log levels and scopes at runtime via console commands
+- **Runtime Configuration**: Change log levels and scopes at runtime through the `MyLogger` API
 - **Rich Output**: Colored, timestamped log messages
 - **Project Settings Integration**: Configure defaults in project settings
 
@@ -84,18 +84,6 @@ enabled_scopes="*"  # Comma-separated scopes or "*" for all
 
 ## Runtime Configuration
 
-### Console Commands
-
-The MyLogger provides console commands for runtime configuration:
-
-| Command | Example | Description |
-|---------|---------|-------------|
-| `log_level` | `log_level DEBUG` | Set current log level |
-| `log_scopes` | `log_scopes Economy,Combat` | Set enabled scopes |
-| `log_info` | `log_info` | Show current configuration |
-
-### Programmatic Configuration
-
 ```gdscript
 # Change log level at runtime
 MyLogger.set_log_level(MyLogger.LogLevel.DEBUG)
@@ -111,34 +99,6 @@ MyLogger.disable_scope("OldFeature")
 var config = MyLogger.get_config()
 print("Current level: ", config.log_level_name)
 print("Enabled scopes: ", config.enabled_scopes)
-```
-
-## Integration Example
-
-Here's how to integrate the MyLogger with your existing console system:
-
-```gdscript
-extends Node
-
-func handle_console_input(command_line: String):
-    var parts = command_line.split(" ")
-    var command = parts[0]
-    var args = PackedStringArray(parts.slice(1))
-    
-    # Try MyLogger commands first
-    if MyLogger.handle_console_command(command, args):
-        return true
-    
-    # Handle other game commands
-    match command:
-        "spawn":
-            # Your spawn command
-            pass
-        "teleport":
-            # Your teleport command
-            pass
-    
-    return false
 ```
 
 ## Performance Considerations
@@ -195,8 +155,4 @@ The framework is already integrated throughout the codebase:
 
 ## Testing
 
-Use the provided test scenes:
-- `test_logger.tscn` - Basic logging functionality test
-- `console_test.tscn` - Console command interface test
-
-Run these to verify the logging framework is working correctly in your environment.
+The [logger unit tests](../tests/unit/test_logger.gd) cover scope filtering and runtime configuration.
