@@ -39,7 +39,6 @@ signal building_placed(building_type: String)
 signal max_scrap_held_updated(new_max: int)
 signal stats_updated()
 signal stats_loaded()
-signal stats_saved()
 
 func _ready():
   MyLogger.info("StatsManager", "Stats tracking system initialized")
@@ -260,15 +259,3 @@ func load_data(data: Dictionary) -> void:
 ## Reset to default state (for new game)
 func reset_data() -> void:
   reset_stats()
-
-## Legacy Methods (deprecated, kept for backward compatibility)
-
-## Check if save file exists (checks SaveManager instead)
-func has_saved_stats() -> bool:
-  return SaveManager.current_save_slot > 0
-
-## Delete save file (delegates to SaveManager)
-func delete_saved_stats() -> bool:
-  if SaveManager.current_save_slot > 0:
-    return SaveManager.delete_save_slot(SaveManager.current_save_slot)
-  return true

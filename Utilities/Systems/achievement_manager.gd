@@ -22,7 +22,6 @@ var achievement_states: Dictionary = {} # id (String) -> AchievementState
 signal achievement_unlocked(achievement: Resource_Achievement)
 signal achievement_progress_updated(achievement: Resource_Achievement, progress: float)
 signal achievements_loaded()
-signal achievements_saved()
 
 # Internal achievement state tracking
 class AchievementState:
@@ -344,15 +343,3 @@ func reset_data() -> void:
     achievement_states[achievement_id] = AchievementState.new()
   
   MyLogger.info("AchievementManager", "Achievement states reset")
-
-## Legacy Methods (deprecated, kept for backward compatibility)
-
-## Check if save file exists (checks SaveManager instead)
-func has_saved_achievements() -> bool:
-  return SaveManager.current_save_slot > 0
-
-## Delete save file (delegates to SaveManager)
-func delete_saved_achievements() -> bool:
-  if SaveManager.current_save_slot > 0:
-    return SaveManager.delete_save_slot(SaveManager.current_save_slot)
-  return true
