@@ -102,6 +102,63 @@ func test_survivor_unit_frame_visible_after_hide():
   assert_true(health.sprite.visible,
     "Survivor unit frame should stay visible even after hide_unit_frame()")
 
+func test_layout_permission_hides_requested_unit_frame():
+  var parent := _make_survivor_parent("Erin")
+  var health := _make_health(parent)
+  await get_tree().process_frame
+
+  health.set_unit_frame_layout_allowed(false)
+
+  assert_true(health.is_unit_frame_requested(),
+    "Layout permission should not change the component's visibility request")
+  assert_false(health.sprite.visible,
+    "Layout manager should be able to hide a requested unit frame")
+
+func test_restoring_layout_permission_shows_requested_unit_frame():
+  var parent := _make_survivor_parent("Frank")
+  var health := _make_health(parent)
+  await get_tree().process_frame
+
+  health.set_unit_frame_layout_allowed(false)
+  health.set_unit_frame_layout_allowed(true)
+
+  assert_true(health.sprite.visible,
+    "Requested unit frame should return when layout permission is restored")
+
+func test_layout_permission_does_not_reveal_unrequested_unit_frame():
+  var health := _make_health()
+  await get_tree().process_frame
+
+  health.set_unit_frame_layout_allowed(false)
+  health.set_unit_frame_layout_allowed(true)
+
+  assert_false(health.sprite.visible,
+    "Layout permission should not bypass the component's local visibility rules")
+
+func test_pause_reveal_is_not_urgent():
+  var health := _make_health()
+  await get_tree().process_frame
+
+  health._on_game_speed_changed(0.0)
+
+  assert_true(health.is_unit_frame_requested(),
+    "Pausing should request the unit frame")
+  assert_false(health.is_unit_frame_urgent(),
+    "Pause reveal should not outrank hovered or damaged frames")
+
+func test_pause_cycle_preserves_hover_state():
+  var health := _make_health()
+  await get_tree().process_frame
+  health.show_unit_frame()
+
+  health._on_game_speed_changed(0.0)
+  health._on_game_speed_changed(1.0)
+
+  assert_true(health.is_unit_frame_urgent(),
+    "Resuming should not clear a frame that remains hovered")
+  assert_true(health.sprite.visible,
+    "Hovered frame should remain visible after a pause cycle")
+
 
 # ────────────────────────────────────────────────────────────────
 # Transparency tests (unit frame must be revealed first)

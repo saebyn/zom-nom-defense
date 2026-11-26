@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://bar612768j6wn" path="res://Stages/Game/main/player_input_controller.gd" id="14_player_input"]
 [ext_resource type="Script" uid="uid://bmn387qe5x7ti" path="res://Stages/Game/main/debug.gd" id="14_qyy2v"]
 [ext_resource type="Resource" uid="uid://conw8uteeyyuk" path="res://Config/Enemies/basic_zombie.tres" id="15_qm00m"]
+[ext_resource type="Script" uid="uid://dcjshdhqv2vd7" path="res://Common/UI/unit_frame_layout/unit_frame_layout.gd" id="16_unit_frame_layout"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_pcgyj"]
 sample_partition_type = 1
@@ -45,6 +46,19 @@ audio_player = NodePath("../AudioStreamPlayer")
 
 [node name="UI" parent="." unique_id=321578720 instance=ExtResource("3_272bh")]
 process_mode = 3
+
+[node name="UnitFrameLayout" type="Control" parent="." node_paths=PackedStringArray("camera", "camera_focus")]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("16_unit_frame_layout")
+camera = NodePath("../CameraRig/YawPivot/PitchPivot/Camera3D")
+camera_focus = NodePath("../CameraRig")
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=2044361057 node_paths=PackedStringArray("camera", "yaw_pivot")]
 process_mode = 3
