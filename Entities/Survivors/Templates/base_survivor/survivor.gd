@@ -27,8 +27,10 @@ func _ready():
   
   # Connect health signals
   if health:
-    health.died.connect(_on_died)
-    health.damaged.connect(_on_health_damaged)
+    if not health.died.is_connected(_on_died):
+      health.died.connect(_on_died)
+    if not health.damaged.is_connected(_on_health_damaged):
+      health.damaged.connect(_on_health_damaged)
 
     # Override health if specified
     if hitpoints_override > 0:
