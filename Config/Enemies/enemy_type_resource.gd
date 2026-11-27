@@ -12,6 +12,7 @@ extends Resource
 @export var speed: float = 2.0 ## Movement speed of the enemy
 @export var damage_amount: float = 10.0 ## Damage dealt by the enemy
 @export var attack_speed: float = 1.0 ## Cooldown between enemy attacks
+@export var uninterruptible_by_damage: bool = false ## Skip the hit reaction animation and its movement pause when taking damage.
 @export var scrap_reward: int = 10 ## Scrap awarded when enemy dies
 @export var target_desired_distance: float = 4.0 ## Desired distance to target when approaching (navigation stopping distance)
 @export var target_attack_range: float = 4.0 ## Range at which the enemy will attack the primary target

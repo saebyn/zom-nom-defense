@@ -12,6 +12,7 @@ const MAX_PATH_STEERING_INTERVAL = 3.0
 @export var target_desired_distance: float = 4.0
 @export var target_attack_range: float = 2.0
 @export var building_attack_range: float = 6.0
+@export var uninterruptible_by_damage: bool = false
 
 @export_group("Navigation")
 @export var movement_disabled: bool = false
@@ -80,6 +81,7 @@ func load_resource(resource: Resource_EnemyType) -> void:
     target_desired_distance = resource.target_desired_distance
     target_attack_range = resource.target_attack_range
     building_attack_range = resource.building_attack_range
+    uninterruptible_by_damage = resource.uninterruptible_by_damage
     scrap_reward = resource.scrap_reward
     enemy_type = resource.enemy_type
 
@@ -249,7 +251,7 @@ func _trigger_attack_animation(_target: Node) -> void:
 
 
 func _trigger_hit_reaction_animation() -> void:
-  if animation_tree:
+  if animation_tree and not uninterruptible_by_damage:
     animation_tree.set(
       "parameters/HitReactionOneShot/request",
       AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE
