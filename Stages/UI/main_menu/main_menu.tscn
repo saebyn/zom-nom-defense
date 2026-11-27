@@ -9,7 +9,8 @@
 [ext_resource type="Texture2D" uid="uid://c8qam6axuhwd0" path="res://Assets/Textures/UI/gear.png" id="6_26kgo"]
 
 [sub_resource type="Gradient" id="Gradient_ptjlr"]
-colors = PackedColorArray(0.922, 0.843, 0.702, 1, 1, 1, 1, 0.24705882)
+offsets = PackedFloat32Array(0.29043728, 0.3936969)
+colors = PackedColorArray(0.922, 0.843, 0.702, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_mx1id"]
 gradient = SubResource("Gradient_ptjlr")
