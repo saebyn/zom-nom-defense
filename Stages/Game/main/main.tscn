@@ -113,13 +113,12 @@ script = ExtResource("13_hover_ctrl")
 camera = NodePath("../CameraRig/YawPivot/PitchPivot/Camera3D")
 ui = NodePath("../UI")
 
-[node name="PlayerInputController" type="Node" parent="." unique_id=300000004 node_paths=PackedStringArray("camera", "attack", "building_placement", "hover_controller", "navigation_controller", "ui")]
+[node name="PlayerInputController" type="Node" parent="." unique_id=300000004 node_paths=PackedStringArray("camera", "attack", "building_placement", "hover_controller", "ui")]
 script = ExtResource("14_player_input")
 camera = NodePath("../CameraRig/YawPivot/PitchPivot/Camera3D")
 attack = NodePath("../Attack")
 building_placement = NodePath("../BuildingPlacement")
 hover_controller = NodePath("../HoverController")
-navigation_controller = NodePath("../NavigationController")
 ui = NodePath("../UI")
 attack_waiting_cursor_image = ExtResource("2_wy7n0")
 
