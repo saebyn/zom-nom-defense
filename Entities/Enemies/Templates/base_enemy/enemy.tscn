@@ -64,6 +64,7 @@ collision_mask = 7
 safe_margin = 0.5
 script = ExtResource("2_4gyqm")
 movement_speed = 20.0
+rotation_speed = 1.526
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1047412762]
 path_desired_distance = 0.1
