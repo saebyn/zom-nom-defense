@@ -1,7 +1,0 @@
-[gd_scene format=3 uid="uid://dkcr3l3x8ks7j"]
-
-[ext_resource type="Script" uid="uid://b7jdk6preu1s4" path="res://Common/Systems/spawner/wave.gd" id="1_00s5r"]
-
-[node name="Wave" type="Node3D" unique_id=218071747]
-script = ExtResource("1_00s5r")
-duration = 15.0
