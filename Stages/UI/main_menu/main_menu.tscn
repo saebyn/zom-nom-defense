@@ -1,32 +1,18 @@
 [gd_scene format=3 uid="uid://dcw0hfnkb8jpt"]
 
-[ext_resource type="Texture2D" uid="uid://dtci5njcdxhnv" path="res://Assets/Icons/icon.svg" id="1_icon"]
 [ext_resource type="Script" uid="uid://bor5bken0xt0" path="res://Stages/UI/main_menu/main_menu.gd" id="1_j5t8x"]
 [ext_resource type="Theme" uid="uid://b8k2vgj8hxk5r" path="res://Config/ztd_ui_theme.tres" id="2_theme"]
-[ext_resource type="FontFile" uid="uid://dko6jljdih2ny" path="res://Assets/Fonts/font52.ttf" id="4_ptjlr"]
+[ext_resource type="Texture2D" uid="uid://bw1uyh05f3y07" path="res://Assets/Textures/UI/main-menu-background.png" id="3_npwht"]
+[ext_resource type="Theme" uid="uid://bj3nrufr0b4io" path="res://Config/ztd_menu_theme.tres" id="3_ptjlr"]
+[ext_resource type="Texture2D" uid="uid://d08dj55tfk5xe" path="res://Assets/Textures/UI/my_logo.png" id="4_xpn44"]
+[ext_resource type="Texture2D" uid="uid://uscqtn4j65n5" path="res://Assets/Textures/UI/my_logo_hand.png" id="5_26kgo"]
+[ext_resource type="Texture2D" uid="uid://c8qam6axuhwd0" path="res://Assets/Textures/UI/gear.png" id="6_26kgo"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xpn44"]
+[sub_resource type="Gradient" id="Gradient_ptjlr"]
+colors = PackedColorArray(0.922, 0.843, 0.702, 1, 1, 1, 1, 0.24705882)
 
-[sub_resource type="LabelSettings" id="LabelSettings_26kgo"]
-font = ExtResource("4_ptjlr")
-font_size = 48
-font_color = Color(0.9372549, 0.6039216, 0.23137255, 1)
-outline_size = 11
-outline_color = Color(0.09411765, 0.07058824, 0.11764706, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_npwht"]
-font = ExtResource("4_ptjlr")
-font_size = 48
-font_color = Color(0.8392157, 0.43137255, 0.12941177, 1)
-outline_size = 11
-outline_color = Color(0.09411765, 0.07058824, 0.11764706, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_alax6"]
-font = ExtResource("4_ptjlr")
-font_size = 18
-font_color = Color(0.95686275, 0.8509804, 0.6431373, 1)
-outline_size = 11
-outline_color = Color(0.09411765, 0.07058824, 0.12156863, 1)
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_mx1id"]
+gradient = SubResource("Gradient_ptjlr")
 
 [node name="MainMenu" type="Control" unique_id=987356057]
 layout_mode = 3
@@ -38,129 +24,132 @@ grow_vertical = 2
 theme = ExtResource("2_theme")
 script = ExtResource("1_j5t8x")
 
-[node name="Background" type="ColorRect" parent="." unique_id=625548915]
+[node name="BackgroundArt" type="TextureRect" parent="." unique_id=1946421231]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.07450981, 0.20392157, 0.22745098, 1)
+texture = ExtResource("3_npwht")
+expand_mode = 2
 
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1957995560]
+[node name="BackgroundFade" type="TextureRect" parent="." unique_id=1104603583]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+texture = SubResource("GradientTexture1D_mx1id")
 
-[node name="MenuPanel" type="Panel" parent="CenterContainer" unique_id=1146886774]
-custom_minimum_size = Vector2(400, 621.995)
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_xpn44")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/MenuPanel" unique_id=1820663719]
+[node name="LeftMenu" type="VBoxContainer" parent="." unique_id=1888936168]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.05
-anchor_top = 0.1
-anchor_right = 0.95
-anchor_bottom = 0.9
-grow_horizontal = 2
-grow_vertical = 2
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 480.0
+offset_bottom = 485.0
+theme = ExtResource("3_ptjlr")
 
-[node name="LogoContainer" type="VBoxContainer" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=927620154]
+[node name="HeroLogo" type="TextureRect" parent="LeftMenu" unique_id=1875830482]
+custom_minimum_size = Vector2(449.482, 0)
 layout_mode = 2
-alignment = 1
+texture = ExtResource("4_xpn44")
+expand_mode = 5
 
-[node name="IconTexture" type="TextureRect" parent="CenterContainer/MenuPanel/VBoxContainer/LogoContainer" unique_id=1912845318]
-custom_minimum_size = Vector2(96, 96)
+[node name="ButtonInset" type="MarginContainer" parent="LeftMenu" unique_id=1284498032]
+custom_maximum_size = Vector2(325, -1)
 layout_mode = 2
-size_flags_horizontal = 4
-texture = ExtResource("1_icon")
-expand_mode = 3
-stretch_mode = 5
+theme = ExtResource("2_theme")
+theme_override_constants/margin_left = 38
+theme_override_constants/margin_top = 21
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/MenuPanel/VBoxContainer/LogoContainer" unique_id=1809949847]
+[node name="Actions" type="VBoxContainer" parent="LeftMenu/ButtonInset" unique_id=1820663719]
 layout_mode = 2
-text = "ZOM NOM"
-label_settings = SubResource("LabelSettings_26kgo")
-horizontal_alignment = 1
+theme = ExtResource("2_theme")
 
-[node name="TitleLabel2" type="Label" parent="CenterContainer/MenuPanel/VBoxContainer/LogoContainer" unique_id=254255089]
+[node name="Play" type="Button" parent="LeftMenu/ButtonInset/Actions" unique_id=1907254994]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
-text = "DEFENSE"
-label_settings = SubResource("LabelSettings_npwht")
-horizontal_alignment = 1
+text = "PLAY"
+icon = ExtResource("5_26kgo")
+alignment = 0
 
-[node name="TitleLabel3" type="Label" parent="CenterContainer/MenuPanel/VBoxContainer/LogoContainer" unique_id=1764762023]
+[node name="SecondaryInset" type="MarginContainer" parent="LeftMenu/ButtonInset/Actions" unique_id=1778860083]
 layout_mode = 2
-text = "CLICK. AIM. SURVIVE."
-label_settings = SubResource("LabelSettings_alax6")
-horizontal_alignment = 1
+theme_override_constants/margin_left = 20
 
-[node name="Spacer1" type="Control" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=816307549]
-custom_minimum_size = Vector2(0, 30)
+[node name="SecondaryActions" type="VBoxContainer" parent="LeftMenu/ButtonInset/Actions/SecondaryInset" unique_id=588730285]
 layout_mode = 2
 
-[node name="StartButton" type="Button" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=1907254994]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-text = "START GAME"
-
-[node name="Spacer2" type="Control" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=1448794575]
-custom_minimum_size = Vector2(0, 10)
-layout_mode = 2
-
-[node name="LoadGameButton" type="Button" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=15422445]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-text = "LOAD GAME"
-
-[node name="Spacer2a" type="Control" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=1952004768]
-custom_minimum_size = Vector2(0, 10)
-layout_mode = 2
-
-[node name="AchievementsButton" type="Button" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=906556496]
-custom_minimum_size = Vector2(0, 50)
+[node name="AchievementsButton" type="Button" parent="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions" unique_id=906556496]
 layout_mode = 2
 text = "ACHIEVEMENTS"
 
-[node name="Spacer2d" type="Control" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=569112002]
-custom_minimum_size = Vector2(0, 20)
+[node name="UtilityRow" type="HBoxContainer" parent="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions" unique_id=1089293329]
 layout_mode = 2
 
-[node name="SettingsButton" type="Button" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=2015263243]
-custom_minimum_size = Vector2(0, 50)
+[node name="SettingsButton" type="Button" parent="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/UtilityRow" unique_id=2015263243]
 layout_mode = 2
-text = "SETTINGS"
+tooltip_text = "Settings"
+icon = ExtResource("6_26kgo")
 
-[node name="Spacer3" type="Control" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=1236868452]
-custom_minimum_size = Vector2(0, 10)
+[node name="ExitButton" type="Button" parent="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/UtilityRow" unique_id=1540509327]
 layout_mode = 2
-
-[node name="ExitButton" type="Button" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=1540509327]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
+size_flags_horizontal = 3
 text = "EXIT"
 
-[node name="Spacer4" type="Control" parent="CenterContainer/MenuPanel/VBoxContainer" unique_id=2111669518]
-layout_mode = 2
-size_flags_vertical = 3
+[node name="CurrentSave" type="Button" parent="." unique_id=15422445]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -214.0
+offset_bottom = 50.0
+grow_horizontal = 0
+text = "{current save}"
 
-[node name="CurrentSongLabel" type="Label" parent="." unique_id=1249684209]
+[node name="Version" type="Label" parent="." unique_id=1827910137]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_top = -20.0
-offset_right = 328.0
+offset_right = 61.0
+grow_vertical = 0
+text = "{version}"
+
+[node name="CurrentSongLabel" type="Label" parent="." unique_id=1249684209]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -328.0
+offset_top = -20.0
+grow_horizontal = 0
 grow_vertical = 0
 text = "Current track: None"
+horizontal_alignment = 2
 
-[connection signal="pressed" from="CenterContainer/MenuPanel/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
-[connection signal="pressed" from="CenterContainer/MenuPanel/VBoxContainer/LoadGameButton" to="." method="_on_load_game_button_pressed"]
-[connection signal="pressed" from="CenterContainer/MenuPanel/VBoxContainer/AchievementsButton" to="." method="_on_achievements_button_pressed"]
-[connection signal="pressed" from="CenterContainer/MenuPanel/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
-[connection signal="pressed" from="CenterContainer/MenuPanel/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
+[node name="Tip" type="Label" parent="." unique_id=76475692]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "{tip}"
+
+[connection signal="pressed" from="LeftMenu/ButtonInset/Actions/Play" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/AchievementsButton" to="." method="_on_achievements_button_pressed"]
+[connection signal="pressed" from="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/UtilityRow/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/UtilityRow/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="CurrentSave" to="." method="_on_load_game_button_pressed"]
