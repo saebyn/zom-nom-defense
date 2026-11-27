@@ -134,6 +134,7 @@ text = "Current track: None"
 horizontal_alignment = 2
 
 [node name="Tip" type="Label" parent="." unique_id=76475692]
+custom_maximum_size = Vector2(600, -1)
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
