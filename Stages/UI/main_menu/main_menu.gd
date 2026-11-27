@@ -8,12 +8,19 @@ class_name UI_MainMenu
 const SettingsMenuScene = preload("res://Common/UI/settings_menu/settings_menu.tscn")
 const TechTreeScene = preload("res://Stages/UI/tech_tree/tech_tree.tscn")
 const AchievementListScene = preload("res://Stages/UI/achievement_list/achievement_list.tscn")
+const MainMenuTips = preload("res://Stages/UI/main_menu/main_menu_tips.gd")
+const TIP_SECONDS_PER_WORD := 2.0
+
+@export var tips: Array[String] = MainMenuTips.TIPS.duplicate()
 
 @onready var current_song_label: Label = $CurrentSongLabel
+@onready var tip_label: Label = $Tip
+@onready var tip_timer: Timer = $TipTimer
 
 var settings_menu = null
 var tech_tree_ui = null
 var achievement_list_ui = null
+var _next_tip_index := 0
 
 func _ready():
   # Set the initial game state when the main menu loads
@@ -36,6 +43,20 @@ func _ready():
 
   AudioManager.song_started.connect(_on_song_change)
   _on_song_change(AudioManager.current_song)
+
+  tips = tips.filter(func(tip: String) -> bool: return not tip.strip_edges().is_empty())
+  _show_next_tip()
+
+func _show_next_tip() -> void:
+  if tips.is_empty():
+    tip_label.text = ""
+    return
+
+  var tip := tips[_next_tip_index]
+  tip_label.text = "Tip: " + tip
+  _next_tip_index = (_next_tip_index + 1) % tips.size()
+  var word_count := tip.replace("\t", " ").replace("\n", " ").replace("\r", " ").split(" ", false).size()
+  tip_timer.start(TIP_SECONDS_PER_WORD * word_count)
 
 func _setup_settings_menu():
   settings_menu = SettingsMenuScene.instantiate()

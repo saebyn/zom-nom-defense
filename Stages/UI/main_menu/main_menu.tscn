@@ -136,20 +136,30 @@ horizontal_alignment = 2
 
 [node name="Tip" type="Label" parent="." unique_id=76475692]
 layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
+anchors_preset = 12
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
+offset_left = 24.0
+offset_top = -52.0
+offset_right = -24.0
+offset_bottom = -24.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "{tip}"
+theme_override_colors/font_outline_color = Color(0.102, 0.122, 0.18, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+
+[node name="TipTimer" type="Timer" parent="." unique_id=758293410]
+one_shot = true
+ignore_time_scale = true
 
 [connection signal="pressed" from="LeftMenu/ButtonInset/Actions/Play" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/AchievementsButton" to="." method="_on_achievements_button_pressed"]
 [connection signal="pressed" from="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/UtilityRow/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/UtilityRow/ExitButton" to="." method="_on_exit_button_pressed"]
 [connection signal="pressed" from="CurrentSave" to="." method="_on_load_game_button_pressed"]
+[connection signal="timeout" from="TipTimer" to="." method="_show_next_tip"]
