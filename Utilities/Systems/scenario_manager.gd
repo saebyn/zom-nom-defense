@@ -48,7 +48,8 @@ var scenario_metadata: Dictionary = {
     "name": "Test Scenario",
     "scene_path": "res://Stages/Scenarios/scenario_test.tscn",
     "description": "A test scenario for debugging purposes.",
-    "prerequisite": null # No prerequisite
+    "prerequisite": null,
+    "dev_only": true,
   },
 }
 
@@ -160,6 +161,9 @@ func is_scenario_unlocked(scenario_id: String) -> bool:
   if not scenario_metadata.has(scenario_id):
     return false
 
+  if not _is_scenario_enabled(scenario_id):
+    return false
+
   if ProjectSettings.get_setting("zom_nom_defense/debug/unlock_all_scenarios"):
     return true
 
@@ -183,13 +187,19 @@ func get_best_time(scenario_id: String) -> float:
 func get_scenario_metadata(scenario_id: String) -> Dictionary:
   return scenario_metadata.get(scenario_id, {})
 
-## Get all available scenario IDs
+## List enabled scenarios, including those still locked by progression.
 func get_all_scenario_ids() -> Array[String]:
   var ids: Array[String] = []
   for key in scenario_metadata.keys():
-    ids.append(key)
+    if _is_scenario_enabled(key):
+      ids.append(key)
   ids.sort()
   return ids
+
+func _is_scenario_enabled(scenario_id: String) -> bool:
+  if not scenario_metadata[scenario_id].get("dev_only", false):
+    return true
+  return ProjectSettings.get_setting("zom_nom_defense/debug/enable_tools", false)
 
 ## Get the previous scenario requirement for unlocking
 func get_unlock_requirement(scenario_id: String) -> String:

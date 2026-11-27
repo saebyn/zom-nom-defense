@@ -68,6 +68,8 @@ Come hang out, watch the chaos unfold, and see how the sausage gets made! ðŸ§Ÿâ€
 
 Controls are fully rebindable in-game via the Settings menu.
 
+For development, enable `zom_nom_defense/debug/enable_tools` in Project Settings to make Test Scenario available in Scenario Select.
+
 ### Running Tests
 
 This project uses [GUT (Godot Unit Testing)](https://github.com/bitwes/Gut) for automated testing.
