@@ -1,6 +1,7 @@
 extends GutTest
 
 const WALL_TYPE := preload("res://Config/Buildings/wall.tres")
+const TURRET_TYPE := preload("res://Config/Buildings/turret.tres")
 
 class TestBuildingPlacement extends Utility_BuildingPlacement:
   func _validate_placement(_target_position: Vector3) -> BuildingPlacementStatus:
@@ -70,3 +71,21 @@ func test_placed_building_keeps_preview_position_and_rotation() -> void:
       placed_building.global_transform.basis.is_equal_approx(expected_transform.basis),
       "Placed building should keep the preview's global rotation"
     )
+
+
+func test_destroyed_building_does_not_leave_a_navigation_obstacle(
+  building_type = use_parameters([WALL_TYPE, TURRET_TYPE])
+) -> void:
+  var navigation_region := NavigationRegion3D.new()
+  add_child_autofree(navigation_region)
+  var building: Entity_PlaceableBuilding = building_type.scene.instantiate()
+  add_child_autofree(building)
+  building.place(navigation_region)
+  var obstacle := building.navigation_obstacle
+  assert_true(is_instance_valid(obstacle), "Placement should create a navigation obstacle")
+
+  building.health.take_damage(building.health.hitpoints)
+  await wait_process_frames(2)
+
+  assert_false(is_instance_valid(building), "Lethal damage should destroy the Building")
+  assert_false(is_instance_valid(obstacle), "The Building's navigation obstacle should be freed too")

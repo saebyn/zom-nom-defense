@@ -7,6 +7,7 @@ Repository guidance for coding agents working on Zom Nom Defense.
 This is a **3D tower defense game** built with **Godot 4**. The project uses a feature-based folder structure with clear separation of concerns and follows a Template + Config pattern for game entities.
 
 ### Key Project Details
+
 - **Engine**: Godot 4
 - **Project Type**: 3D Tower Defense Game
 - **Main Scene**: `Stages/Game/main/main.tscn`
@@ -17,11 +18,13 @@ This is a **3D tower defense game** built with **Godot 4**. The project uses a f
 ## Critical Setup Requirements
 
 ### ⚠️ CRITICAL: Asset Import Timing
+
 **NEVER cancel the initial asset import process!** The first-time asset import takes **15+ minutes minimum**. Cancelling this process will break 3D model rendering and require starting over.
 
 ### Godot 4.7 Installation
 
 1. **Download Godot 4.7.2 stable** to match CI:
+
    ```bash
    wget https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
    unzip Godot_v4.7.2-stable_linux.x86_64.zip
@@ -30,6 +33,7 @@ This is a **3D tower defense game** built with **Godot 4**. The project uses a f
    ```
 
 2. **Verify Installation**:
+
    ```bash
    ./godot --version
    # The official build reports 4.7.2.stable.official followed by a commit hash.
@@ -38,23 +42,28 @@ This is a **3D tower defense game** built with **Godot 4**. The project uses a f
 ### Project Setup
 
 1. **Initialize Submodules** (⚠️ REQUIRED):
+
    ```bash
    git submodule update --init --recursive
    ```
+
    - This downloads external dependencies like the GUT testing framework
    - Always run this after cloning the repository
 
 2. **Initial Asset Import** (⚠️ CRITICAL - DO NOT CANCEL):
+
    ```bash
    # This takes 15+ minutes minimum - be patient!
    ./godot --headless --import --path .
    # On a fresh checkout, scan again so Dialogic indexes characters and timelines.
    ./godot --headless --import --path .
    ```
+
    - Wait for complete import before proceeding
    - Script class registration happens during this process
 
-2. **Quick Validation**:
+3. **Quick Validation**:
+
    ```bash
    # Test headless execution (should exit cleanly)
    ./godot --headless --path . "res://Stages/Game/main/main.tscn"
@@ -63,6 +72,7 @@ This is a **3D tower defense game** built with **Godot 4**. The project uses a f
 ## Project Structure
 
 ### Directory Organization
+
 ```
 ├── Assets/               # Asset files (models, icons)
 │   ├── Icons/            # UI icons (PNG or SVG files)
@@ -75,7 +85,7 @@ This is a **3D tower defense game** built with **Godot 4**. The project uses a f
 │   └── Models/           # 3D models (*.blend files, etc)
 ├── Common/               # Shared components and systems
 │   ├── Components/       # Reusable components (attack, health)
-│   ├── Effects/          # Visual/audio effects (shake_effect)
+│   ├── Effects/          # Visual/audio effects
 │   ├── Systems/          # Game systems (spawner)
 │   └── UI/               # Common UI components (health_display)
 ├── Config/               # Configuration files
@@ -107,12 +117,14 @@ This project uses git submodules for external dependencies to keep the repositor
 - **Example**: `addons/gut` → `../external/Gut/addons/gut`
 
 **When adding new addons**:
+
 1. Add as submodule: `git submodule add <repo-url> external/<addon-name>`
 2. Checkout specific version if needed
 3. Create symlink: `ln -s ../external/<addon-name>/addons/<name> addons/<name>`
 4. Commit the submodule and symlink (not the addon files directly)
 
 ### Key Files
+
 - **Main Scene**: `Stages/Game/main/main.tscn` - Primary game scene
 - **Project File**: `project.godot` - Godot project configuration
 - **Enemy Template**: `Entities/Enemies/Templates/base_enemy/enemy.tscn`
@@ -125,24 +137,30 @@ All code identifiers, comments, documentation, and UI text must use the canonica
 ## Development Guidelines
 
 ### Coding Standards
+
 - Follow Godot GDScript style guide
 - Always use 2 spaces for indentation
 - Comment complex logic
 - Use meaningful variable and function names
 
 ### Template + Config Pattern
+
 The project uses a Template + Config architecture:
+
 - **Templates**: Base entity scenes in `Entities/*/Templates/`
 - **Configs**: Configuration resources in `Config/`
 - **Components**: Reusable components in `Common/Components/`
 
 ### Autoloaded Systems
+
 The project uses several autoloaded singletons for global state management:
+
 - **MyLogger**: Comprehensive logging with scope-based filtering (`Utilities/Systems/logger.gd`)
 - **CurrencyManager**: Player currency tracking and transactions (`Utilities/Systems/currency_manager.gd`)
 - **GameManager**: Game state transitions and high-level coordination (`Utilities/Systems/game_manager.gd`)
 
 Access these systems from anywhere in the codebase:
+
 ```gdscript
 MyLogger.info("System", "Message")
 CurrencyManager.earn_scrap(10)
@@ -154,12 +172,14 @@ GameManager.set_game_state(GameManager.GameState.IN_GAME_MENU)
 The `GameManager` singleton manages game states and transitions. It defines an enum for game states and emits signals on state changes. See the `game_manager.gd` autoload script for implementation details.
 
 ### Script Class Registration
+
 - Scripts use proper class_name declarations
 - Registration happens during asset import
 - Restart Godot if class recognition issues occur
 
 ### Asset Management
-- **Large Assets**: Excluded from git (*.blend, *.blend1)
+
+- **Large Assets**: Excluded from git (*.blend,*.blend1)
 - **Import Files**: Keep .import files for proper asset handling
 - **3D Models**: Require full asset import for proper rendering
 
@@ -190,6 +210,7 @@ The `GameManager` singleton manages game states and transitions. It defines an e
 ### ⚠️ Scene/Resource UID Guidance
 
 Godot 4 scene files (`.tscn`) and resource files (`.tres`) contain `uid="uid://..."` values in their `[ext_resource]` headers. These UIDs are Godot's internal resource identifiers stored in the project's UID registry (`.godot/uid_cache.bin`) — they are **not** related to any `.uid` sidecar files on disk.
+
 - **Do not modify or remove** the `uid="uid://..."` values in `.tscn` and `.tres` files
 - These UIDs are automatically generated and managed by Godot during asset import and scene/resource creation
 - When you create new scenes or resources, Godot will assign new UIDs to them during the import process, so don't worry about manually managing or creating UIDs for your assets
@@ -197,18 +218,21 @@ Godot 4 scene files (`.tscn`) and resource files (`.tres`) contain `uid="uid://.
 ### Build and Test Commands
 
 1. **Asset Import Validation**:
+
    ```bash
    # Check for import completion
    ls -la .godot/imported/
    ```
 
 2. **Headless Testing**:
+
    ```bash
    # Test scene loading without GUI
    ./godot --headless --path . "res://Stages/Game/main/main.tscn"
    ```
 
 3. **Error Checking**:
+
    ```bash
    # Run with debug output
    ./godot --path . --verbose "res://Stages/Game/main/main.tscn"

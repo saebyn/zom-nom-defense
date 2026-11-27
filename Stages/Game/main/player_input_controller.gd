@@ -15,7 +15,6 @@ signal enemy_attacked ## Emitted when the player clicks to attack an enemy
 @export var attack: Component_Attack
 @export var building_placement: Utility_BuildingPlacement
 @export var hover_controller: Main_HoverController
-@export var navigation_controller: Main_NavigationController
 @export var ui: MainUI
 @export var attack_waiting_cursor_image: Texture2D
 @export var raycast_length: float = 1000.0
@@ -132,10 +131,6 @@ func _handle_building_remove_click(click_position: Vector2) -> void:
       # Show UI feedback
       if ui and ui.has_method("show_building_removed"):
         ui.show_building_removed(refund)
-
-      # Rebake navigation mesh after removal
-      if navigation_controller:
-        navigation_controller.rebake_navigation_mesh()
     else:
       MyLogger.info("PlayerInput", "Clicked object is not a removable building")
   else:

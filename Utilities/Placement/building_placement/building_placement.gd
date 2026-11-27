@@ -209,6 +209,7 @@ func _place_building() -> void:
   building.global_rotation = _preview.global_rotation
   building.building_type = _place_building_type
   building.place(navigation_region)
+  building.tree_exited.connect(_on_placed_building_exited, CONNECT_DEFERRED | CONNECT_ONE_SHOT)
 
   rebake_navigation_mesh.emit()
   building_placed.emit()
@@ -220,6 +221,13 @@ func _place_building() -> void:
   _clear_building_placement()
 
   AudioManager.play_sound(audio_player, Resource_SoundEffect.SoundEffect.BUILDING_COMPLETE)
+
+
+func _on_placed_building_exited() -> void:
+  # Wait for queued deletion of both the Building and its navigation obstacle before baking.
+  if is_inside_tree():
+    rebake_navigation_mesh.emit()
+
 
 func _cancel_building_placement() -> void:
   _clear_building_placement()

@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://ef5o7bdag8pq" path="res://Entities/Survivors/Templates/base_survivor/survivor.gd" id="1_e1yvt"]
 [ext_resource type="PackedScene" uid="uid://cxtvhj0yxxp2n" path="res://Common/Components/health/health.tscn" id="2_5ebp1"]
-[ext_resource type="Script" uid="uid://1es12v0p8gvh" path="res://Common/Effects/shake_effect/shake_effect.gd" id="3_n2scg"]
 [ext_resource type="Material" uid="uid://e2ebugibvdmg" path="res://Assets/Textures/survivorMaleB.material" id="4_cn6ui"]
 [ext_resource type="Script" uid="uid://b81o4afla2kvg" path="res://Common/Components/panic_behavior/panic_behavior.gd" id="4_jt1q2"]
 
@@ -1142,16 +1141,6 @@ hit_sound = 19
 death_sound = 5
 audio_player = NodePath("../AudioStreamPlayer3D")
 
-[node name="ShakeEffect" type="Node" parent="." unique_id=448051785]
-script = ExtResource("3_n2scg")
-metadata/_custom_type_script = "uid://1es12v0p8gvh"
-
-[node name="characterMedium" type="MeshInstance3D" parent="." unique_id=286343175]
-mesh = SubResource("ArrayMesh_tdtg0")
-skin = SubResource("Skin_iu6f8")
-skeleton = NodePath("../Skeleton3D")
-surface_material_override/0 = ExtResource("4_cn6ui")
-
 [node name="Skeleton3D" type="Skeleton3D" parent="." unique_id=1418949546]
 motion_scale = 1.24222
 animate_physical_bones = false
@@ -1350,7 +1339,7 @@ bones/27/rest = Transform3D(-1, 1.0155732e-07, 6.9174625e-08, -2.980239e-08, 0.3
 bones/27/enabled = true
 bones/27/position = Vector3(-0.0145746, 0.247242, -0.0750821)
 bones/27/rotation = Quaternion(0, 0, 0, 1)
-bones/27/scale = Vector3(1.00001, 0.999999, 0.999991)
+bones/27/scale = Vector3(1, 1, 1)
 bones/28/name = "LeftLowerArm"
 bones/28/parent = 27
 bones/28/rest = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.0124925, 0.468765, 0.041642)
@@ -1483,7 +1472,7 @@ bones/46/rest = Transform3D(1, 0, 0, 0, 1, 2.98023e-08, 0, -2.98023e-08, 1, 0.03
 bones/46/enabled = true
 bones/46/position = Vector3(0.0316439, 0.0848861, -0.0548945)
 bones/46/rotation = Quaternion(-2.98023e-08, 1.49012e-08, 2.22045e-16, 1)
-bones/46/scale = Vector3(1.00002, 0.999995, 0.999985)
+bones/46/scale = Vector3(1, 1, 1)
 bones/47/name = "RightThumbDistal"
 bones/47/parent = 46
 bones/47/rest = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0385808, 0.125169, -0.0188754)
@@ -1511,7 +1500,7 @@ bones/50/rest = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, 0.0286424, 0.5867, 0.1
 bones/50/enabled = true
 bones/50/position = Vector3(0.0286424, 0.5867, 0.160044)
 bones/50/rotation = Quaternion(0.078452386, 0.43269658, -0.8964783, -0.054272585)
-bones/50/scale = Vector3(0.999993, 0.999988, 1.00002)
+bones/50/scale = Vector3(1, 1, 1)
 bones/51/name = "LeftToes"
 bones/51/parent = 50
 bones/51/rest = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.051078, 0.236066, -0.18005)
@@ -1562,6 +1551,11 @@ bones/57/position = Vector3(-0.0255165, 0.211536, 0.00843864)
 bones/57/rotation = Quaternion(-0.05987952, 0.9979979, 0.020042688, 0.0035988593)
 bones/57/scale = Vector3(1, 0.99999946, 1.0000004)
 
+[node name="characterMedium" type="MeshInstance3D" parent="Skeleton3D" unique_id=286343175]
+mesh = SubResource("ArrayMesh_tdtg0")
+skin = SubResource("Skin_iu6f8")
+surface_material_override/0 = ExtResource("4_cn6ui")
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=931396292]
 libraries/ = SubResource("AnimationLibrary_e25lm")
 autoplay = &"Idle"
@@ -1585,5 +1579,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8723701, 0)
 shape = SubResource("CapsuleShape3D_hover")
 
 [connection signal="damaged" from="Health" to="." method="_on_health_damaged"]
-[connection signal="damaged" from="Health" to="ShakeEffect" method="damage_taken"]
 [connection signal="died" from="Health" to="." method="_on_died"]

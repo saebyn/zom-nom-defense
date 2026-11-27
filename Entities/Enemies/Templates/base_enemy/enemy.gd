@@ -2,16 +2,23 @@ extends CharacterBody3D
 
 const CMP_EPSILON = 0.001
 const SHAMBLE_REFERENCE_SPEED = 1.0
+const MAX_PATH_STEERING_RATIO = 0.25
+const MIN_PATH_STEERING_INTERVAL = 1.5
+const MAX_PATH_STEERING_INTERVAL = 3.0
 
+@export_group("Overridable Properties")
 @export var movement_speed: float = 2.0
-@export var rotation_speed: float = PI / 3.0 # Radians per second, adjust for faster/slower turning. This is independent of movement speed to ensure the enemy can always turn towards the target effectively.
-@export var path_desired_distance: float = 0.5
+@export var scrap_reward: int = 10 ## Scrap awarded when enemy dies (can be 0)
 @export var target_desired_distance: float = 4.0
 @export var target_attack_range: float = 2.0
 @export var building_attack_range: float = 6.0
-@export var scrap_reward: int = 10 ## Scrap awarded when enemy dies (can be 0)
-@export var enemy_type: String = "base_enemy" ## Type identifier for stats tracking
-@export var enemy_group: String = "enemies"
+@export var uninterruptible_by_damage: bool = false
+
+@export_group("Navigation")
+@export var movement_disabled: bool = false
+@export var rotation_speed: float = PI / 3.0 # Radians per second, adjust for faster/slower turning. This is independent of movement speed to ensure the enemy can always turn towards the target effectively.
+@export var path_desired_distance: float = 0.5
+@export_range(0.0, 15.0, 0.1, "or_greater") var max_path_steering_offset: float = 5.0 ## Maximum horizontal steering offset in world units. Zero follows the path directly.
 
 @export_group("Animations")
 @export var idle_animation_state: StringName = &"Idle"
@@ -20,10 +27,19 @@ const SHAMBLE_REFERENCE_SPEED = 1.0
 @export var walk_speed_threshold: float = 0.2
 @export var run_speed_threshold: float = 4.0
 
+@export_group("Other Properties")
+@export var enemy_type: String = "base_enemy" ## Type identifier for stats tracking
+@export var enemy_group: String = "enemies"
+
+
 var attack: Component_Attack
 var health: Component_Health
 var damage_numbers: Component_DamageNumbers
 var is_dead: bool = false
+var _path_steering_from := Vector3.ZERO
+var _path_steering_to := Vector3.ZERO
+var _path_steering_elapsed := 0.0
+var _path_steering_interval := 0.0
 
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var animation_state: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/Locomotion/playback")
@@ -65,6 +81,7 @@ func load_resource(resource: Resource_EnemyType) -> void:
     target_desired_distance = resource.target_desired_distance
     target_attack_range = resource.target_attack_range
     building_attack_range = resource.building_attack_range
+    uninterruptible_by_damage = resource.uninterruptible_by_damage
     scrap_reward = resource.scrap_reward
     enemy_type = resource.enemy_type
 
@@ -136,18 +153,22 @@ func _physics_process(delta: float):
   _update_locomotion_animation()
 
 func _update_navigation(delta: float):
-  if navigation_agent.is_navigation_finished():
+  if navigation_agent.is_navigation_finished() or movement_disabled:
     velocity = Vector3.ZERO
   else:
     var next_path_position := navigation_agent.get_next_path_position()
+    var to_waypoint := next_path_position - global_position
+    var remaining_xz := Vector2(to_waypoint.x, to_waypoint.z).length()
+    # Offset only the steering aim, and converge on the real waypoint to let the agent advance.
+    var steering_offset := _advance_path_steering(delta)
+    var steering_position := next_path_position + steering_offset.limit_length(remaining_xz * MAX_PATH_STEERING_RATIO)
 
     var local_current_look_position := Vector3.MODEL_FRONT
 
-    # Move directly without avoidance
-    var direction := global_position.direction_to(next_path_position)
+    var direction := global_position.direction_to(steering_position)
     velocity = direction * movement_speed
 
-    var global_target_look_position := Vector3(next_path_position)
+    var global_target_look_position := steering_position
     global_target_look_position.y = global_position.y # Keep the look direction horizontal
     var local_target_look_position := to_local(global_target_look_position)
 
@@ -169,7 +190,33 @@ func _update_navigation(delta: float):
 
     look_at(interpolated_look_position, Vector3.UP, true)
 
-    
+
+func _advance_path_steering(delta: float) -> Vector3:
+  if max_path_steering_offset <= 0.0:
+    return Vector3.ZERO
+
+  if _path_steering_interval == 0.0:
+    _path_steering_from = _roll_path_steering_offset()
+    _path_steering_to = _roll_path_steering_offset()
+    _path_steering_interval = randf_range(MIN_PATH_STEERING_INTERVAL, MAX_PATH_STEERING_INTERVAL)
+
+  _path_steering_elapsed += delta
+  while _path_steering_elapsed >= _path_steering_interval:
+    _path_steering_elapsed -= _path_steering_interval
+    _path_steering_from = _path_steering_to
+    _path_steering_to = _roll_path_steering_offset()
+    _path_steering_interval = randf_range(MIN_PATH_STEERING_INTERVAL, MAX_PATH_STEERING_INTERVAL)
+
+  var blend := smoothstep(0.0, _path_steering_interval, _path_steering_elapsed)
+  return _path_steering_from.lerp(_path_steering_to, blend)
+
+
+func _roll_path_steering_offset() -> Vector3:
+  var angle := randf_range(0.0, TAU)
+  var distance := randf_range(0.0, max_path_steering_offset)
+  return Vector3(cos(angle), 0.0, sin(angle)) * distance
+
+
 func _on_died(damage_source: String = "unknown"):
   MyLogger.info("Enemy", "Enemy (%s) died from %s, removing from scene" % [enemy_type, damage_source])
   
@@ -204,7 +251,7 @@ func _trigger_attack_animation(_target: Node) -> void:
 
 
 func _trigger_hit_reaction_animation() -> void:
-  if animation_tree:
+  if animation_tree and not uninterruptible_by_damage:
     animation_tree.set(
       "parameters/HitReactionOneShot/request",
       AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE

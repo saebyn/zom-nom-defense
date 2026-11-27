@@ -93,8 +93,8 @@ func spawn_enemy(enemy_type: Resource_EnemyType) -> Variant:
     if spawn_position == null:
         return null
     else:
-        enemy.global_position = spawn_position
         add_child(enemy)
+        enemy.global_position = spawn_position
         current_enemies.append(enemy)
         _spawned_enemies += 1
         enemy_spawned.emit(enemy)

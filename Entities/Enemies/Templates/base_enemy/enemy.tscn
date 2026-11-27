@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://bllk3lva37p4k" path="res://Entities/Enemies/Templates/base_enemy/enemy.gd" id="2_4gyqm"]
 [ext_resource type="PackedScene" uid="uid://d2nt6gtj5g3cm" path="res://Common/Components/attack/attack.tscn" id="3_qi2p4"]
 [ext_resource type="PackedScene" uid="uid://cxtvhj0yxxp2n" path="res://Common/Components/health/health.tscn" id="4_iifgy"]
-[ext_resource type="Script" uid="uid://1es12v0p8gvh" path="res://Common/Effects/shake_effect/shake_effect.gd" id="5_s6e6n"]
 [ext_resource type="Script" uid="uid://d2guk20uq6gui" path="res://Common/Components/damage_numbers/damage_numbers.gd" id="6_s8arm"]
 [ext_resource type="Script" uid="uid://c7bdetuss8stb" path="res://Common/Components/idle_sounds/idle_sounds.gd" id="7_sm4ql"]
 [ext_resource type="PackedScene" uid="uid://crngc516wfv4x" path="res://Assets/Models/zombie1.glb" id="9_4dxql"]
@@ -64,6 +63,7 @@ collision_mask = 7
 safe_margin = 0.5
 script = ExtResource("2_4gyqm")
 movement_speed = 20.0
+rotation_speed = 1.526
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1047412762]
 path_desired_distance = 0.1
@@ -85,10 +85,6 @@ audio_player = NodePath("../AudioStreamPlayer3D")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1571389275]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0118122, 2.05365, 0.171304)
 shape = SubResource("CapsuleShape3D_s6e6n")
-
-[node name="ShakeEffect" type="Node" parent="." unique_id=1766538940]
-script = ExtResource("5_s6e6n")
-metadata/_custom_type_script = "uid://1es12v0p8gvh"
 
 [node name="Component_DamageNumbers" type="Node" parent="." unique_id=377778520]
 script = ExtResource("6_s8arm")
@@ -132,7 +128,6 @@ parameters/HitReactionOneShot/request = 0
 
 [connection signal="attack_accepted" from="Attack" to="." method="_trigger_attack_animation"]
 [connection signal="damaged" from="Health" to="." method="_on_health_damaged"]
-[connection signal="damaged" from="Health" to="ShakeEffect" method="damage_taken"]
 [connection signal="died" from="Health" to="." method="_on_died"]
 
 [editable path="Zombie"]

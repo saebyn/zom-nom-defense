@@ -29,6 +29,11 @@ func _ready():
   super._ready()
 
 
+func _exit_tree() -> void:
+  # The obstacle is parented to the navigation region, not to this Building.
+  if is_instance_valid(navigation_obstacle):
+    navigation_obstacle.queue_free()
+
 
 ## Remove this building and return currency based on remaining health
 func remove() -> int:
@@ -59,10 +64,6 @@ func remove() -> int:
   MyLogger.info("Building", "Removing building. Health: %d%%, Refund: %d/%d" % [
     health_percentage * 100, refund_amount, building_type.cost
   ])
-  
-  # Clean up navigation obstacle
-  if navigation_obstacle and is_instance_valid(navigation_obstacle):
-    navigation_obstacle.queue_free()
   
   # Return currency
   CurrencyManager.earn_scrap(refund_amount)
@@ -113,7 +114,7 @@ func place(navigation_region: NavigationRegion3D) -> void:
     size.y = max(size.y, aabb.size.y * 0.5)
     size.z = max(size.z, aabb.size.z * 0.5)
 
-  nav_obstacle.vertices.append_array([
+  nav_obstacle.vertices = PackedVector3Array([
     Vector3(-size.x, 0, -size.z),
     Vector3(size.x, 0, -size.z),
     Vector3(size.x, 0, size.z),

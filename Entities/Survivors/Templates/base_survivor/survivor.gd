@@ -8,7 +8,7 @@ var health: Component_Health
 var survivor_name: String = "" ## Name of this survivor (from their persistent profile)
 var profile_id: String = "" ## Persistent profile id assigned by SurvivorNameManager
 
-@onready var mesh: MeshInstance3D = $characterMedium
+@onready var mesh: MeshInstance3D = $Skeleton3D/characterMedium
 @onready var audio_player: AudioStreamPlayer3D = $AudioStreamPlayer3D
 
 func _ready():
