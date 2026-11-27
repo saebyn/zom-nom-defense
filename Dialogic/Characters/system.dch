@@ -21,12 +21,23 @@
 "style": "",
 "suffix": ""
 },
-&"default_portrait": "",
+&"default_portrait": "New portrait",
 &"description": "",
 &"display_name": "Tutorial",
 &"mirror": false,
 &"nicknames": [""],
 &"offset": Vector2(0, 0),
-&"portraits": {},
+&"portraits": {
+"New portrait": {
+"export_overrides": {
+"image": "\"res://Assets/Icons/question.png\""
+},
+"ignore_char_scale": false,
+"mirror": false,
+"offset": Vector2(0, -11),
+"scale": 1.0,
+"scene": ""
+}
+},
 &"scale": 1.0
 }
