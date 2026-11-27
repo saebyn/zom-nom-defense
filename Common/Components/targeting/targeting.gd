@@ -323,7 +323,9 @@ func _attack_target():
       return
   else:
     MyLogger.debug("Component_Targeting", "No valid fallback building target currently set.")
-    navigation_agent.set_target_position(current_target.global_position)
+    var destination := current_target.global_position
+    if navigation_agent.target_position != destination:
+      navigation_agent.set_target_position(destination)
     _check_and_set_fallback_target()
 
   # Attack primary target if in range (higher priority)
