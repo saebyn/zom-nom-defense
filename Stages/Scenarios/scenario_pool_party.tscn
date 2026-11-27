@@ -40,7 +40,7 @@ albedo_color = Color(0, 0, 0, 1)
 script = ExtResource("1_amgde")
 enemy_spawner = NodePath("System_EnemySpawner")
 scenario_environment = ExtResource("2_8hvwh")
-camera_max_size = 1000.0
+camera_max_size = 100.0
 metadata/_custom_type_script = "uid://nv24k764rct"
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1964702786]
