@@ -31,6 +31,10 @@ sed -i \
 	's|^debug/unlock_all_scenarios=.*|debug/unlock_all_scenarios=false|' \
 	"$PROJECT_FILE"
 
+sed -i \
+	's|^debug/enable_tools=.*|debug/enable_tools=false|' \
+	"$PROJECT_FILE"
+
 # ── [twitcher] log levels ─────────────────────────────────────────────────────
 # Lower all twitcher log channels from "debug" to "warn" for release.
 for key in TwitchAuth TwitchAPI TwitchService; do

@@ -337,8 +337,7 @@ func _generate_slot_metadata() -> Dictionary:
     "timestamp": Time.get_unix_time_from_system(),
     "playtime": slot_playtime,
     "player_level": 1,
-    "last_scenario": "",
-    "slot_name": "" # Optional user-customizable name
+    "last_scenario": ""
   }
   
   # Try to get player level from CurrencyManager (with null check)
@@ -347,7 +346,7 @@ func _generate_slot_metadata() -> Dictionary:
   else:
     MyLogger.warn("SaveManager", "CurrencyManager not available for metadata generation")
   
-  # The last scenario is display metadata, not a checkpoint.
+  # The last scenario is informational metadata, not a checkpoint.
   if ScenarioManager and ScenarioManager.has_method("get_current_scenario_id"):
     metadata["last_scenario"] = ScenarioManager.get_current_scenario_id()
   else:

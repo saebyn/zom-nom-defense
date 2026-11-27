@@ -51,7 +51,6 @@ func configure(slot_num: int, metadata: Dictionary):
     var level = metadata.get("player_level", 1)
     var playtime = metadata.get("playtime", 0.0)
     var timestamp = metadata.get("timestamp", 0)
-    var _scenario = metadata.get("last_scenario", "")
     
     MyLogger.debug("SaveSlotCard", "Slot %d metadata - Level: %d, Playtime: %.2f, Timestamp: %d" % [slot_number, level, playtime, timestamp])
     

@@ -58,8 +58,8 @@ Components are reusable, modular pieces of functionality that can be attached to
 
 **Key Characteristics:**
 
-- ✅ **Should be classes only** (`.gd` files)
-- ❌ **Should NOT be scenes** (`.tscn` files)
+- Use script classes (`.gd` files) for behavior
+- Use reusable scenes (`.tscn` files) when components need child nodes or shared scene setup
 - Extend from base Godot nodes (`Node`, `Area3D`, etc.)
 - Register themselves in parent's metadata for discovery
 - Focus on single responsibility
@@ -67,7 +67,7 @@ Components are reusable, modular pieces of functionality that can be attached to
 **Usage Example:**
 
 ```gdscript
-# Add to entity scene tree, not instantiated in code
+# Instance health.tscn as a child of the entity.
 # Component registers itself automatically in _ready()
 var health: Component_Health
 func _ready():
@@ -75,14 +75,7 @@ func _ready():
     health = get_meta("health_component")
 ```
 
-**Why Components Should Be Classes, Not Scenes:**
-
-1. **Performance**: Instantiating scripts is faster than loading scenes
-2. **Flexibility**: Easier to attach dynamically in code
-3. **Simplicity**: No scene hierarchy to manage
-4. **Composability**: Pure behavior, no visual structure
-
-> **Note**: Some older components (`Component_Health` and `Component_Attack`) currently have both `.gd` and `.tscn` files. These should be refactored to remove the `.tscn` files in future updates, using the scripts directly instead.
+Instantiate the [Health Component scene](../Common/Components/health/health.tscn) for its health display and the [Attack Component scene](../Common/Components/attack/attack.tscn) for its wired attack timer. The game instantiates both scenes as reusable child nodes.
 
 ---
 
@@ -184,26 +177,27 @@ Stage classes represent levels and scenarios.
 
 This is a critical architectural distinction in Zom Nom Defense:
 
-### Components = Classes (Scripts Only)
+### Components = Reusable Behavior
 
 **What they are:**
 
-- Pure behavior modules
+- Modules that provide a specific behavior
 - Lightweight and reusable
-- No visual structure
+- Can include supporting nodes without representing a full entity
 
 **File structure:**
 
 ```
 Common/Components/health/
-├── health.gd          ✅ (class_name Component_Health)
-└── health.gd.uid
+├── health.gd          (class_name Component_Health)
+├── health.gd.uid
+└── health.tscn        (reusable component scene)
 ```
 
 **How to use:**
 
 ```gdscript
-# In entity scene: Add Component_Health as child node
+# In the entity scene, instance health.tscn as a child node.
 # Script automatically registers in parent metadata
 
 # In entity script:
@@ -233,11 +227,10 @@ Entities/Buildings/Templates/placeable_building/
 
 **Why the distinction matters:**
 
-1. **Performance**: Components are instantiated faster
-2. **Reusability**: Same component on many entity types
-3. **Clarity**: Clear separation between behavior (component) and object (entity)
-4. **Testing**: Components can be unit tested independently
-5. **Maintenance**: Changes to component behavior affect all users automatically
+1. **Reusability**: Same component on many entity types
+2. **Clarity**: Clear separation between behavior (component) and object (entity)
+3. **Testing**: Components can be unit tested independently
+4. **Maintenance**: Changes to component behavior affect all users automatically
 
 ---
 
@@ -255,7 +248,7 @@ Entities/Buildings/Templates/placeable_building/
 
 ✅ **DO:**
 
-- Create components as single `.gd` files
+- Use a single `.gd` file when a component doesn't need child nodes or shared scene setup
 - Extend from appropriate Godot base node
 - Register in parent metadata in `_ready()`
 - Focus on single responsibility
@@ -263,7 +256,6 @@ Entities/Buildings/Templates/placeable_building/
 
 ❌ **DON'T:**
 
-- Create `.tscn` files for components (use scripts only)
 - Put game logic in components (they're behavior, not brains)
 - Hard-code references to specific entities
 - Use `get_node()` to find components (use metadata)
@@ -282,38 +274,6 @@ Entities/Buildings/Templates/placeable_building/
 - Instantiate entities directly from scripts (load scene instead)
 - Duplicate component logic in entity scripts
 - Create complex inheritance hierarchies
-
----
-
-## Migration Notes
-
-### Legacy Components with Scene Files
-
-Currently, `Component_Health` and `Component_Attack` have both `.gd` and `.tscn` files. This is legacy structure that should eventually be refactored:
-
-**Current state:**
-
-```
-Common/Components/health/
-├── health.gd          ✅
-├── health.tscn        ⚠️ (legacy, should be removed)
-└── health.gd.uid
-```
-
-**Future state:**
-
-```
-Common/Components/health/
-├── health.gd          ✅
-└── health.gd.uid
-```
-
-**Migration plan:**
-
-1. Update all entity scenes to use script directly instead of scene
-2. Test that component registration still works correctly
-3. Remove `.tscn` files and update references
-4. Document the change in release notes
 
 ---
 

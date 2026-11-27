@@ -9,7 +9,7 @@ extends Node
 ## 
 ## Persistent State (saved across sessions):
 ## - Completed scenarios
-## - Best times and scores per scenario
+## - Best times per scenario
 ## - Scenario unlocking logic
 
 const DEFAULT_SCENARIO_ID: String = "scenario_1" ## Default scenario to start with
@@ -22,7 +22,6 @@ var last_scenario_stats: Dictionary = {} # Stats from the last completed/failed 
 # Persistent state (saved across sessions)
 var completed_scenarios: Array[String] = [] # Array of completed scenario IDs ["scenario_1", "scenario_2"]
 var scenario_best_times: Dictionary = {} # scenario_id -> best time in seconds
-var scenario_best_scores: Dictionary = {} # scenario_id -> best score
 
 # Scenario metadata (can be extended to load from resources in the future)
 var scenario_metadata: Dictionary = {
@@ -30,21 +29,18 @@ var scenario_metadata: Dictionary = {
     "name": "Car Defense",
     "scene_path": "res://Stages/Scenarios/scenario_1.tscn",
     "description": "Defend a person on top of a car.",
-    "thumbnail": "", # Optional icon path
     "prerequisite": null, # No prerequisite for the first scenario
   },
   "scenario_2": {
     "name": "Campfire Survivors",
     "scene_path": "res://Stages/Scenarios/scenario_2.tscn",
     "description": "Protect two survivors next to a campfire.",
-    "thumbnail": "",
     "prerequisite": "scenario_1" # Must complete scenario_1 to unlock
   },
   "scenario_4": {
     "name": "Pool Party",
     "scene_path": "res://Stages/Scenarios/scenario_pool_party.tscn",
     "description": "Defend survivors in an inflatable pool.",
-    "thumbnail": "",
     "prerequisite": "scenario_2",
   },
 
@@ -52,8 +48,8 @@ var scenario_metadata: Dictionary = {
     "name": "Test Scenario",
     "scene_path": "res://Stages/Scenarios/scenario_test.tscn",
     "description": "A test scenario for debugging purposes.",
-    "thumbnail": "",
-    "prerequisite": null # No prerequisite
+    "prerequisite": null,
+    "dev_only": true,
   },
 }
 
@@ -143,7 +139,7 @@ func get_current_wave() -> int:
 ## Persistent Progression Management
 
 ## Mark a scenario as completed
-func mark_scenario_complete(scenario_id: String, time: float = 0.0, score: int = 0) -> void:
+func mark_scenario_complete(scenario_id: String, time: float = 0.0) -> void:
   if scenario_id not in completed_scenarios:
     completed_scenarios.append(scenario_id)
     scenario_completed.emit(scenario_id)
@@ -159,16 +155,13 @@ func mark_scenario_complete(scenario_id: String, time: float = 0.0, score: int =
     if scenario_id not in scenario_best_times or time < scenario_best_times[scenario_id]:
       scenario_best_times[scenario_id] = time
       MyLogger.info("ScenarioManager", "New best time for %s: %.2f seconds" % [scenario_id, time])
-  
-  # Update best score (if better or first time)
-  if score > 0:
-    if scenario_id not in scenario_best_scores or score > scenario_best_scores[scenario_id]:
-      scenario_best_scores[scenario_id] = score
-      MyLogger.info("ScenarioManager", "New best score for %s: %d" % [scenario_id, score])
 
 ## Check if a scenario is unlocked
 func is_scenario_unlocked(scenario_id: String) -> bool:
   if not scenario_metadata.has(scenario_id):
+    return false
+
+  if not _is_scenario_enabled(scenario_id):
     return false
 
   if ProjectSettings.get_setting("zom_nom_defense/debug/unlock_all_scenarios"):
@@ -190,21 +183,23 @@ func is_scenario_completed(scenario_id: String) -> bool:
 func get_best_time(scenario_id: String) -> float:
   return scenario_best_times.get(scenario_id, 0.0)
 
-## Get best score for a scenario (0 if not played)
-func get_best_score(scenario_id: String) -> int:
-  return scenario_best_scores.get(scenario_id, 0)
-
 ## Get scenario metadata
 func get_scenario_metadata(scenario_id: String) -> Dictionary:
   return scenario_metadata.get(scenario_id, {})
 
-## Get all available scenario IDs
+## List enabled scenarios, including those still locked by progression.
 func get_all_scenario_ids() -> Array[String]:
   var ids: Array[String] = []
   for key in scenario_metadata.keys():
-    ids.append(key)
+    if _is_scenario_enabled(key):
+      ids.append(key)
   ids.sort()
   return ids
+
+func _is_scenario_enabled(scenario_id: String) -> bool:
+  if not scenario_metadata[scenario_id].get("dev_only", false):
+    return true
+  return ProjectSettings.get_setting("zom_nom_defense/debug/enable_tools", false)
 
 ## Get the previous scenario requirement for unlocking
 func get_unlock_requirement(scenario_id: String) -> String:
@@ -239,7 +234,6 @@ func get_save_data() -> Dictionary:
   return {
     "completed_scenarios": completed_scenarios,
     "scenario_best_times": scenario_best_times,
-    "scenario_best_scores": scenario_best_scores,
   }
 
 ## Load data from saved state
@@ -258,7 +252,6 @@ func load_data(data: Dictionary) -> void:
       completed_scenarios.append(scenario)
   
   scenario_best_times = data.get("scenario_best_times", data.get("level_best_times", {}))
-  scenario_best_scores = data.get("scenario_best_scores", data.get("level_best_scores", {}))
   
   MyLogger.info("ScenarioManager", "Scenario progression loaded - Completed: %s" % str(completed_scenarios))
   progression_loaded.emit()
@@ -267,6 +260,5 @@ func load_data(data: Dictionary) -> void:
 func reset_data() -> void:
   completed_scenarios.clear()
   scenario_best_times.clear()
-  scenario_best_scores.clear()
   
   MyLogger.info("ScenarioManager", "Scenario progression reset")

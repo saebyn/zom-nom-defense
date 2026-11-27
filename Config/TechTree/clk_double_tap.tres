@@ -11,6 +11,5 @@ description = "10% chance for player clicks to deal critical (double) damage."
 branch_name = "Click"
 level_requirement = 3
 prerequisite_tech_ids = Array[String](["clk_hydraulic_mouse"])
-achievement_ids = Array[String](["ach_click_100"])
 mutually_exclusive_with = Array[String](["clk_shock_click"])
 player_attack_effect = ExtResource("1_dtap")

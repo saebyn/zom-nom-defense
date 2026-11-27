@@ -9,16 +9,27 @@ extends GutTest
 ## NOTE: We test the logic directly without instantiating the UI scene
 ## to avoid dependencies on asset imports (audio files, etc.)
 
+const ENABLE_TOOLS := "zom_nom_defense/debug/enable_tools"
+const UNLOCK_ALL_SCENARIOS := "zom_nom_defense/debug/unlock_all_scenarios"
+
 var initial_completed_scenarios: Array[String] = []
 var initial_current_scenario: String = ""
+var initial_enable_tools: bool
+var initial_unlock_all_scenarios: bool
 
 func before_each():
   # Save the initial state
   initial_completed_scenarios = ScenarioManager.completed_scenarios.duplicate()
   initial_current_scenario = ScenarioManager.get_current_scenario_id()
+  initial_enable_tools = ProjectSettings.get_setting(ENABLE_TOOLS, false)
+  initial_unlock_all_scenarios = ProjectSettings.get_setting(UNLOCK_ALL_SCENARIOS, false)
+  ProjectSettings.set_setting(ENABLE_TOOLS, false)
+  ProjectSettings.set_setting(UNLOCK_ALL_SCENARIOS, false)
 
 func after_each():
   # Restore original state
+  ProjectSettings.set_setting(ENABLE_TOOLS, initial_enable_tools)
+  ProjectSettings.set_setting(UNLOCK_ALL_SCENARIOS, initial_unlock_all_scenarios)
   ScenarioManager.completed_scenarios = initial_completed_scenarios.duplicate()
   if initial_current_scenario.is_empty():
     ScenarioManager.clear_current_scenario()
@@ -94,11 +105,31 @@ func test_only_scenario_1_unlocked_for_new_game():
   var scenario_ids = ScenarioManager.get_all_scenario_ids()
   for scenario_id in scenario_ids:
     if ScenarioManager.is_scenario_unlocked(scenario_id):
-      if scenario_id != "scenario_test": # Exclude test scenarios
-        unlocked_scenarios.append(scenario_id)
+      unlocked_scenarios.append(scenario_id)
   
-  assert_eq(unlocked_scenarios.size(), 1, "Should have only one unlocked scenario")
-  assert_eq(unlocked_scenarios[0], "scenario_1", "Only scenario_1 should be unlocked for new game")
+  assert_eq(unlocked_scenarios, ["scenario_1"], "Car Defense should be the only unlocked scenario on a fresh save")
+
+func test_unlock_all_does_not_expose_test_scenario_without_dev_tools():
+  ProjectSettings.set_setting(UNLOCK_ALL_SCENARIOS, true)
+
+  assert_does_not_have(ScenarioManager.get_all_scenario_ids(), "scenario_test",
+    "Test Scenario should be hidden when dev tools are off")
+  assert_false(ScenarioManager.is_scenario_unlocked("scenario_test"),
+    "Unlock all should not bypass the dev tools gate")
+  assert_true(ScenarioManager.is_scenario_unlocked("scenario_2"),
+    "Unlock all should still bypass ordinary progression")
+
+func test_dev_tools_expose_test_scenario_without_unlocking_story_scenarios():
+  ScenarioManager.completed_scenarios.clear()
+  ProjectSettings.set_setting(ENABLE_TOOLS, true)
+
+  var scenario_ids = ScenarioManager.get_all_scenario_ids()
+  assert_has(scenario_ids, "scenario_test", "Dev tools should list Test Scenario")
+  assert_true(ScenarioManager.is_scenario_unlocked("scenario_test"),
+    "Dev tools alone should unlock Test Scenario")
+  assert_has(scenario_ids, "scenario_2", "Scenario Select should still list locked story scenarios")
+  assert_false(ScenarioManager.is_scenario_unlocked("scenario_2"),
+    "Dev tools should not bypass ordinary progression")
 
 ## Test that is_scenario_unlocked doesn't depend on current_scenario_id
 func test_is_scenario_unlocked_independent_of_current_scenario():

@@ -22,26 +22,37 @@ jobs:
           lfs: true
           submodules: "recursive"
 
+      - name: Read Godot version
+        id: godot
+        run: |
+          version="$(godot --version)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "editor_version=$(printf '%s\n' "$version" | cut -d. -f1,2)" >> "$GITHUB_OUTPUT"
+
       - name: Cache Godot import files
         id: cache
         uses: actions/cache@v6
         with:
           path: .godot/
-          key: godot-import-v1-${{ hashFiles('**/*.tscn', '**/*.tres', '**/*.blend', '**/*.gd', 'project.godot') }}
+          key: godot-import-${{ steps.godot.outputs.version }}-${{ hashFiles('**/*.tscn', '**/*.tres', '**/*.blend', '**/*.gd', 'project.godot') }}
           restore-keys: |
-            godot-import-v1-
+            godot-import-${{ steps.godot.outputs.version }}-
 
       - name: Pre-configure Godot Editor Settings
+        env:
+          GODOT_EDITOR_VERSION: ${{ steps.godot.outputs.editor_version }}
         run: |
-          # Pre-configure Godot editor settings for Blender path
-          mkdir -p /github/home/.config/godot
-          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nfilesystem/import/blender/blender_path = "/usr/bin/blender"\n' > /github/home/.config/godot/editor_settings-4.tres
+          config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/godot"
+          mkdir -p "$config_dir"
+          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nfilesystem/import/blender/blender_path = "/usr/bin/blender"\n' > "$config_dir/editor_settings-$GODOT_EDITOR_VERSION.tres"
 
       - name: Import project files
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           echo "Running initial project import (this may take 15+ minutes)..."
-          godot --headless --import --path . --quit
+          godot --headless --import --path .
+          # Dialogic needs a second scan to populate its character and timeline indexes on a fresh checkout.
+          godot --headless --import --path .
 
       - name: Run Tests
         id: run_tests

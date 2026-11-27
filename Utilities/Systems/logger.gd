@@ -30,9 +30,6 @@ var enabled_scopes: PackedStringArray = ["*"]
 var _log_level_names: PackedStringArray = ["TRACE", "DEBUG", "INFO", "WARN", "ERROR"]
 var _log_level_colors: PackedStringArray = ["[color=gray]", "[color=lightblue]", "[color=green]", "[color=orange]", "[color=red]"]
 
-# Console commands for runtime control
-var _console_commands: Dictionary = {}
-
 signal log_message_emitted(level: LogLevel, scope: String, message: String, timestamp: String)
 
 func _ready() -> void:
@@ -40,10 +37,7 @@ func _ready() -> void:
   _define_project_settings()
   # Load settings from project settings
   _load_project_settings()
-  
-  # Register console commands for runtime control
-  _register_console_commands()
-  
+
   # Log framework initialization
   info("MyLogger", "Logging framework initialized - Level: %s, Scopes: %s" % [
     _log_level_names[current_log_level],
@@ -124,14 +118,6 @@ func _load_project_settings() -> void:
     # Trim whitespace from each scope
     for i in range(enabled_scopes.size()):
       enabled_scopes[i] = enabled_scopes[i].strip_edges()
-
-## Register console commands for runtime log control
-func _register_console_commands() -> void:
-  _console_commands = {
-    "log_level": _cmd_set_log_level,
-    "log_scopes": _cmd_set_scopes,
-    "log_info": _cmd_show_info
-  }
 
 ## Main logging function - checks level and scope before outputting
 func _log(level: LogLevel, scope: String, message: String) -> void:
@@ -227,53 +213,6 @@ func disable_scope(scope: String) -> void:
   if index >= 0:
     enabled_scopes.remove_at(index)
     info("MyLogger", "Disabled scope: %s" % scope)
-
-## Console command handlers
-
-func _cmd_set_log_level(args: PackedStringArray) -> void:
-  if args.size() < 1:
-    print("Usage: log_level <DEBUG|INFO|WARN|ERROR|NONE>")
-    return
-  
-  var level_name = args[0].to_upper()
-  var level_index = _log_level_names.find(level_name)
-  if level_index >= 0:
-    set_log_level(level_index as LogLevel)
-  elif level_name == "NONE":
-    set_log_level(LogLevel.NONE)
-  else:
-    print("Invalid log level: %s" % level_name)
-
-func _cmd_set_scopes(args: PackedStringArray) -> void:
-  if args.size() < 1:
-    print("Usage: log_scopes <scope1,scope2,...> or log_scopes *")
-    print("Current scopes: %s" % ", ".join(enabled_scopes))
-    return
-  
-  var scopes_arg = args[0]
-  if scopes_arg == "*":
-    set_enabled_scopes(["*"])
-  else:
-    var new_scopes = scopes_arg.split(",")
-    for i in range(new_scopes.size()):
-      new_scopes[i] = new_scopes[i].strip_edges()
-    set_enabled_scopes(new_scopes)
-
-func _cmd_show_info(_args: PackedStringArray) -> void:
-  print("=== MyLogger Configuration ===")
-  print("Current Log Level: %s" % _log_level_names[current_log_level])
-  print("Enabled Scopes: %s" % ", ".join(enabled_scopes))
-  print("Available Commands:")
-  print("  log_level <TRACE|DEBUG|INFO|WARN|ERROR|NONE> - Set log level")
-  print("  log_scopes <scope1,scope2,...> - Set enabled scopes")
-  print("  log_info - Show this information")
-
-## Handle console input (to be called from input handler)
-func handle_console_command(command: String, args: PackedStringArray) -> bool:
-  if command in _console_commands:
-    _console_commands[command].call(args)
-    return true
-  return false
 
 ## Utility method to get current configuration as a dictionary
 func get_config() -> Dictionary:

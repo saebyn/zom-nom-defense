@@ -177,13 +177,18 @@ func _update_detail_panel() -> void:
     requirements_text += "\n• Complete branches: %s" % ", ".join(tech.requires_branch_completion)
   detail_requirements.text = requirements_text
   
-  # Build unlocks text
-  var unlocks_text = "Unlocks:\n"
-  if tech.unlocked_building_ids.size() > 0:
-    unlocks_text += "• Buildings: %s" % ", ".join(tech.unlocked_building_ids)
-  else:
-    unlocks_text += "• No buildings (upgrade/feature)"
-  detail_unlocks.text = unlocks_text
+  var building_names := PackedStringArray()
+  for building_type in BuildingRegistry.get_buildings_requiring_tech(tech.id):
+    building_names.append(building_type.name)
+  building_names.sort()
+
+  var unlocks := PackedStringArray()
+  if not building_names.is_empty():
+    unlocks.append("• Buildings: %s" % ", ".join(building_names))
+  if tech.player_attack_effect:
+    unlocks.append("• Click upgrade")
+  detail_unlocks.visible = not unlocks.is_empty()
+  detail_unlocks.text = "Unlocks:\n%s" % "\n".join(unlocks)
   
   # Update unlock button
   if TechTreeManager.is_tech_unlocked(selected_tech_id):

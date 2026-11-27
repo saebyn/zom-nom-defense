@@ -1,4 +1,5 @@
-FROM barichello/godot-ci:4.6.1
+# Keep this tag in sync with GODOT_VERSION in .github/workflows/release.yml.
+FROM barichello/godot-ci:4.7.2
 
 # Blender's glTF exporter needs NumPy.
 RUN apt-get update && \

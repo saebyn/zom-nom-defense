@@ -63,13 +63,9 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-  print("unhandled")
-  if event is InputEventKey and event.pressed:
-    match event.keycode:
-      KEY_F2:
-        print("f2")
-        current_song = _pick_next_song()
-        _play_song(current_song)
+  if event.is_action_pressed(&"advance_background_music_track", false, true):
+    _advance_background_music_track()
+    get_viewport().set_input_as_handled()
 
 
 ## Recursively process existing buttons in the scene tree
@@ -201,6 +197,18 @@ func stop_background_music() -> void:
   want_bg_music = false
   current_song = ""
   bg_music_player.stop()
+
+
+func _advance_background_music_track() -> void:
+  if not bg_music_player.playing:
+    return
+
+  # Manual skips ignore the automatic playlist's repeat cooldown.
+  var alternatives := songs.keys()
+  alternatives.erase(current_song)
+  if not alternatives.is_empty():
+    current_song = alternatives.pick_random()
+    _play_song(current_song)
 
 
 ## Apply the music pause mode based on current settings.

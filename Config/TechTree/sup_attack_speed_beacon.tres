@@ -12,4 +12,3 @@ icon = ExtResource("1_eto2y")
 branch_name = "Support"
 level_requirement = 3
 prerequisite_tech_ids = Array[String](["sup_overcharger"])
-unlocked_building_ids = Array[String](["cooldown_beacon"])

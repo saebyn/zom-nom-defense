@@ -46,30 +46,31 @@ func test_can_unlock_tech_with_valid_level():
 func test_cannot_unlock_tech_with_insufficient_level():
   # Arrange
   CurrencyManager.current_level = 1
+  TechTreeManager.unlock_tech("clk_hydraulic_mouse")
   
   # Act
-  var can_unlock = TechTreeManager.can_unlock_tech("tur_molotov_mortar")
+  var can_unlock = TechTreeManager.can_unlock_tech("clk_shock_click")
   
   # Assert
-  assert_false(can_unlock, "Should not be able to unlock tech requiring level 4")
+  assert_false(can_unlock, "Should not be able to unlock tech requiring level 3")
 
 func test_cannot_unlock_tech_without_prerequisites():
   # Arrange
-  CurrencyManager.current_level = 2
+  CurrencyManager.current_level = 3
   
   # Act
-  var can_unlock = TechTreeManager.can_unlock_tech("tur_boom_barrel")
+  var can_unlock = TechTreeManager.can_unlock_tech("clk_double_tap")
   
   # Assert
   assert_false(can_unlock, "Should not be able to unlock tech without prerequisite")
 
 func test_can_unlock_tech_with_prerequisites():
   # Arrange
-  CurrencyManager.current_level = 2
-  TechTreeManager.unlock_tech("tur_scrap_shooter")
+  CurrencyManager.current_level = 3
+  TechTreeManager.unlock_tech("clk_hydraulic_mouse")
   
   # Act
-  var can_unlock = TechTreeManager.can_unlock_tech("tur_boom_barrel")
+  var can_unlock = TechTreeManager.can_unlock_tech("clk_double_tap")
   
   # Assert
   assert_true(can_unlock, "Should be able to unlock tech with prerequisite satisfied")
@@ -110,36 +111,37 @@ func test_cannot_unlock_already_unlocked_tech():
 
 func test_mutual_exclusivity_locks_alternative_tech():
   # Arrange
-  CurrencyManager.current_level = 2
-  TechTreeManager.unlock_tech("tur_scrap_shooter")
+  CurrencyManager.current_level = 3
+  TechTreeManager.unlock_tech("clk_hydraulic_mouse")
+  assert_true(TechTreeManager.can_unlock_tech("clk_shock_click"))
   
   # Act
-  TechTreeManager.unlock_tech("tur_boom_barrel")
+  assert_true(TechTreeManager.unlock_tech("clk_double_tap"))
   
   # Assert
-  assert_true(TechTreeManager.is_tech_locked("tur_molotov_mortar"), "Mutually exclusive tech should be locked")
+  assert_true(TechTreeManager.is_tech_locked("clk_shock_click"), "Mutually exclusive tech should be locked")
 
 func test_mutual_exclusivity_emits_locked_signal():
   # Arrange
-  CurrencyManager.current_level = 2
-  TechTreeManager.unlock_tech("tur_scrap_shooter")
+  CurrencyManager.current_level = 3
+  TechTreeManager.unlock_tech("clk_hydraulic_mouse")
   watch_signals(TechTreeManager)
   
   # Act
-  TechTreeManager.unlock_tech("tur_boom_barrel")
+  TechTreeManager.unlock_tech("clk_double_tap")
   
   # Assert
   assert_signal_emitted(TechTreeManager, "tech_locked")
-  assert_signal_emitted_with_parameters(TechTreeManager, "tech_locked", ["tur_molotov_mortar"])
+  assert_signal_emitted_with_parameters(TechTreeManager, "tech_locked", ["clk_shock_click"])
 
 func test_cannot_unlock_permanently_locked_tech():
   # Arrange
-  CurrencyManager.current_level = 4
-  TechTreeManager.unlock_tech("tur_scrap_shooter")
-  TechTreeManager.unlock_tech("tur_boom_barrel")
+  CurrencyManager.current_level = 3
+  TechTreeManager.unlock_tech("clk_hydraulic_mouse")
+  TechTreeManager.unlock_tech("clk_double_tap")
   
   # Act
-  var can_unlock = TechTreeManager.can_unlock_tech("tur_molotov_mortar")
+  var can_unlock = TechTreeManager.can_unlock_tech("clk_shock_click")
   
   # Assert
   assert_false(can_unlock, "Should not be able to unlock permanently locked tech")
@@ -169,29 +171,27 @@ func test_is_branch_completed_returns_false_initially():
   # Assert
   assert_false(completed, "Branch should not be completed initially")
 
-func test_get_unlocked_building_ids_returns_buildings():
-  # Arrange
-  CurrencyManager.current_level = 1
-  TechTreeManager.unlock_tech("tur_scrap_shooter")
-  
-  # Act
-  var building_ids = TechTreeManager.get_unlocked_building_ids()
-  
-  # Assert
-  assert_has(building_ids, "turret", "Should include building from unlocked tech")
+func test_electric_fence_follows_spike_barricade_in_defensive_branch():
+  CurrencyManager.current_level = 3
+  assert_true(TechTreeManager.unlock_tech("ob_crates"))
+  assert_false(TechTreeManager.can_unlock_tech("ob_electric_fence"),
+    "Electric Fence should remain locked until Spike Barricade is researched")
+  assert_false(BuildingRegistry.is_building_available("electric_fence"))
 
-func test_get_unlocked_building_ids_accumulates_from_multiple_techs():
-  # Arrange
-  CurrencyManager.current_level = 1
-  TechTreeManager.unlock_tech("tur_scrap_shooter")
-  TechTreeManager.unlock_tech("ob_crates")
-  
-  # Act
-  var building_ids = TechTreeManager.get_unlocked_building_ids()
-  
-  # Assert
-  assert_has(building_ids, "turret", "Should include turret from first tech")
-  assert_has(building_ids, "wall", "Should include wall from second tech")
+  assert_true(TechTreeManager.unlock_tech("ob_spike_barricade"))
+  assert_true(TechTreeManager.unlock_tech("ob_electric_fence"),
+    "Spike Barricade should be the only tech prerequisite for Electric Fence")
+  assert_true(BuildingRegistry.is_building_available("electric_fence"))
+
+func test_researching_multiple_techs_makes_each_building_available():
+  assert_false(BuildingRegistry.is_building_available("turret"))
+  assert_false(BuildingRegistry.is_building_available("wall"))
+
+  assert_true(TechTreeManager.unlock_tech("tur_scrap_shooter"))
+  assert_true(TechTreeManager.unlock_tech("ob_crates"))
+
+  assert_true(BuildingRegistry.is_building_available("turret"))
+  assert_true(BuildingRegistry.is_building_available("wall"))
 
 func test_reset_tech_tree_clears_unlocked_techs():
   # Arrange
@@ -207,37 +207,37 @@ func test_reset_tech_tree_clears_unlocked_techs():
 
 func test_reset_tech_tree_clears_locked_techs():
   # Arrange
-  CurrencyManager.current_level = 2
-  TechTreeManager.unlock_tech("tur_scrap_shooter")
-  TechTreeManager.unlock_tech("tur_boom_barrel")
+  CurrencyManager.current_level = 3
+  TechTreeManager.unlock_tech("clk_hydraulic_mouse")
+  TechTreeManager.unlock_tech("clk_double_tap")
   
   # Act
   TechTreeManager.reset_tech_tree()
   
   # Assert
-  assert_false(TechTreeManager.is_tech_locked("tur_molotov_mortar"), "Tech should not be locked after reset")
+  assert_false(TechTreeManager.is_tech_locked("clk_shock_click"), "Tech should not be locked after reset")
   assert_eq(TechTreeManager.locked_tech_ids.size(), 0, "Locked tech list should be empty")
 
 ## Debug mode tests
 
 func test_debug_mode_bypasses_level_requirement():
-  # Arrange - tech requires level 4, player is level 1
+  # Arrange - tech requires level 3, player is level 1
   CurrencyManager.current_level = 1
   ProjectSettings.set_setting("zom_nom_defense/debug/bypass_tech_requirements", true)
   
   # Act
-  var can_unlock = TechTreeManager.can_unlock_tech("tur_molotov_mortar")
+  var can_unlock = TechTreeManager.can_unlock_tech("clk_shock_click")
   
   # Assert
   assert_true(can_unlock, "Debug mode should bypass level requirement")
 
 func test_debug_mode_bypasses_prerequisite_requirement():
-  # Arrange - tech requires prerequisite tur_scrap_shooter (not unlocked)
-  CurrencyManager.current_level = 2
+  # Arrange - Hydraulic Mouse is not unlocked
+  CurrencyManager.current_level = 3
   ProjectSettings.set_setting("zom_nom_defense/debug/bypass_tech_requirements", true)
   
   # Act
-  var can_unlock = TechTreeManager.can_unlock_tech("tur_boom_barrel")
+  var can_unlock = TechTreeManager.can_unlock_tech("clk_double_tap")
   
   # Assert
   assert_true(can_unlock, "Debug mode should bypass prerequisite requirement")
@@ -281,13 +281,13 @@ func test_debug_mode_still_blocks_already_unlocked_tech():
 
 func test_debug_mode_still_blocks_permanently_locked_tech():
   # Arrange
-  CurrencyManager.current_level = 2
-  TechTreeManager.unlock_tech("tur_scrap_shooter")
-  TechTreeManager.unlock_tech("tur_boom_barrel")  # locks tur_molotov_mortar
+  CurrencyManager.current_level = 3
+  TechTreeManager.unlock_tech("clk_hydraulic_mouse")
+  TechTreeManager.unlock_tech("clk_double_tap")
   ProjectSettings.set_setting("zom_nom_defense/debug/bypass_tech_requirements", true)
   
   # Act
-  var can_unlock = TechTreeManager.can_unlock_tech("tur_molotov_mortar")
+  var can_unlock = TechTreeManager.can_unlock_tech("clk_shock_click")
   
   # Assert
   assert_false(can_unlock, "Debug mode should not bypass permanent mutual-exclusivity lock")

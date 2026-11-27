@@ -11,4 +11,3 @@ description = "Aura that increases damage delt of nearby buildings."
 icon = ExtResource("1_gbovo")
 branch_name = "Support"
 level_requirement = 2
-unlocked_building_ids = Array[String](["overcharger"])

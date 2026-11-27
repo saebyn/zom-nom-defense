@@ -5,6 +5,7 @@
 [ext_resource type="AudioStream" uid="uid://c870h3dxyi4cr" path="res://Assets/Audio/Music/make_do_or_die.mp3" id="3_mjhew"]
 
 [node name="AudioManager" type="Node" unique_id=685505261]
+process_mode = 3
 script = ExtResource("1_audio_mgr")
 current_song = "Make Do Or Die"
 songs = Dictionary[String, AudioStream]({
@@ -16,6 +17,7 @@ songs = Dictionary[String, AudioStream]({
 bus = &"Music"
 
 [node name="UIAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1455416242]
+process_mode = 1
 bus = &"Sound Effects"
 
 [node name="BgMusicWatchdogTimer" type="Timer" parent="." unique_id=604182914]

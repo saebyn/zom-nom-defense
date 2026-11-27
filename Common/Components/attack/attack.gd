@@ -8,7 +8,6 @@ class_name Component_Attack
 signal attack_accepted(target: Node) ## Emitted when the attack is successfully performed on a valid target.
 signal attack_released ## Emitted when the attack reaches the point where the damage is applied.
 signal attack_finished ## Emitted when the attack reaches the point where the animation is completed.
-signal attack_canceled ## Emitted when the attack is cancelled before completion (e.g., due to player input or interruption).
 signal cooldown_ended ## Emitted when the attack cooldown ends, allowing the next attack to be performed.
 
 enum AttackResult {

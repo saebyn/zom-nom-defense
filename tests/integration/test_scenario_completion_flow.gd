@@ -17,7 +17,6 @@ func before_each():
   # Reset to a known state
   ScenarioManager.completed_scenarios.clear()
   ScenarioManager.scenario_best_times.clear()
-  ScenarioManager.scenario_best_scores.clear()
   
   # Reset state
   GameManager.set_game_state(GameManager.GameState.MAIN_MENU)
@@ -68,29 +67,27 @@ func test_completing_scenario_1_unlocks_scenario_2():
   # Assert
   assert_true(ScenarioManager.is_scenario_unlocked("scenario_2"), "Scenario 2 should be unlocked after completing scenario 1")
 
-func test_scenario_completion_with_time_and_score():
+func test_scenario_completion_records_time():
   # Arrange
   var scenario_id = "scenario_1"
   var completion_time = 120.5
-  var score = 1000
   ScenarioManager.set_current_scenario_id(scenario_id)
   
   # Act
-  ScenarioManager.mark_scenario_complete(scenario_id, completion_time, score)
+  ScenarioManager.mark_scenario_complete(scenario_id, completion_time)
   
   # Assert
   assert_true(ScenarioManager.is_scenario_completed(scenario_id), "Scenario should be completed")
   assert_eq(ScenarioManager.get_best_time(scenario_id), completion_time, "Best time should be recorded")
-  assert_eq(ScenarioManager.get_best_score(scenario_id), score, "Best score should be recorded")
 
 func test_better_time_updates_best_time():
   # Arrange
   var scenario_id = "scenario_1"
   ScenarioManager.set_current_scenario_id(scenario_id)
-  ScenarioManager.mark_scenario_complete(scenario_id, 150.0, 0)
+  ScenarioManager.mark_scenario_complete(scenario_id, 150.0)
   
   # Act - complete with better time
-  ScenarioManager.mark_scenario_complete(scenario_id, 100.0, 0)
+  ScenarioManager.mark_scenario_complete(scenario_id, 100.0)
   
   # Assert
   assert_eq(ScenarioManager.get_best_time(scenario_id), 100.0, "Best time should be updated to faster time")
@@ -99,10 +96,10 @@ func test_worse_time_does_not_update_best_time():
   # Arrange
   var scenario_id = "scenario_1"
   ScenarioManager.set_current_scenario_id(scenario_id)
-  ScenarioManager.mark_scenario_complete(scenario_id, 100.0, 0)
+  ScenarioManager.mark_scenario_complete(scenario_id, 100.0)
   
   # Act - complete with worse time
-  ScenarioManager.mark_scenario_complete(scenario_id, 150.0, 0)
+  ScenarioManager.mark_scenario_complete(scenario_id, 150.0)
   
   # Assert
   assert_eq(ScenarioManager.get_best_time(scenario_id), 100.0, "Best time should remain the faster time")

@@ -142,7 +142,6 @@
 **Man-Made Elements**:
 - Campfire: Simple logs + flame geometry + particles
 - Pool: Blue plane + white edge rim
-- Hammock: Simple mesh between poles
 - Boxes/Crates: Rounded cube forms
 
 **Design Principles**:

@@ -139,28 +139,36 @@ func test_game_over_can_save_activity_after_loading_a_backup() -> void:
   primary.close()
   assert_true(SaveManager.load_save_slot(TEST_SLOT), "Backup is still usable")
 
-func test_branch_locks_always_read_permanent_and_menu_choices_persist() -> void:
+func test_menu_click_choice_and_permanent_lock_survive_save_reload() -> void:
   ProjectSettings.set_setting(BYPASS_TECH, true)
   var tech_tree := TechTreeScene.instantiate() as UI_TechTree
   add_child_autofree(tech_tree)
-  tech_tree.tech_node_cards["tur_boom_barrel"].selected.emit()
+  tech_tree.tech_node_cards["clk_double_tap"].selected.emit()
   tech_tree.unlock_button.pressed.emit()
   tech_tree.confirmation_dialog.confirmed.emit()
   tech_tree.confirmation_dialog.hide()
 
   assert_true(SaveManager.load_save_slot(TEST_SLOT))
-  assert_true(TechTreeManager.is_tech_unlocked("tur_boom_barrel"))
+  assert_true(TechTreeManager.is_tech_unlocked("clk_double_tap"))
+  assert_true(TechTreeManager.is_tech_locked("clk_shock_click"))
   assert_false(ScenarioManager.is_scenario_completed(SCENARIO_ID))
 
   _start_attempt()
   GameManager.set_game_state(GameManager.GameState.IN_TECH_TREE)
-  tech_tree.tech_node_cards["tur_molotov_mortar"].selected.emit()
+  tech_tree.tech_node_cards["clk_shock_click"].selected.emit()
   assert_eq(tech_tree.unlock_button.text, "Permanently Locked")
+  GameManager.abandon_scenario_attempt()
 
-  tech_tree.tech_node_cards["clk_double_tap"].selected.emit()
+func test_in_scenario_click_choice_shows_other_click_tech_as_permanently_locked() -> void:
+  ProjectSettings.set_setting(BYPASS_TECH, true)
+  var tech_tree := TechTreeScene.instantiate() as UI_TechTree
+  add_child_autofree(tech_tree)
+  _start_attempt()
+  GameManager.set_game_state(GameManager.GameState.IN_TECH_TREE)
+  tech_tree.tech_node_cards["clk_shock_click"].selected.emit()
   tech_tree.unlock_button.pressed.emit()
   tech_tree.confirmation_dialog.confirmed.emit()
   tech_tree.confirmation_dialog.hide()
-  tech_tree.tech_node_cards["clk_shock_click"].selected.emit()
+  tech_tree.tech_node_cards["clk_double_tap"].selected.emit()
   assert_eq(tech_tree.unlock_button.text, "Permanently Locked")
   GameManager.abandon_scenario_attempt()

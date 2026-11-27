@@ -44,22 +44,26 @@ func test_tech_tree_loads_all_nodes():
   # Assert - verify that tech node cards were created
   assert_gt(tech_tree.tech_node_cards.size(), 0, "Should create tech node cards")
   assert_eq(tech_tree.tech_node_cards.size(), TechTreeManager.tech_nodes.size(), "Should create one card per tech node")
+  for tech_id: String in tech_tree.tech_node_cards:
+    var tech := TechTreeManager.get_tech_node(tech_id)
+    assert_true(tech.player_attack_effect != null or not BuildingRegistry.get_buildings_requiring_tech(tech_id).is_empty(),
+      "Expected %s to provide a click effect or gate a registered building" % tech_id)
 
 func test_detail_panel_hidden_initially():
   # Assert
   assert_false(tech_tree.detail_panel.visible, "Detail panel should be hidden initially")
 
 func test_selecting_tech_node_shows_details():
-  # Arrange - unlock a tech first
-  CurrencyManager.current_level = 1
-  
-  # Act - simulate selecting a tech node
-  tech_tree._on_tech_node_selected("tur_scrap_shooter")
-  
-  # Assert
+  tech_tree.tech_node_cards["tur_scrap_shooter"].selected.emit()
+
   assert_true(tech_tree.detail_panel.visible, "Detail panel should be visible after selection")
-  assert_eq(tech_tree.selected_tech_id, "tur_scrap_shooter", "Selected tech should be set")
   assert_eq(tech_tree.detail_name.text, "Scrap Shooter", "Tech name should be displayed")
+  assert_eq(tech_tree.detail_unlocks.text, "Unlocks:\n• Buildings: Scrap Shooter",
+    "The unlock list should name the registered building, not show its internal ID")
+
+  tech_tree.tech_node_cards["clk_double_tap"].selected.emit()
+  assert_eq(tech_tree.detail_unlocks.text, "Unlocks:\n• Click upgrade",
+    "A click-only node should not list any buildings")
 
 func test_unlock_button_enabled_for_available_tech():
   # Arrange
@@ -84,8 +88,8 @@ func test_unlock_button_disabled_for_locked_tech():
   # Arrange
   CurrencyManager.current_level = 1
   
-  # Act - select a tech that requires level 2
-  tech_tree._on_tech_node_selected("tur_boom_barrel")
+  # Act - select a tech that requires level 3
+  tech_tree.tech_node_cards["clk_double_tap"].selected.emit()
   
   # Assert
   assert_true(tech_tree.unlock_button.disabled, "Unlock button should be disabled for locked tech")
@@ -121,17 +125,16 @@ func test_tech_node_card_state_updates_on_unlock():
 
 func test_tech_node_card_state_updates_on_lock():
   # Arrange
-  CurrencyManager.current_level = 2
-  TechTreeManager.unlock_tech("tur_scrap_shooter")
+  CurrencyManager.current_level = 3
+  TechTreeManager.unlock_tech("clk_hydraulic_mouse")
   
   # Act - unlock a mutually exclusive tech
-  TechTreeManager.unlock_tech("tur_boom_barrel")
+  assert_true(TechTreeManager.unlock_tech("clk_double_tap"))
   await wait_process_frames(2)
   
   # Assert - mutually exclusive tech card should update
-  var molotov_card = tech_tree.tech_node_cards.get("tur_molotov_mortar")
-  if molotov_card:
-    assert_eq(molotov_card.current_state, UI_TechNodeCard.NodeState.PERMANENTLY_LOCKED, "Card should show as permanently locked")
+  var shock_click_card = tech_tree.tech_node_cards["clk_shock_click"]
+  assert_eq(shock_click_card.current_state, UI_TechNodeCard.NodeState.PERMANENTLY_LOCKED, "Card should show as permanently locked")
 
 func test_tech_tree_displays_branches():
   # Assert - check that all expected branches are represented
@@ -167,7 +170,7 @@ func test_double_click_unlocks_available_tech():
 
 func test_double_click_does_nothing_on_locked_tech():
   # Arrange
-  var card = tech_tree.tech_node_cards.get("tur_boom_barrel")
+  var card = tech_tree.tech_node_cards.get("clk_double_tap")
   assert_not_null(card, "Card should exist")
   watch_signals(card)
   

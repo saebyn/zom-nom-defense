@@ -3,7 +3,7 @@ extends Control
 class_name UI_ScenarioSelect
 
 ## Scenario selection UI that displays available scenarios and handles scenario loading
-## Shows completion status, best scores, and enforces unlock progression
+## Shows completion status and best times, and enforces unlock progression
 
 @onready var scenario_container = $MarginContainer/VBoxContainer/ScrollContainer/ScenarioContainer
 @onready var back_button = $MarginContainer/VBoxContainer/TopBar/BackButton
@@ -46,7 +46,6 @@ func _populate_scenarios():
     var is_unlocked = ScenarioManager.is_scenario_unlocked(scenario_id)
     var is_completed = ScenarioManager.is_scenario_completed(scenario_id)
     var best_time = ScenarioManager.get_best_time(scenario_id)
-    var best_score = ScenarioManager.get_best_score(scenario_id)
     
     scenario_card.configure(
       scenario_id,
@@ -54,8 +53,7 @@ func _populate_scenarios():
       metadata.get("description", ""),
       is_unlocked,
       is_completed,
-      best_time,
-      best_score
+      best_time
     )
     
     # Connect the scenario selection signal

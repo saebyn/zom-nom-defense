@@ -38,10 +38,10 @@ layout_mode = 2
 text = "Level description goes here."
 autowrap_mode = 2
 
-[node name="StatsLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1742567623]
+[node name="BestTimeLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1742567623]
 layout_mode = 2
 theme_type_variation = &"LabelSmall"
-text = "Best Time: 5:30 | Best Score: 1000"
+text = "Best Time: 5:30"
 
 [node name="LockMessageLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1833485338]
 layout_mode = 2

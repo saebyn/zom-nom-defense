@@ -6,8 +6,8 @@ This document describes the logging framework implemented for the Tower Defense 
 
 The logging framework provides:
 - **Scoped Logging**: Messages organized by scope (e.g., "Economy", "Combat", "UI")
-- **Log Levels**: DEBUG, INFO, WARN, ERROR, NONE
-- **Runtime Configuration**: Change log levels and scopes at runtime via console commands
+- **Log Levels**: TRACE, DEBUG, INFO, WARN, ERROR
+- **Runtime Configuration**: Change log levels and scopes at runtime through the `MyLogger` API
 - **Rich Output**: Colored, timestamped log messages
 - **Project Settings Integration**: Configure defaults in project settings
 
@@ -33,13 +33,15 @@ MyLogger.info("UI.Health", "Updating health display")
 
 ## Log Levels
 
-| Level | Description | When to Use |
-|-------|-------------|-------------|
-| `DEBUG` | Detailed diagnostic information | Development debugging, verbose tracing |
-| `INFO` | General informational messages | Important game events, state changes |
-| `WARN` | Warning conditions | Recoverable errors, deprecated usage |
-| `ERROR` | Error conditions | Unrecoverable errors, critical failures |
-| `NONE` | Disable all logging | Production builds, performance testing |
+| Level | Value | Description | When to Use |
+|-------|-------|-------------|-------------|
+| `TRACE` | `0` | Most detailed messages | Tracing frequent operations |
+| `DEBUG` | `1` | Detailed diagnostic information | Development debugging |
+| `INFO` | `2` | General informational messages | Important game events, state changes |
+| `WARN` | `3` | Warning conditions | Recoverable errors, deprecated usage |
+| `ERROR` | `4` | Error conditions | Unrecoverable errors, critical failures |
+
+`NONE` (`5`) exists in the enum but is not supported by the logger configuration. To suppress all log output, set `logging/enabled_scopes` to an empty string.
 
 ## Scope Filtering
 
@@ -73,28 +75,18 @@ MyLogger.set_enabled_scopes(["*"])
 
 ## Project Settings Configuration
 
-Add these settings to your `project.godot`:
+Set `zom_nom_defense/logging/log_level` and `zom_nom_defense/logging/enabled_scopes` in Project Settings, or use this configuration in `project.godot`:
 
 ```ini
-[logging]
+[zom_nom_defense]
 
-log_level=1  # 0=DEBUG, 1=INFO, 2=WARN, 3=ERROR, 4=NONE
-enabled_scopes="*"  # Comma-separated scopes or "*" for all
+logging/log_level=2
+logging/enabled_scopes="*"
 ```
 
+`logging/enabled_scopes` accepts comma-separated scopes or `*` for all scopes.
+
 ## Runtime Configuration
-
-### Console Commands
-
-The MyLogger provides console commands for runtime configuration:
-
-| Command | Example | Description |
-|---------|---------|-------------|
-| `log_level` | `log_level DEBUG` | Set current log level |
-| `log_scopes` | `log_scopes Economy,Combat` | Set enabled scopes |
-| `log_info` | `log_info` | Show current configuration |
-
-### Programmatic Configuration
 
 ```gdscript
 # Change log level at runtime
@@ -111,34 +103,6 @@ MyLogger.disable_scope("OldFeature")
 var config = MyLogger.get_config()
 print("Current level: ", config.log_level_name)
 print("Enabled scopes: ", config.enabled_scopes)
-```
-
-## Integration Example
-
-Here's how to integrate the MyLogger with your existing console system:
-
-```gdscript
-extends Node
-
-func handle_console_input(command_line: String):
-    var parts = command_line.split(" ")
-    var command = parts[0]
-    var args = PackedStringArray(parts.slice(1))
-    
-    # Try MyLogger commands first
-    if MyLogger.handle_console_command(command, args):
-        return true
-    
-    # Handle other game commands
-    match command:
-        "spawn":
-            # Your spawn command
-            pass
-        "teleport":
-            # Your teleport command
-            pass
-    
-    return false
 ```
 
 ## Performance Considerations
@@ -195,8 +159,4 @@ The framework is already integrated throughout the codebase:
 
 ## Testing
 
-Use the provided test scenes:
-- `test_logger.tscn` - Basic logging functionality test
-- `console_test.tscn` - Console command interface test
-
-Run these to verify the logging framework is working correctly in your environment.
+The [logger unit tests](../tests/unit/test_logger.gd) cover scope filtering and runtime configuration.
