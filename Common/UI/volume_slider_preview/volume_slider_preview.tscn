@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Common/UI/volume_slider_preview/volume_slider_preview.gd" id="1_preview"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/SFX/ui/volume_calibration.wav" id="2_calibration"]
+
+[node name="VolumeSliderPreview" type="Node"]
+script = ExtResource("1_preview")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_calibration")
+
+[node name="IdleTimer" type="Timer" parent="."]
+one_shot = true
+ignore_time_scale = true

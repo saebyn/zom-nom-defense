@@ -8,6 +8,7 @@ signal video_settings_changed()
 signal audio_settings_changed()
 
 const SETTINGS_FILE = "user://settings.cfg"
+const AUDIO_SILENCE_DB := -80.0
 
 # Video settings
 var fullscreen: bool = false
@@ -43,10 +44,20 @@ const RESOLUTIONS: Array[Vector2i] = [
 const UI_SCALES: Array[float] = [0.75, 1.0, 1.25, 1.5, 2.0]
 
 func _ready() -> void:
-  load_settings()
+  if needs_first_run_audio_setup():
+    master_volume = AUDIO_SILENCE_DB
+    music_volume = AUDIO_SILENCE_DB
+    sfx_volume = AUDIO_SILENCE_DB
+  else:
+    load_settings()
   apply_audio_settings()
   apply_video_settings()
   MyLogger.info("SettingsManager", "Settings Manager initialized")
+
+
+func needs_first_run_audio_setup() -> bool:
+  return not FileAccess.file_exists(SETTINGS_FILE)
+
 
 ## Load settings from file
 func load_settings() -> void:
@@ -54,7 +65,7 @@ func load_settings() -> void:
   var err = config.load(SETTINGS_FILE)
   
   if err != OK:
-    MyLogger.info("SettingsManager", "No settings file found, using defaults")
+    MyLogger.warn("SettingsManager", "Could not load settings (%d), using defaults" % err)
     return
   
   # Load video settings
@@ -87,7 +98,7 @@ func load_settings() -> void:
   MyLogger.info("SettingsManager", "Settings loaded from file")
 
 ## Save settings to file
-func save_settings() -> void:
+func save_settings() -> Error:
   var config = ConfigFile.new()
   
   # Save video settings
@@ -118,6 +129,7 @@ func save_settings() -> void:
     MyLogger.error("SettingsManager", "Failed to save settings: %d" % err)
   else:
     MyLogger.info("SettingsManager", "Settings saved to file")
+  return err
 
 ## Apply all current settings
 func apply_settings() -> void:
@@ -169,17 +181,19 @@ func apply_video_settings() -> void:
 
 ## Apply audio settings
 func apply_audio_settings() -> void:
-  var master_bus = AudioServer.get_bus_index("Master")
-  var music_bus = AudioServer.get_bus_index("Music")
-  var sfx_bus = AudioServer.get_bus_index("Sound Effects")
-  
-  # Apply volume levels
-  AudioServer.set_bus_volume_db(master_bus, master_volume)
-  AudioServer.set_bus_volume_db(music_bus, music_volume)
-  AudioServer.set_bus_volume_db(sfx_bus, sfx_volume)
-  
+  _apply_bus_volume(&"Master", master_volume)
+  _apply_bus_volume(&"Music", music_volume)
+  _apply_bus_volume(&"Sound Effects", sfx_volume)
+
   audio_settings_changed.emit()
   MyLogger.debug("SettingsManager", "Audio settings applied")
+
+
+func _apply_bus_volume(bus: StringName, volume: float) -> void:
+  var index := AudioServer.get_bus_index(bus)
+  AudioServer.set_bus_volume_db(index, volume)
+  # The saved floor stays finite, but 0% must be completely silent.
+  AudioServer.set_bus_mute(index, volume <= AUDIO_SILENCE_DB)
 
 
 ## Get resolution string for display

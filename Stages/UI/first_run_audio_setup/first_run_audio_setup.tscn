@@ -1,0 +1,157 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Stages/UI/first_run_audio_setup/first_run_audio_setup.gd" id="1_setup"]
+[ext_resource type="Theme" uid="uid://b8k2vgj8hxk5r" path="res://Config/ztd_ui_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://c1g3vqaakxkv2" path="res://Common/UI/settings_menu/SettingBinding.gd" id="3_binding"]
+[ext_resource type="PackedScene" path="res://Common/UI/volume_slider_preview/volume_slider_preview.tscn" id="4_preview"]
+
+[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_continue"]
+button_index = 0
+
+[sub_resource type="Shortcut" id="Shortcut_continue"]
+events = [SubResource("InputEventJoypadButton_continue")]
+
+[node name="FirstRunAudioSetup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_setup")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.07450981, 0.20392157, 0.22745098, 1)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Center"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="Padding" type="MarginContainer" parent="Center/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="Content" type="VBoxContainer" parent="Center/Panel/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Center/Panel/Padding/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Audio Setup"
+horizontal_alignment = 1
+
+[node name="Instructions" type="Label" parent="Center/Panel/Padding/Content"]
+layout_mode = 2
+text = "Raise Master to unlock Music and Sound Effects.
+Adjust each slider to hear a preview."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Master" type="VBoxContainer" parent="Center/Panel/Padding/Content"]
+layout_mode = 2
+
+[node name="ValueLabel" type="Label" parent="Center/Panel/Padding/Content/Master"]
+layout_mode = 2
+text = "Master: 0%"
+
+[node name="MasterSlider" type="HSlider" parent="Center/Panel/Padding/Content/Master"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MasterBinding" type="Node" parent="Center/Panel/Padding/Content/Master"]
+unique_name_in_owner = true
+script = ExtResource("3_binding")
+setting_key = &"master_volume"
+control_path = NodePath("../MasterSlider")
+apply_group = "audio"
+live_preview = true
+conversion = "db_to_percentage"
+value_label_path = NodePath("../ValueLabel")
+label_format = "Master: %d%%"
+
+[node name="Music" type="VBoxContainer" parent="Center/Panel/Padding/Content"]
+layout_mode = 2
+
+[node name="ValueLabel" type="Label" parent="Center/Panel/Padding/Content/Music"]
+layout_mode = 2
+text = "Music: 0%"
+
+[node name="MusicSlider" type="HSlider" parent="Center/Panel/Padding/Content/Music"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+editable = false
+
+[node name="MusicBinding" type="Node" parent="Center/Panel/Padding/Content/Music"]
+unique_name_in_owner = true
+script = ExtResource("3_binding")
+setting_key = &"music_volume"
+control_path = NodePath("../MusicSlider")
+apply_group = "audio"
+live_preview = true
+conversion = "db_to_percentage"
+value_label_path = NodePath("../ValueLabel")
+label_format = "Music: %d%%"
+
+[node name="SFX" type="VBoxContainer" parent="Center/Panel/Padding/Content"]
+layout_mode = 2
+
+[node name="ValueLabel" type="Label" parent="Center/Panel/Padding/Content/SFX"]
+layout_mode = 2
+text = "Sound Effects: 0%"
+
+[node name="SFXSlider" type="HSlider" parent="Center/Panel/Padding/Content/SFX"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+editable = false
+
+[node name="SFXBinding" type="Node" parent="Center/Panel/Padding/Content/SFX"]
+unique_name_in_owner = true
+script = ExtResource("3_binding")
+setting_key = &"sfx_volume"
+control_path = NodePath("../SFXSlider")
+apply_group = "audio"
+live_preview = true
+conversion = "db_to_percentage"
+value_label_path = NodePath("../ValueLabel")
+label_format = "Sound Effects: %d%%"
+
+[node name="ContinueButton" type="Button" parent="Center/Panel/Padding/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+shortcut = SubResource("Shortcut_continue")
+shortcut_in_tooltip = false
+text = "Continue"
+metadata/skip_audio_manager = true
+
+[node name="SaveError" type="Label" parent="Center/Panel/Padding/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Could not save your audio settings. Please try again."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="VolumeSliderPreview" parent="." instance=ExtResource("4_preview")]

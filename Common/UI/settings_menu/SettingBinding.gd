@@ -158,13 +158,16 @@ func _apply_to_manager() -> void:
 
 func _convert_to_control(val: Variant) -> Variant:
   if conversion == "db_to_percentage":
+    if float(val) <= SettingsManager.AUDIO_SILENCE_DB:
+      return 0.0
     return db_to_linear(float(val)) * 100.0
   return val
 
 
 func _convert_from_control(val: Variant) -> Variant:
   if conversion == "db_to_percentage":
-    return linear_to_db(float(val) / 100.0)
+    var percent := float(val)
+    return SettingsManager.AUDIO_SILENCE_DB if percent <= 0.0 else linear_to_db(percent / 100.0)
   return val
 
 
@@ -173,4 +176,4 @@ func _update_label() -> void:
     return
   var label_node: Node = get_node_or_null(value_label_path)
   if is_instance_valid(label_node) and label_node is Label:
-    (label_node as Label).text = label_format % [int(_convert_to_control(_staged_value))]
+    (label_node as Label).text = label_format % [roundi(_convert_to_control(_staged_value))]
