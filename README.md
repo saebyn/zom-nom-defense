@@ -17,12 +17,12 @@ A lighthearted zombie tower defense game with a click-to-kill twist, built with 
 **Zom Nom Defense** is a lo-fi, chaotic tower defense/clicker hybrid where:
 - You **click zombies** to deal manual damage and earn "scrap"
 - You spend scrap to **place obstacles and turrets** to automate defense
-- You **defend absurd scenarios** (person on a car, survivor in a hammock, inflatable pool party)
+- You **defend survivors** on a car, by a campfire, or at an inflatable pool party
 - You **earn XP** to meet Player Level requirements for new buildings and click upgrades
 - You make **permanent strategic choices** in a branching tech tree (choose Double Tap or Shock Click)
 
 **Genre**: Tower Defense / Clicker Hybrid  
-**Platform**: PC (Steam planned)  
+**Platform**: PC (Steam release: **Not implemented**; under consideration)\
 **Tone**: Silly but strategic - light-hearted post-apocalypse chaos
 
 ---
@@ -31,7 +31,7 @@ A lighthearted zombie tower defense game with a click-to-kill twist, built with 
 
 This is a **part-time passion project**. Core systems are functional, but many features and content are still in development.
 
-See the [open issues](https://github.com/saebyn/zom-nom-defense/issues?q=is%3Aissue+is%3Aopen) and [project boards](https://github.com/saebyn/zom-nom-defense/projects) for the current roadmap, known bugs, and planned features.
+See the [Game Design Document](docs/zom_nom_defense_gdd.md) for feature status, the [open issues](https://github.com/saebyn/zom-nom-defense/issues?q=is%3Aissue+is%3Aopen) for known bugs and feature requests, and the [project boards](https://github.com/saebyn/zom-nom-defense/projects) for development priorities.
 
 ---
 
@@ -66,7 +66,7 @@ Come hang out, watch the chaos unfold, and see how the sausage gets made! ðŸ§Ÿâ€
 2. Open the project in Godot by importing the `project.godot` file
 3. Press F5 or click the "Play" button to run the game
 
-Controls are fully rebindable in-game via the Settings menu.
+Control rebinding is **Partially implemented**: Settings lets you change some bindings, but left-click attacks, right-click building removal, and middle-mouse camera dragging are fixed.
 
 For development, enable `zom_nom_defense/debug/enable_tools` in Project Settings to make Test Scenario available in Scenario Select.
 
