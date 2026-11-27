@@ -25,6 +25,8 @@ func before_each() -> void:
   add_child_autofree(viewport)
   audio_manager = AUDIO_MANAGER_SCENE.instantiate()
   viewport.add_child(audio_manager)
+  if not audio_manager.bg_music_player.playing:
+    audio_manager.play_background_music()
   watch_signals(audio_manager)
 
 

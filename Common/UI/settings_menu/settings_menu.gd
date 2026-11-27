@@ -21,7 +21,7 @@ signal closed()
 @onready var twitch_auth_button: Button = %TwitchAuthButton
 @onready var twitch_status_label: Label = %TwitchStatusLabel
 
-@onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
+@onready var volume_slider_preview: UI_VolumeSliderPreview = $VolumeSliderPreview
 
 # Keybind button scene
 const KeybindButtonScene = preload("res://Common/UI/settings_menu/keybind_button.tscn")
@@ -105,6 +105,7 @@ func _connect_binding_signals() -> void:
     var binding := raw as SettingBinding
     if binding.apply_group == "audio":
       binding.value_changed.connect(_on_audio_binding_changed)
+      volume_slider_preview.bind_volume_slider(binding)
     elif binding.setting_key == &"twitch_enabled":
       binding.value_changed.connect(_on_twitch_enabled_changed)
 
@@ -354,17 +355,3 @@ func _restore_original_keybinds() -> void:
         child._update_display()
 
   MyLogger.debug("SettingsMenu", "Keybinds restored to original state")
-
-
-func _on_master_slider_value_changed(_value: float) -> void:
-  audio_player.bus = "Master"
-  audio_player.play()
-
-func _on_music_slider_value_changed(_value: float) -> void:
-  audio_player.bus = "Music"
-  audio_player.play()
-
-func _on_sfx_slider_value_changed(_value: float) -> void:
-  audio_player.bus = "Sound Effects"
-  audio_player.play()
-

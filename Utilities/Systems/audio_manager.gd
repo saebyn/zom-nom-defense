@@ -59,7 +59,8 @@ func _ready() -> void:
   _on_audio_settings_changed()
   SettingsManager.audio_settings_changed.connect(_on_audio_settings_changed)
 
-  play_background_music()
+  if not SettingsManager.needs_first_run_audio_setup():
+    play_background_music()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -219,12 +220,9 @@ func _on_audio_settings_changed() -> void:
 
 
 func _on_playlist_timer_timeout() -> void:
-  if not bg_music_player.playing:
-    current_song = ""
-
-    if want_bg_music:
-      current_song = _pick_next_song()
-      _play_song(current_song)
+  if want_bg_music and not bg_music_player.playing:
+    current_song = _pick_next_song()
+    _play_song(current_song)
 
 
 func _pick_next_song() -> String:

@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://q4474n3vbxwb" path="res://Common/UI/settings_menu/settings_menu.gd" id="1_settings"]
 [ext_resource type="Theme" uid="uid://b8k2vgj8hxk5r" path="res://Config/ztd_ui_theme.tres" id="2_theme"]
 [ext_resource type="Script" uid="uid://c1g3vqaakxkv2" path="res://Common/UI/settings_menu/SettingBinding.gd" id="3_settingbinding"]
-[ext_resource type="AudioStream" uid="uid://borwpkctbfksr" path="res://Assets/Audio/SFX/ui/click.wav" id="4_20v7f"]
+[ext_resource type="PackedScene" path="res://Common/UI/volume_slider_preview/volume_slider_preview.tscn" id="4_preview"]
 
 [node name="SettingsMenu" type="Control" unique_id=2049746040]
 process_mode = 3
@@ -429,10 +429,4 @@ custom_minimum_size = Vector2(120, 40)
 layout_mode = 2
 text = "Cancel"
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=972591166]
-stream = ExtResource("4_20v7f")
-pitch_scale = 0.77
-
-[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/MasterContainer/MasterSlider" to="." method="_on_master_slider_value_changed"]
-[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/MusicContainer/MusicSlider" to="." method="_on_music_slider_value_changed"]
-[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/SFXContainer/SFXSlider" to="." method="_on_sfx_slider_value_changed"]
+[node name="VolumeSliderPreview" parent="." instance=ExtResource("4_preview")]
