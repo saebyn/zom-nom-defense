@@ -11,6 +11,5 @@ description = "Player clicks now splash damage in a small area of effect."
 branch_name = "Click"
 level_requirement = 3
 prerequisite_tech_ids = Array[String](["clk_hydraulic_mouse"])
-achievement_ids = Array[String](["ach_click_kills_25"])
 mutually_exclusive_with = Array[String](["clk_double_tap"])
 player_attack_effect = ExtResource("2_xxxxx")

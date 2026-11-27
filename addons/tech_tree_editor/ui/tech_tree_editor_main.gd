@@ -836,17 +836,14 @@ func _generate_markdown() -> String:
       if tech.prerequisite_tech_ids.size() > 0:
         md += "- **Prerequisites:** %s\n" % ", ".join(tech.prerequisite_tech_ids)
       
-      if tech.achievement_ids.size() > 0:
-        md += "- **Required Achievements:** %s\n" % ", ".join(tech.achievement_ids)
-      
       if tech.mutually_exclusive_with.size() > 0:
         md += "- **⚠ Mutually Exclusive With:** %s\n" % ", ".join(tech.mutually_exclusive_with)
       
       if tech.requires_branch_completion.size() > 0:
         md += "- **Requires Branch Completion:** %s\n" % ", ".join(tech.requires_branch_completion)
       
-      if tech.unlocked_building_ids.size() > 0:
-        md += "- **Unlocks:** %s\n" % ", ".join(tech.unlocked_building_ids)
+      if tech.player_attack_effect:
+        md += "- **Unlocks:** Click upgrade\n"
       
       md += "\n"
     

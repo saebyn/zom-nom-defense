@@ -30,6 +30,7 @@
    - **Level**: `1`
 3. Click **OK**
 4. Your new node appears in the graph!
+5. For a building unlock, add the new tech ID to `required_tech_ids` on the building resource in `Config/Buildings/`. For a click upgrade, set **Player Attack Effect** on the tech node instead.
 
 ### Step 5: Validate Your Changes
 1. Click the **Validate** button (or press **Ctrl+V**)
@@ -42,7 +43,7 @@
 ### Connect Prerequisites
 **Drag from prerequisite node → to dependent node**
 
-Example: Drag from `tur_scrap_shooter` to `tur_boom_barrel` to make the shooter a prerequisite.
+Example: `ob_spike_barricade` → `ob_electric_fence` means Spike Barricade is a prerequisite for Electric Fence.
 
 ### Search for a Node
 1. Type in the **search box** (top-right)

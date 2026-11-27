@@ -11,4 +11,3 @@ description = "A turret that does a small amount of damage to passing enemies. S
 icon = ExtResource("1_c5tpp")
 branch_name = "Offensive"
 scrap_cost = 75
-unlocked_building_ids = Array[String](["turret"])

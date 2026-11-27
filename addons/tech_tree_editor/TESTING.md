@@ -25,9 +25,9 @@ Since this is an EditorPlugin, it requires manual testing in the Godot Editor.
 - [ ] Expected nodes visible:
   - tur_scrap_shooter (Red - Offensive)
   - ob_crates (Blue - Defensive)
-  - eco_scrap_recycler (Green - Economy)
-  - tur_boom_barrel (Red - Offensive)
-  - tur_molotov_mortar (Red - Offensive)
+  - ob_electric_fence (Blue - Defensive)
+  - clk_double_tap (Purple - Click)
+  - clk_shock_click (Purple - Click)
 
 #### 3. Graph Visualization
 - [ ] Nodes are color-coded by branch
@@ -54,10 +54,9 @@ Test editing each field in Godot's Inspector:
 - [ ] Level Requirement - Player Level requirement changes
 - [ ] Scrap Cost - number changes
 - [ ] Prerequisites - array of tech IDs
-- [ ] Achievements - array of achievement IDs
 - [ ] Mutually Exclusive - array of tech IDs
-- [ ] Unlocked Buildings - array of building IDs
 - [ ] Branch Completion - array of branch names
+- [ ] Player Attack Effect - click effect resource
 - [ ] Inspector edits are saved automatically to the node's `.tres` file and persist after refreshing from disk
 - [ ] Edits to displayed properties (such as Display Name) update the graph without a manual save
 

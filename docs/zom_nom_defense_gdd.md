@@ -60,9 +60,9 @@ PC (Steam), with optional Twitch integration for live playthroughs and audience 
 ### Tech Tree
 
 - Branching structure with **mutually exclusive choices**.
-- At key decision points, players choose between competing specializations (e.g., Rapid Fire vs Heavy Damage).
+- At key decision points, players choose between competing specializations (e.g., Double Tap vs Shock Click).
 - **Exclusive choices are permanent per save slot once saved** - main-menu choices save immediately; in-scenario choices save on Victory.
-- Some unlocks require both a minimum level **and** achievement.
+- Tech unlocks can require a minimum Player Level, Scrap, or prerequisite tech nodes. Achievements are tracked separately.
 - Advanced tiers may require completing an entire branch before unlocking.
 - No unlock tickets or upgrade tokens.
 - **Multiple save slots** allow players to explore different tech paths in separate playthroughs.

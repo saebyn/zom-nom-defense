@@ -16,7 +16,6 @@ class_name Resource_TechNode
 @export var level_requirement: int = 1 ## Player level required to unlock this tech
 @export var scrap_cost: int = 0 ## Scrap cost to unlock
 @export var prerequisite_tech_ids: Array[String] = [] ## Tech IDs that must be unlocked first
-@export var achievement_ids: Array[String] = [] ## Achievement IDs required to unlock
 
 @export_category("Mutual Exclusivity")
 @export var mutually_exclusive_with: Array[String] = [] ## Tech IDs that become permanently locked when this is unlocked
@@ -25,7 +24,6 @@ class_name Resource_TechNode
 @export var requires_branch_completion: Array[String] = [] ## Branch names that must be fully completed before this unlocks
 
 @export_category("Effects")
-@export var unlocked_building_ids: Array[String] = [] ## Building IDs that become available when this tech is unlocked
 @export var player_attack_effect: Resource_AttackEffect = null ## Attack effects applied to the player when this tech is unlocked
 
 ## Validates that the tech node has required fields

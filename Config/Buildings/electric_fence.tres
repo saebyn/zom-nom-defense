@@ -9,7 +9,7 @@
 script = ExtResource("1_jonh0")
 id = "electric_fence"
 name = "Electric Fence"
-description = "DoT fence that continuously damages enemies. Requires Zed Zapper tech."
+description = "An electrified fence that deals continuous damage to enemies in contact with it."
 icon = ExtResource("1_k8ehq")
 is_offensive = true
 cost = 50

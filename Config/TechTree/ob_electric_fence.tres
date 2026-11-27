@@ -7,10 +7,8 @@
 script = ExtResource("1_xxxxx")
 id = "ob_electric_fence"
 display_name = "Electric Fence"
-description = "DoT fence that continuously damages enemies. Requires Zed Zapper tech."
+description = "An electrified fence that deals continuous damage to enemies in contact with it."
 icon = ExtResource("1_tibvh")
 branch_name = "Defensive"
 level_requirement = 3
-prerequisite_tech_ids = Array[String](["ob_spike_barricade", "tur_zed_zapper"])
-achievement_ids = Array[String](["ach_survive_3"])
-unlocked_building_ids = Array[String](["electric_fence"])
+prerequisite_tech_ids = Array[String](["ob_spike_barricade"])

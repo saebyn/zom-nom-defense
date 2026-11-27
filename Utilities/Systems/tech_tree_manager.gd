@@ -99,12 +99,6 @@ func can_unlock_tech(tech_id: String) -> bool:
       MyLogger.debug("TechTreeManager", "Tech %s requires branch completion: %s" % [tech_id, branch_name])
       return false
   
-  # Check achievement requirements (if AchievementManager exists)
-  if tech.achievement_ids.size() > 0:
-    # TODO: Integrate with AchievementManager when it's implemented
-    MyLogger.debug("TechTreeManager", "Tech %s has achievement requirements (not yet checked)" % tech_id)
-    # For now, we'll allow unlocking without achievements
-  
   return true
 
 ## Unlock a tech node
@@ -185,19 +179,6 @@ func is_branch_completed(branch_name: String) -> bool:
       return false
   
   return true
-
-## Get all unlocked building IDs from the tech tree
-func get_unlocked_building_ids() -> Array[String]:
-  var building_ids: Array[String] = []
-  
-  for tech_id in unlocked_tech_ids:
-    var tech = tech_nodes.get(tech_id)
-    if tech:
-      for building_id in tech.unlocked_building_ids:
-        if building_id not in building_ids:
-          building_ids.append(building_id)
-  
-  return building_ids
 
 ## Reset tech tree state (for testing or new game)
 func reset_tech_tree() -> void:

@@ -18,8 +18,8 @@ A lighthearted zombie tower defense game with a click-to-kill twist, built with 
 - You **click zombies** to deal manual damage and earn "scrap"
 - You spend scrap to **place obstacles and turrets** to automate defense
 - You **defend absurd scenarios** (person on a car, survivor in a hammock, inflatable pool party)
-- You **unlock tech via achievements** and level up through an XP system
-- You make **permanent strategic choices** in a branching tech tree (choose Rapid Fire OR Heavy Damage - forever!)
+- You **earn XP** to meet Player Level requirements for new buildings and click upgrades
+- You make **permanent strategic choices** in a branching tech tree (choose Double Tap or Shock Click)
 
 **Genre**: Tower Defense / Clicker Hybrid  
 **Platform**: PC (Steam planned)  

@@ -104,6 +104,15 @@ func get_building_type(building_id: String) -> Resource_BuildingType:
   return null
 
 
+## List registered buildings gated by this tech, even if they are not yet available.
+func get_buildings_requiring_tech(tech_id: String) -> Array[Resource_BuildingType]:
+  var matching_buildings: Array[Resource_BuildingType] = []
+  for building_type in _building_types:
+    if tech_id in building_type.required_tech_ids:
+      matching_buildings.append(building_type)
+  return matching_buildings
+
+
 ## Check if a building is available
 func is_building_available(building_id: String) -> bool:
   for building_type in available_building_types:

@@ -26,10 +26,11 @@ Click any node in the graph to open it in Godot's built-in Inspector dock. All p
 - Level Requirement (1-10)
 - Scrap Cost (0-9999, Scrap paid at unlock)
 - Prerequisites (array of tech IDs)
-- Achievements (array of achievement IDs)
 - Mutually Exclusive (array of tech IDs)
-- Unlocked Buildings (array of building IDs)
 - Branch Completion Requirements (array of branch names)
+- Player Attack Effect (resource for a click upgrade)
+
+To gate a building behind a tech node, add its tech ID to the building resource's `required_tech_ids` in `Config/Buildings/`. The in-game Tech Tree lists buildings from those requirements.
 
 ### Validation Engine
 Comprehensive validation checks:
@@ -121,10 +122,10 @@ Tech nodes are stored as `.tres` resource files in `Config/TechTree/`. Each file
 Tech node IDs should follow these prefixes based on branch:
 - **Offensive**: `tur_` (e.g., `tur_scrap_shooter`)
 - **Defensive**: `ob_` (e.g., `ob_crates`)
-- **Economy**: `eco_` (e.g., `eco_scrap_recycler`)
+- **Economy**: `eco_`
 - **Support**: `sup_` (e.g., `sup_overcharger`)
 - **Click**: `clk_` (e.g., `clk_hydraulic_mouse`)
-- **Advanced**: `adv_` (e.g., `adv_experimental_weapons`)
+- **Advanced**: `adv_`
 
 ## Validation Rules
 
@@ -171,5 +172,4 @@ Potential improvements for future versions:
 - Import from Markdown
 - Diff viewer for comparing tree versions
 - Custom node templates
-- Visual indicators for achievement requirements
 - Branch completion gate visualization

@@ -10,5 +10,3 @@ description = "Blocks enemy pathing and deals contact damage to zombies."
 branch_name = "Defensive"
 level_requirement = 2
 prerequisite_tech_ids = Array[String](["ob_crates"])
-achievement_ids = Array[String](["ach_place_3"])
-unlocked_building_ids = Array[String](["spike_barricade"])
