@@ -81,26 +81,28 @@ func test_occupied_slots_display():
 func test_continue_loads_backup_when_primary_is_unusable(
   primary_text = use_parameters(["not JSON", '{"version":1,"metadata":[]}', null])
 ):
-  SaveManager.create_new_game(1)
-  var backup := FileAccess.open(SaveManager.SAVE_SLOT_BACKUP_PATH % 1, FileAccess.WRITE)
+  const SLOT := 2
+  SaveManager.create_new_game(SLOT)
+  var backup := FileAccess.open(SaveManager.SAVE_SLOT_BACKUP_PATH % SLOT, FileAccess.WRITE)
   backup.store_string(JSON.stringify({
     "version": 1,
     "metadata": {"player_level": 4, "timestamp": 1700000000},
     "player_progression": {"current_level": 4, "current_xp": 37},
   }))
   backup.close()
-  var primary_path := SaveManager.SAVE_SLOT_PATH % 1
+  var primary_path := SaveManager.SAVE_SLOT_PATH % SLOT
   if primary_text == null:
     assert_eq(DirAccess.remove_absolute(primary_path), OK)
   else:
     var primary := FileAccess.open(primary_path, FileAccess.WRITE)
     primary.store_string(primary_text)
     primary.close()
+  SaveManager.create_new_game(SaveManager.DEFAULT_SLOT)
 
   var picker = load("res://Stages/UI/save_slot_selection/save_slot_selection.tscn").instantiate()
   add_child_autofree(picker)
   var cards = picker.get_node("MarginContainer/VBoxContainer/ScrollContainer/SlotContainer")
-  var card = cards.get_child(0)
+  var card = cards.get_child(SLOT - 1)
   var action_button: Button = card.get_node("MarginContainer/HBoxContainer/ButtonContainer/ActionButton")
   assert_eq(action_button.text, "Continue", "A valid backup makes the slot playable")
   if action_button.text != "Continue":
@@ -111,7 +113,12 @@ func test_continue_loads_backup_when_primary_is_unusable(
   action_button.pressed.emit()
   assert_eq(CurrencyManager.get_xp(), 37, "Continue loads the backed-up progression")
   await wait_process_frames(2)
-  if get_tree().current_scene is UI_MainMenu:
+  var menu := get_tree().current_scene as UI_MainMenu
+  assert_not_null(menu)
+  if menu:
+    var save_slot_button := menu.get_node("CurrentSave") as Button
+    assert_eq(save_slot_button.text, "Save Slot 2")
+    assert_eq(SaveManager.current_save_slot, SLOT)
     get_tree().unload_current_scene()
   CurrencyManager.reset_data()
 

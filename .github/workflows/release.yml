@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       do_publish:
-        description: "Set to true to publish the release"
+        description: "Publish to itch.io after building the selected v-prefixed tag"
         required: false
         default: "false"
 
@@ -37,6 +37,13 @@ jobs:
             output: "zom-nom-defense-game.x86_64"
             directory: linux
     steps:
+      - name: Validate release tag
+        run: |
+          case "$GITHUB_REF_TYPE:$GITHUB_REF_NAME" in
+            tag:v?*) ;;
+            *) echo "::error::Release builds require a version tag starting with v (for example, v0.5.4)."; exit 1 ;;
+          esac
+
       - uses: actions/checkout@v7
         with:
           lfs: true
@@ -70,7 +77,7 @@ jobs:
       - name: Apply release settings
         run: |
           cd "$PROJECT_PATH"
-          bash scripts/apply_release_settings.sh project.godot
+          bash scripts/apply_release_settings.sh project.godot "${GITHUB_REF_NAME#v}"
 
       - name: Build ${{ matrix.platform.name }}
         run: |

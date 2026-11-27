@@ -3,9 +3,9 @@ extends Node
 ## Atomic, multi-slot saves.
 ##
 ## Current Implementation:
-##   - Automatically uses slot 1 by default (initialize_default_slot())
-##   - Loads existing save from slot 1 if available, or creates new game
-##   - The main menu initializes the default slot; the slot picker can switch slots
+##   - Restores the last selected Save Slot on startup
+##   - Without a remembered selection, loads or creates Slot 1
+##   - The main menu initializes the active slot; the slot picker can switch slots
 ##   - Scenario outcomes and main-menu tech choices save without a timer
 ##
 ## Data Safety Features:
@@ -42,7 +42,8 @@ extends Node
 
 # Save slot configuration
 const MAX_SAVE_SLOTS = 10 # Expandable, minimum 3
-const DEFAULT_SLOT = 1 # Default slot to use when no slot selection UI exists
+const DEFAULT_SLOT = 1
+const LAST_SAVE_SLOT_PATH = "user://last_save_slot.cfg"
 const SAVE_SLOT_DIR = "user://saves/"
 const SAVE_SLOT_PATH = "user://saves/save_slot_%d.save"
 const SAVE_SLOT_BACKUP_PATH = "user://saves/save_slot_%d.save.bak"
@@ -142,26 +143,46 @@ func load_save_slot(slot_number: int) -> bool:
   # Restore playtime from metadata
   var metadata = save_data.get("metadata", {})
   slot_playtime = metadata.get("playtime", 0.0)
-  
+
+  _remember_save_slot(slot_number)
   MyLogger.info("SaveManager", "Successfully loaded save slot %d" % slot_number)
   load_completed.emit()
   return true
 
-## Initialize default save slot (slot 1)
-## Loads existing save if available, or creates new game
-## Call this when starting the game to ensure a slot is always loaded
-func initialize_default_slot() -> bool:
-  if current_save_slot > 0:
+## Keep the active slot, restore the last selection, or initialize Slot 1 on first use.
+## If a remembered slot cannot be loaded, the player must pick a slot.
+func initialize_active_slot() -> bool:
+  if _is_valid_slot_number(current_save_slot):
     MyLogger.info("SaveManager", "Save slot already loaded: %d" % current_save_slot)
     return true
-  
+
+  if FileAccess.file_exists(LAST_SAVE_SLOT_PATH):
+    var config := ConfigFile.new()
+    var error := config.load(LAST_SAVE_SLOT_PATH)
+    if error != OK:
+      MyLogger.warn("SaveManager", "Could not read last selected Save Slot (error %d)" % error)
+      return false
+    var remembered_slot = config.get_value("selection", "slot", -1)
+    if not (remembered_slot is int and _is_valid_slot_number(remembered_slot)):
+      MyLogger.warn("SaveManager", "Invalid last selected Save Slot")
+      return false
+    return load_save_slot(remembered_slot)
+
   if _slot_files_exist(DEFAULT_SLOT):
     MyLogger.info("SaveManager", "Loading existing save from default slot %d" % DEFAULT_SLOT)
     return load_save_slot(DEFAULT_SLOT)
-  else:
-    MyLogger.info("SaveManager", "Creating new game in default slot %d" % DEFAULT_SLOT)
-    create_new_game(DEFAULT_SLOT)
-    return true
+  MyLogger.info("SaveManager", "Creating new game in default slot %d" % DEFAULT_SLOT)
+  return create_new_game(DEFAULT_SLOT)
+
+func _remember_save_slot(slot_number: int) -> void:
+  var config := ConfigFile.new()
+  config.set_value("selection", "slot", slot_number)
+  var temp_path := LAST_SAVE_SLOT_PATH + ".tmp"
+  var error := config.save(temp_path)
+  if error == OK:
+    error = DirAccess.rename_absolute(temp_path, LAST_SAVE_SLOT_PATH)
+  if error != OK:
+    MyLogger.warn("SaveManager", "Could not remember Save Slot %d (error %d)" % [slot_number, error])
 
 ## Save the current slot atomically
 ## Uses temporary file + rename to ensure atomic writes
@@ -245,10 +266,10 @@ func _write_current_slot(save_data: Dictionary, capture_screenshot: bool) -> boo
   return true
 
 ## Start a fresh game in the given slot.
-func create_new_game(slot_number: int) -> void:
+func create_new_game(slot_number: int) -> bool:
   if not _is_valid_slot_number(slot_number):
     MyLogger.error("SaveManager", "Invalid slot number: %d (must be 1-%d)" % [slot_number, MAX_SAVE_SLOTS])
-    return
+    return false
   
   MyLogger.info("SaveManager", "Creating new game in slot %d" % slot_number)
   
@@ -265,15 +286,18 @@ func create_new_game(slot_number: int) -> void:
   
   # Save the fresh state without capturing screenshot (we're still in UI, not in game)
   if not save_current_slot(false):
+    current_save_slot = -1
     MyLogger.error("SaveManager", "Failed to save new game in slot %d" % slot_number)
     load_failed.emit("Failed to save new game slot %d" % slot_number)
-    return
-  
+    return false
+
+  _remember_save_slot(slot_number)
   slot_created.emit(slot_number)
   # Notify downstream systems (BuildingRegistry, etc.) that a valid state is now loaded
   # This ensures they refresh after a reset, just as they would after loading a save
   load_completed.emit()
   MyLogger.info("SaveManager", "New game created in slot %d" % slot_number)
+  return true
 
 ## Get metadata for a specific save slot
 ## Returns dictionary with slot info or empty dict if slot doesn't exist
@@ -317,6 +341,7 @@ func delete_save_slot(slot_number: int) -> bool:
   _delete_screenshot(slot_number)
   if current_save_slot == slot_number:
     current_save_slot = -1
+  # Keep the remembered selection so deleting it never silently switches to Slot 1.
   MyLogger.info("SaveManager", "Deleted save slot %d" % slot_number)
   slot_deleted.emit(slot_number)
   return true

@@ -8,21 +8,38 @@ class_name UI_MainMenu
 const SettingsMenuScene = preload("res://Common/UI/settings_menu/settings_menu.tscn")
 const TechTreeScene = preload("res://Stages/UI/tech_tree/tech_tree.tscn")
 const AchievementListScene = preload("res://Stages/UI/achievement_list/achievement_list.tscn")
+const MainMenuTips = preload("res://Stages/UI/main_menu/main_menu_tips.gd")
+const TIP_SECONDS_PER_WORD := 2.0
 
+@export var tips: Array[String] = MainMenuTips.TIPS.duplicate()
+
+@onready var version_label: Label = $Version
 @onready var current_song_label: Label = $CurrentSongLabel
+@onready var tip_label: Label = $Tip
+@onready var tip_timer: Timer = $TipTimer
+@onready var save_slot_button: Button = $CurrentSave
+@onready var play_button: Button = $LeftMenu/ButtonInset/Actions/Play
 
 var settings_menu = null
 var tech_tree_ui = null
 var achievement_list_ui = null
+var _next_tip_index := 0
 
 func _ready():
   # Set the initial game state when the main menu loads
   GameManager.set_game_state(GameManager.GameState.MAIN_MENU)
   MyLogger.info("MainMenu", "Main menu loaded")
+
+  var version := str(ProjectSettings.get_setting("application/config/version", ""))
+  version_label.text = "Dev build" if version.is_empty() else "v" + version
   
-  # Ensure a save slot is loaded (loads existing save or creates new game)
+  # Restore the active Save Slot before reading any progression.
   # This must happen before clearing scenario state
-  SaveManager.initialize_default_slot()
+  var has_save_slot := SaveManager.initialize_active_slot()
+  play_button.disabled = not has_save_slot
+  if has_save_slot:
+    save_slot_button.text = "Save Slot %d" % SaveManager.current_save_slot
+    save_slot_button.tooltip_text = "Change Save Slot"
   
   # Clear any active scenario (we're at menu, not in gameplay)
   # This happens after loading the save to ensure clean menu state
@@ -37,12 +54,28 @@ func _ready():
   AudioManager.song_started.connect(_on_song_change)
   _on_song_change(AudioManager.current_song)
 
+  tips = tips.filter(func(tip: String) -> bool: return not tip.strip_edges().is_empty())
+  _show_next_tip()
+
+func _show_next_tip() -> void:
+  if tips.is_empty():
+    tip_label.text = ""
+    return
+
+  var tip := tips[_next_tip_index]
+  tip_label.text = "Tip: " + tip
+  _next_tip_index = (_next_tip_index + 1) % tips.size()
+  var word_count := tip.replace("\t", " ").replace("\n", " ").replace("\r", " ").split(" ", false).size()
+  tip_timer.start(TIP_SECONDS_PER_WORD * word_count)
+
 func _setup_settings_menu():
   settings_menu = SettingsMenuScene.instantiate()
   add_child(settings_menu)
   settings_menu.closed.connect(_on_settings_menu_closed)
 
 func _on_start_button_pressed():
+  if play_button.disabled:
+    return
   MyLogger.info("MainMenu", "Start button pressed")
   
   # Check how many scenarios are unlocked
@@ -109,8 +142,8 @@ func _on_achievement_list_closed():
   MyLogger.debug("MainMenu", "Achievement list closed")
   achievement_list_ui = null
 
-func _on_load_game_button_pressed():
-  MyLogger.info("MainMenu", "Load Game button pressed - transitioning to save slot selection")
+func _on_save_slot_button_pressed():
+  MyLogger.info("MainMenu", "Opening Save Slot picker")
   _show_save_slot_selection()
 
 func _on_exit_button_pressed():

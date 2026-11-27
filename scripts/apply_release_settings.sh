@@ -3,13 +3,15 @@
 #
 # Patches project.godot to enforce production-safe settings before a release
 # build. Run this script from the repository root before invoking
-# `godot --export-release`.
+# `godot --export-release`. An optional second argument sets the game
+# version (without the tag's leading v).
 #
 # Idempotent: safe to run multiple times.
 
 set -euo pipefail
 
 PROJECT_FILE="${1:-project.godot}"
+BUILD_VERSION="${2:-}"
 
 if [[ ! -f "$PROJECT_FILE" ]]; then
 	echo "ERROR: project file not found: $PROJECT_FILE" >&2
@@ -17,6 +19,15 @@ if [[ ! -f "$PROJECT_FILE" ]]; then
 fi
 
 echo "Applying release settings to $PROJECT_FILE ..."
+
+# Godot can omit the version setting when it is empty. Insert it even if
+# there is no existing key, escaping for both the Godot string and sed.
+if [[ -n "$BUILD_VERSION" ]]; then
+	escaped_version="$(printf '%s' "$BUILD_VERSION" | sed 's/["\\]/\\&/g; s/[\\&|]/\\&/g')"
+	sed -i -e '/^config\/version=/d' \
+		-e "/^\[application\]$/s|$|\nconfig/version=\"$escaped_version\"|" \
+		"$PROJECT_FILE"
+fi
 
 # ── [zom_nom_defense] debug flags ────────────────────────────────────────────
 sed -i \

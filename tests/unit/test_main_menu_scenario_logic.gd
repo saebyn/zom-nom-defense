@@ -3,7 +3,7 @@ extends GutTest
 ## Unit tests for main menu scenario logic
 ## Tests that the main menu properly clears scenario state and handles scenario selection
 ## 
-## BUG FIX: Main menu now calls initialize_default_slot() BEFORE checking unlocked scenarios
+## BUG FIX: Main menu now calls initialize_active_slot() BEFORE checking unlocked scenarios
 ## to prevent the save load from modifying state after the check.
 ## 
 ## NOTE: We test the logic directly without instantiating the UI scene
