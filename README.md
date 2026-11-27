@@ -51,7 +51,7 @@ Come hang out, watch the chaos unfold, and see how the sausage gets made! ðŸ§Ÿâ€
 
 ### Prerequisites
 
-- [Godot Engine 4.6](https://godotengine.org/download) or later
+- Godot Engine **4.7.x**. Use [4.7.2 stable](https://godotengine.org/download/archive/4.7.2-stable/) to match CI and the release export templates.
 
 ### Running the Game
 

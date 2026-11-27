@@ -15,23 +15,27 @@ Each scenario can have its own custom visual environment (lighting, fog, colors)
 
 ## Available Environment Presets
 
+### `desert.tres`
+- **Used by**: Car Defense (`scenario_1.tscn`)
+- **Features**: Warm procedural sky, pale horizon, and sandy ground colors
+- **Atmosphere**: Dry and sunlit
+
 ### `daytime_bright.tres`
-- **Use Case**: Bright, cheerful daytime scenarios (scenario_1, scenario_4)
-- **Features**: Bright ambient lighting, clear sky, no fog
+- **Used by**: Test Scenario (`scenario_test.tscn`)
+- **Features**: Clear blue procedural sky, green ground colors, and no fog
 - **Atmosphere**: Upbeat, visible, clear
 
 ### `nighttime_campfire.tres`
-- **Use Case**: Dark nighttime scenarios with warm light sources (scenario_2)
-- **Features**: 
-  - Very dark ambient (dark blue-black background)
-  - Warm, dim orange ambient light
+- **Used by**: Campfire Survivors (`scenario_2.tscn`)
+- **Features**:
+  - Dim procedural sky with a warm horizon
+  - Sky-sourced ambient lighting
   - Glow enabled for fire effects
-  - Light fog for atmosphere
 - **Atmosphere**: Tense, intimate, dramatic
 - **Best with**: `OmniLight3D` for campfire, `DirectionalLight3D` for moonlight
 
 ### `golden_hour_forest.tres`
-- **Use Case**: Late afternoon forest scenarios (scenario_3)
+- **Use Case**: Late afternoon forest scenarios (not assigned to a current Scenario)
 - **Features**:
   - Warm golden/orange tones
   - Moderate glow for sun rays
@@ -40,11 +44,11 @@ Each scenario can have its own custom visual environment (lighting, fog, colors)
 - **Best with**: `DirectionalLight3D` angled low for sunset effect
 
 ### `daytime_pool_party.tres`
-- **Use Case**: Bright outdoor party scenarios (scenario_4)
+- **Used by**: Pool Party (`scenario_pool_party.tscn`, ID `scenario_4`)
 - **Features**:
-  - Bright blue sky
-  - High ambient lighting
-  - Minimal glow for water reflections
+  - Solid light-blue background
+  - Increased ambient light energy and exposure
+  - Subtle glow enabled for bright highlights
 - **Atmosphere**: Fun, energetic, bright
 
 ## Using in Your Scenario
@@ -117,7 +121,7 @@ Simply leave `scenario_environment` as `null` and the scenario will use whatever
 ### Performance
 - Changing environments is very fast (just swaps the resource)
 - Glow/fog have small performance costs
-- SSAO/SSR/SDFGI are expensive (disabled in presets)
+- Effects such as SSAO, SSR, and SDFGI have higher costs and depend on renderer support.
 
 ## Testing Your Environment
 

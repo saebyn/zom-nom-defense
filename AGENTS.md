@@ -1,6 +1,6 @@
-# GitHub Copilot Instructions for Godot Tower Defense
+# Agent Instructions for Zom Nom Defense
 
-This document provides comprehensive instructions for GitHub Copilot to work effectively with this Godot 4 tower defense game project.
+Repository guidance for coding agents working on Zom Nom Defense.
 
 ## Project Overview
 
@@ -19,20 +19,20 @@ This is a **3D tower defense game** built with **Godot 4**. The project uses a f
 ### ⚠️ CRITICAL: Asset Import Timing
 **NEVER cancel the initial asset import process!** The first-time asset import takes **15+ minutes minimum**. Cancelling this process will break 3D model rendering and require starting over.
 
-### Godot 4.6 Installation
+### Godot 4.7 Installation
 
-1. **Download Godot 4.6** (verified URL):
+1. **Download Godot 4.7.2 stable** to match CI:
    ```bash
-   wget https://github.com/godotengine/godot/releases/download/4.6-stable/Godot_v4.6-stable_linux.x86_64.zip
-   unzip Godot_v4.6-stable_linux.x86_64.zip
-   chmod +x Godot_v4.6-stable_linux.x86_64
-   mv Godot_v4.6-stable_linux.x86_64 ./godot
+   wget https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+   unzip Godot_v4.7.2-stable_linux.x86_64.zip
+   chmod +x Godot_v4.7.2-stable_linux.x86_64
+   mv Godot_v4.7.2-stable_linux.x86_64 ./godot
    ```
 
 2. **Verify Installation**:
    ```bash
    ./godot --version
-   # Expected output: 4.6.stable.official
+   # The official build reports 4.7.2.stable.official followed by a commit hash.
    ```
 
 ### Project Setup
@@ -47,6 +47,8 @@ This is a **3D tower defense game** built with **Godot 4**. The project uses a f
 2. **Initial Asset Import** (⚠️ CRITICAL - DO NOT CANCEL):
    ```bash
    # This takes 15+ minutes minimum - be patient!
+   ./godot --headless --import --path .
+   # On a fresh checkout, scan again so Dialogic indexes characters and timelines.
    ./godot --headless --import --path .
    ```
    - Wait for complete import before proceeding
@@ -118,7 +120,7 @@ This project uses git submodules for external dependencies to keep the repositor
 
 ## Domain Language
 
-All code identifiers, comments, documentation, and UI text must use the canonical terms defined in [`docs/UBIQUITOUS_LANGUAGE.md`](../docs/UBIQUITOUS_LANGUAGE.md). Consult that document before introducing or reusing any domain term. Key examples: use **Survivor** (not "target"), **Scenario** (not "level"), **Building** (not "obstacle" generically), **Player Level** (not bare "level") for the progression rank.
+All code identifiers, comments, documentation, and UI text must use the canonical terms defined in [`docs/UBIQUITOUS_LANGUAGE.md`](docs/UBIQUITOUS_LANGUAGE.md). Consult that document before introducing or reusing any domain term. Key examples: use **Survivor** (not "target"), **Scenario** (not "level"), **Building** (not "obstacle" generically), **Player Level** (not bare "level") for the progression rank.
 
 ## Development Guidelines
 

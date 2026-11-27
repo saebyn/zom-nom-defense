@@ -56,7 +56,7 @@ func show_settings():
 This component requires:
 - SettingsManager singleton (autoloaded)
 - MyLogger system (for logging)
-- Godot 4.6+
+- Godot (see the [project prerequisites](../../../README.md#prerequisites))
 
 ## Documentation
 

@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GODOT_VERSION: 4.6.1
+  GODOT_VERSION: 4.7.2
   EXPORT_NAME: zom-nom-defense-game
   PROJECT_PATH: .
 
@@ -44,31 +44,39 @@ jobs:
 
       - name: Setup Godot
         run: |
-          mkdir -v -p ~/.local/share/godot/export_templates/
-          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          version="$(godot --version)"
+          case "$version" in
+            "$GODOT_VERSION".stable.*) ;;
+            *) echo "::error::Expected Godot $GODOT_VERSION stable, found $version. Rebuild the CI image before releasing."; exit 1 ;;
+          esac
+          template_dir="${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates"
+          mkdir -p "$template_dir"
+          mv "/root/.local/share/godot/export_templates/$GODOT_VERSION.stable" "$template_dir/"
 
       - name: Pre-configure Godot Editor Settings
         run: |
-          # Pre-configure Godot editor settings for Blender path
-          mkdir -p /github/home/.config/godot
-          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nfilesystem/import/blender/blender_path = "/usr/bin/blender"\n' > /github/home/.config/godot/editor_settings-4.tres
+          config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/godot"
+          mkdir -p "$config_dir"
+          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nfilesystem/import/blender/blender_path = "/usr/bin/blender"\n' > "$config_dir/editor_settings-${GODOT_VERSION%.*}.tres"
 
       - name: Import project files
         run: |
           echo "Running initial project import..."
-          cd $PROJECT_PATH
-          godot --headless --verbose --import --path . --quit
+          cd "$PROJECT_PATH"
+          godot --headless --verbose --import --path .
+          # Dialogic needs a second scan to populate its character and timeline indexes on a fresh checkout.
+          godot --headless --import --path .
 
       - name: Apply release settings
         run: |
-          cd $PROJECT_PATH
+          cd "$PROJECT_PATH"
           bash scripts/apply_release_settings.sh project.godot
 
       - name: Build ${{ matrix.platform.name }}
         run: |
           mkdir -v -p build/${{ matrix.platform.directory }}
           EXPORT_DIR="$(readlink -f build)"
-          cd $PROJECT_PATH
+          cd "$PROJECT_PATH"
           godot --headless --verbose --export-release "${{ matrix.platform.preset }}" "$EXPORT_DIR/${{ matrix.platform.directory }}/${{ matrix.platform.output }}"
 
       - name: Upload Artifact
