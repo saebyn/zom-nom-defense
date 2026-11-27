@@ -1,6 +1,7 @@
 extends GutTest
 
 const MainMenuScene := preload("res://Stages/UI/main_menu/main_menu.tscn")
+const VERSION_SETTING := "application/config/version"
 
 var _original_slot: int
 var _original_playtime: float
@@ -30,36 +31,50 @@ func after_each() -> void:
   get_tree().paused = _original_paused
   Engine.time_scale = _original_time_scale
 
-func _open_menu(tips = null) -> Label:
+func _open_menu(tips = null) -> UI_MainMenu:
   var menu := MainMenuScene.instantiate() as UI_MainMenu
   if tips != null:
     menu.tips.assign(tips)
   add_child_autofree(menu)
-  return menu.get_node("Tip") as Label
+  return menu
+
+func test_shows_the_release_version_when_the_main_menu_opens() -> void:
+  var original_version = ProjectSettings.get_setting(VERSION_SETTING)
+  ProjectSettings.set_setting(VERSION_SETTING, "0.5.4")
+
+  var version_label := _open_menu().get_node("Version") as Label
+
+  ProjectSettings.set_setting(VERSION_SETTING, original_version)
+  assert_eq(version_label.text, "v0.5.4")
+
+func test_shows_dev_build_in_an_unstamped_checkout() -> void:
+  var version_label := _open_menu().get_node("Version") as Label
+
+  assert_eq(version_label.text, "Dev build")
 
 func test_default_menu_has_a_tip_to_show() -> void:
-  var tip_label := _open_menu()
+  var tip_label := _open_menu().get_node("Tip") as Label
 
   assert_ne(tip_label.text.strip_edges(), "")
 
 func test_shows_a_prefixed_tip_when_the_main_menu_opens() -> void:
-  var tip_label := _open_menu(["Protect Survivors."])
+  var tip_label := _open_menu(["Protect Survivors."]).get_node("Tip") as Label
 
   assert_eq(tip_label.text, "Tip: Protect Survivors.")
 
 func test_leaves_the_tip_label_empty_when_there_are_no_tips() -> void:
-  var tip_label := _open_menu([])
+  var tip_label := _open_menu([]).get_node("Tip") as Label
 
   assert_eq(tip_label.text, "")
 
 func test_skips_blank_entries() -> void:
-  var tip_label := _open_menu([" \t", "Protect Survivors."])
+  var tip_label := _open_menu([" \t", "Protect Survivors."]).get_node("Tip") as Label
 
   assert_eq(tip_label.text, "Tip: Protect Survivors.")
 
 func test_rotates_at_two_real_seconds_per_word_and_wraps() -> void:
   Engine.time_scale = 2.0
-  var tip_label := _open_menu(["Click!", "Protect \t Survivors."])
+  var tip_label := _open_menu(["Click!", "Protect \t Survivors."]).get_node("Tip") as Label
 
   await get_tree().create_timer(1.75, true, false, true).timeout
   assert_eq(tip_label.text, "Tip: Click!", "The one-word tip should still be visible")

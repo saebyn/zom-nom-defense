@@ -13,6 +13,7 @@ const TIP_SECONDS_PER_WORD := 2.0
 
 @export var tips: Array[String] = MainMenuTips.TIPS.duplicate()
 
+@onready var version_label: Label = $Version
 @onready var current_song_label: Label = $CurrentSongLabel
 @onready var tip_label: Label = $Tip
 @onready var tip_timer: Timer = $TipTimer
@@ -26,6 +27,9 @@ func _ready():
   # Set the initial game state when the main menu loads
   GameManager.set_game_state(GameManager.GameState.MAIN_MENU)
   MyLogger.info("MainMenu", "Main menu loaded")
+
+  var version := str(ProjectSettings.get_setting("application/config/version", ""))
+  version_label.text = "Dev build" if version.is_empty() else "v" + version
   
   # Ensure a save slot is loaded (loads existing save or creates new game)
   # This must happen before clearing scenario state
