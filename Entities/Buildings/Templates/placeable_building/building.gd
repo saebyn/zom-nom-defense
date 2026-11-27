@@ -113,7 +113,7 @@ func place(navigation_region: NavigationRegion3D) -> void:
     size.y = max(size.y, aabb.size.y * 0.5)
     size.z = max(size.z, aabb.size.z * 0.5)
 
-  nav_obstacle.vertices.append_array([
+  nav_obstacle.vertices = PackedVector3Array([
     Vector3(-size.x, 0, -size.z),
     Vector3(size.x, 0, -size.z),
     Vector3(size.x, 0, size.z),
