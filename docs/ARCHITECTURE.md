@@ -197,7 +197,7 @@ graph TB
         Stats[StatsManager<br/>defeats, placements]
         Tech[TechTreeManager<br/>unlocks, locked branches]
         Achievements[AchievementManager<br/>in-game progress]
-        Scenarios[ScenarioManager<br/>completed scenarios, scores]
+        Scenarios[ScenarioManager<br/>completed scenarios, best times]
         Survivors[SurvivorNameManager<br/>survivor profiles]
     end
     
@@ -437,7 +437,7 @@ graph TB
         
         PauseMenu[Pause Menu<br/>Resume, Settings<br/>Tech Tree, Quit]
         
-        ScenarioSelect[Scenario Select<br/>Available scenarios<br/>Best scores]
+        ScenarioSelect[Scenario Select<br/>Available scenarios<br/>Best times]
         
         TechTree[Tech Tree UI<br/>Unlock tree<br/>Exclusive branches]
         

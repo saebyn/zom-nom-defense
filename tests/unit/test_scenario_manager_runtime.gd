@@ -13,7 +13,6 @@ func before_each():
   ScenarioManager.clear_current_scenario()
   ScenarioManager.completed_scenarios.clear()
   ScenarioManager.scenario_best_times.clear()
-  ScenarioManager.scenario_best_scores.clear()
 
 func after_each():
   # Restore original state

@@ -1,7 +1,7 @@
 extends PanelContainer
 
 ## Individual scenario card that displays scenario info and handles selection
-## Shows scenario name, status (locked/available/completed), and best stats
+## Shows scenario name, status (locked/available/completed), and best time
 
 signal scenario_selected(scenario_id: String)
 
@@ -12,7 +12,7 @@ var scene_path: String = ""
 @onready var scenario_name_label = $MarginContainer/VBoxContainer/HeaderHBox/ScenarioName
 @onready var status_label = $MarginContainer/VBoxContainer/HeaderHBox/StatusLabel
 @onready var description_label = $MarginContainer/VBoxContainer/DescriptionLabel
-@onready var stats_label = $MarginContainer/VBoxContainer/StatsLabel
+@onready var best_time_label = $MarginContainer/VBoxContainer/BestTimeLabel
 @onready var lock_message_label = $MarginContainer/VBoxContainer/LockMessageLabel
 @onready var play_button = $MarginContainer/VBoxContainer/PlayButton
 
@@ -28,8 +28,7 @@ func configure(
   p_description: String,
   p_is_unlocked: bool,
   p_is_completed: bool,
-  p_best_time: float,
-  p_best_score: int
+  p_best_time: float
 ):
   scenario_id = p_scenario_id
   is_unlocked = p_is_unlocked
@@ -60,28 +59,20 @@ func configure(
     lock_message_label.text = "Complete %s to unlock" % required_name
     lock_message_label.visible = true
     
-    # Hide stats and play button
-    stats_label.visible = false
+    # Hide best time and play button
+    best_time_label.visible = false
     play_button.visible = false
     play_button.disabled = true
   else:
     # Hide lock message
     lock_message_label.visible = false
     
-    # Show/update stats if completed
+    # Show best time if completed
+    best_time_label.visible = p_is_completed
     if p_is_completed:
-      var stats_text = ""
-      var show_time = true
-      var show_score = true
-      # Always show both, even if zero
       var minutes = int(p_best_time) / 60
       var seconds = int(p_best_time) % 60
-      stats_text += "Best Time: %d:%02d" % [minutes, seconds]
-      stats_text += " | Best Score: %d" % p_best_score
-      stats_label.text = stats_text
-      stats_label.visible = true
-    else:
-      stats_label.visible = false
+      best_time_label.text = "Best Time: %d:%02d" % [minutes, seconds]
     
     # Show play button
     play_button.visible = true

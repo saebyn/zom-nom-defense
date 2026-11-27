@@ -167,11 +167,10 @@ func test_scenario_manager_save_load():
   SaveManager.create_new_game(TEST_SLOT_1)
   
   # Mark some scenarios complete
-  ScenarioManager.mark_scenario_complete("scenario_1", 120.5, 1000)
-  ScenarioManager.mark_scenario_complete("scenario_2", 95.3, 1500)
+  ScenarioManager.mark_scenario_complete("scenario_1", 120.5)
+  ScenarioManager.mark_scenario_complete("scenario_2", 95.3)
   
   var expected_count = ScenarioManager.completed_scenarios.size()
-  var expected_best_time = ScenarioManager.get_best_time("scenario_1")
   
   # Save
   SaveManager.save_current_slot()
@@ -186,7 +185,7 @@ func test_scenario_manager_save_load():
   assert_eq(ScenarioManager.completed_scenarios.size(), expected_count, "Completed count should match")
   assert_true(ScenarioManager.is_scenario_completed("scenario_1"), "Scenario 1 should be complete")
   assert_true(ScenarioManager.is_scenario_completed("scenario_2"), "Scenario 2 should be complete")
-  assert_eq(ScenarioManager.get_best_time("scenario_1"), expected_best_time, "Best time should be restored")
+  assert_eq(ScenarioManager.get_best_time("scenario_1"), 120.5, "Best time should be restored")
 
 ## Test: Tech tree manager save/load
 func test_tech_tree_manager_save_load():

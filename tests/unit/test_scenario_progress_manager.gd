@@ -9,7 +9,6 @@ func before_each():
   # Reset the ScenarioManager state before each test
   ScenarioManager.completed_scenarios.clear()
   ScenarioManager.scenario_best_times.clear()
-  ScenarioManager.scenario_best_scores.clear()
   
   # Clean up any test save file
   if FileAccess.file_exists(test_save_path):
@@ -88,32 +87,6 @@ func test_best_time_only_updates_when_better():
   
   # Assert - Best time should update to 100.0
   assert_eq(ScenarioManager.get_best_time("scenario_1"), 100.0, "Best time should update with better time")
-
-func test_best_score_tracking():
-  # Arrange - No best score initially
-  assert_eq(ScenarioManager.get_best_score("scenario_1"), 0, "Best score should be 0 initially")
-  
-  # Act - Complete with a score
-  ScenarioManager.mark_scenario_complete("scenario_1", 0.0, 1000)
-  
-  # Assert - Best score is recorded
-  assert_eq(ScenarioManager.get_best_score("scenario_1"), 1000, "Best score should be recorded")
-
-func test_best_score_only_updates_when_higher():
-  # Arrange - Set initial best score
-  ScenarioManager.mark_scenario_complete("scenario_1", 0.0, 1000)
-  
-  # Act - Complete with lower score
-  ScenarioManager.mark_scenario_complete("scenario_1", 0.0, 500)
-  
-  # Assert - Best score should still be 1000
-  assert_eq(ScenarioManager.get_best_score("scenario_1"), 1000, "Best score should not update with lower score")
-  
-  # Act - Complete with higher score
-  ScenarioManager.mark_scenario_complete("scenario_1", 0.0, 1500)
-  
-  # Assert - Best score should update to 1500
-  assert_eq(ScenarioManager.get_best_score("scenario_1"), 1500, "Best score should update with higher score")
 
 func test_get_scenario_metadata_returns_correct_data():
   # Act

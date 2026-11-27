@@ -12,7 +12,6 @@ func before_each():
   # Reset to a known state
   ScenarioManager.completed_scenarios.clear()
   ScenarioManager.scenario_best_times.clear()
-  ScenarioManager.scenario_best_scores.clear()
   
   # Reset GameManager state
   GameManager.set_game_state(GameManager.GameState.MAIN_MENU)
@@ -108,7 +107,7 @@ func test_scenario_completion_data_persists_across_state_changes():
   ScenarioManager.set_current_scenario_id(scenario_id)
   
   # Act - Complete scenario and change states multiple times
-  ScenarioManager.mark_scenario_complete(scenario_id, 120.5, 1000)
+  ScenarioManager.mark_scenario_complete(scenario_id, 120.5)
   GameManager.set_game_state(GameManager.GameState.VICTORY)
   GameManager.set_game_state(GameManager.GameState.MAIN_MENU)
   GameManager.set_game_state(GameManager.GameState.PLAYING)
@@ -116,4 +115,3 @@ func test_scenario_completion_data_persists_across_state_changes():
   # Assert - Completion data should persist
   assert_true(ScenarioManager.is_scenario_completed(scenario_id), "Level completion should persist")
   assert_eq(ScenarioManager.get_best_time(scenario_id), 120.5, "Best time should persist")
-  assert_eq(ScenarioManager.get_best_score(scenario_id), 1000, "Best score should persist")

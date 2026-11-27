@@ -12,7 +12,6 @@ func before_each():
   # Reset ScenarioManager state
   ScenarioManager.completed_scenarios.clear()
   ScenarioManager.scenario_best_times.clear()
-  ScenarioManager.scenario_best_scores.clear()
   ScenarioManager.last_scenario_stats = {}
   ScenarioManager.clear_current_scenario()
   
