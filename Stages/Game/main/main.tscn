@@ -38,7 +38,7 @@ script = ExtResource("1_1bvp3")
 
 [node name="Attack" parent="." unique_id=532095815 node_paths=PackedStringArray("audio_player") instance=ExtResource("2_kek77")]
 damage_amount = 10.0
-attack_speed = 10.0
+attack_speed = 0.5
 damage_source = "player"
 hit_sound = 18
 audio_player = NodePath("../AudioStreamPlayer")

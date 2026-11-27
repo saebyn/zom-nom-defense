@@ -6,16 +6,18 @@ const MAX_PATH_STEERING_RATIO = 0.25
 const MIN_PATH_STEERING_INTERVAL = 1.5
 const MAX_PATH_STEERING_INTERVAL = 3.0
 
+@export_group("Overridable Properties")
 @export var movement_speed: float = 2.0
-@export var rotation_speed: float = PI / 3.0 # Radians per second, adjust for faster/slower turning. This is independent of movement speed to ensure the enemy can always turn towards the target effectively.
-@export var path_desired_distance: float = 0.5
-@export_range(0.0, 15.0, 0.1, "or_greater") var max_path_steering_offset: float = 5.0 ## Maximum horizontal steering offset in world units. Zero follows the path directly.
+@export var scrap_reward: int = 10 ## Scrap awarded when enemy dies (can be 0)
 @export var target_desired_distance: float = 4.0
 @export var target_attack_range: float = 2.0
 @export var building_attack_range: float = 6.0
-@export var scrap_reward: int = 10 ## Scrap awarded when enemy dies (can be 0)
-@export var enemy_type: String = "base_enemy" ## Type identifier for stats tracking
-@export var enemy_group: String = "enemies"
+
+@export_group("Navigation")
+@export var movement_disabled: bool = false
+@export var rotation_speed: float = PI / 3.0 # Radians per second, adjust for faster/slower turning. This is independent of movement speed to ensure the enemy can always turn towards the target effectively.
+@export var path_desired_distance: float = 0.5
+@export_range(0.0, 15.0, 0.1, "or_greater") var max_path_steering_offset: float = 5.0 ## Maximum horizontal steering offset in world units. Zero follows the path directly.
 
 @export_group("Animations")
 @export var idle_animation_state: StringName = &"Idle"
@@ -23,6 +25,11 @@ const MAX_PATH_STEERING_INTERVAL = 3.0
 @export var run_animation_state: StringName = &"Run"
 @export var walk_speed_threshold: float = 0.2
 @export var run_speed_threshold: float = 4.0
+
+@export_group("Other Properties")
+@export var enemy_type: String = "base_enemy" ## Type identifier for stats tracking
+@export var enemy_group: String = "enemies"
+
 
 var attack: Component_Attack
 var health: Component_Health
@@ -144,7 +151,7 @@ func _physics_process(delta: float):
   _update_locomotion_animation()
 
 func _update_navigation(delta: float):
-  if navigation_agent.is_navigation_finished():
+  if navigation_agent.is_navigation_finished() or movement_disabled:
     velocity = Vector3.ZERO
   else:
     var next_path_position := navigation_agent.get_next_path_position()
