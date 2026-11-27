@@ -52,6 +52,46 @@ func test_shows_dev_build_in_an_unstamped_checkout() -> void:
 
   assert_eq(version_label.text, "Dev build")
 
+func test_shows_the_loaded_save_slot_and_enables_play() -> void:
+  SaveManager.current_save_slot = 2
+
+  var menu := _open_menu()
+  var save_slot_button := menu.get_node("CurrentSave") as Button
+  var play_button := menu.get_node("LeftMenu/ButtonInset/Actions/Play") as Button
+
+  assert_eq(save_slot_button.text, "Save Slot 2")
+  assert_eq(save_slot_button.tooltip_text, "Change Save Slot")
+  assert_false(play_button.disabled)
+
+func test_offers_slot_selection_instead_of_play_when_the_remembered_slot_is_unavailable() -> void:
+  var path := SaveManager.LAST_SAVE_SLOT_PATH
+  var selection_existed := FileAccess.file_exists(path)
+  var previous_selection := FileAccess.get_file_as_bytes(path) if selection_existed else PackedByteArray()
+  var selection := ConfigFile.new()
+  selection.set_value("selection", "slot", SaveManager.MAX_SAVE_SLOTS + 1)
+  assert_eq(selection.save(path), OK)
+  SaveManager.current_save_slot = -1
+
+  var menu := _open_menu()
+  var save_slot_button := menu.get_node("CurrentSave") as Button
+  var play_button := menu.get_node("LeftMenu/ButtonInset/Actions/Play") as Button
+
+  if selection_existed:
+    var file := FileAccess.open(path, FileAccess.WRITE)
+    file.store_buffer(previous_selection)
+    file.close()
+  else:
+    DirAccess.remove_absolute(path)
+
+  assert_eq(save_slot_button.text, "Select Save Slot")
+  assert_false(save_slot_button.disabled)
+  assert_true(play_button.disabled)
+  save_slot_button.pressed.emit()
+  await wait_process_frames(2)
+  assert_true(get_tree().current_scene is UI_SaveSlotSelection)
+  if get_tree().current_scene is UI_SaveSlotSelection:
+    get_tree().unload_current_scene()
+
 func test_default_menu_has_a_tip_to_show() -> void:
   var tip_label := _open_menu().get_node("Tip") as Label
 

@@ -71,9 +71,9 @@ func _on_slot_selected(slot_number: int):
 
 ## Create a new game in the specified slot
 func _create_new_game(slot_number: int):
-  # Create new game in SaveManager
-  SaveManager.create_new_game(slot_number)
-  
+  if not SaveManager.create_new_game(slot_number):
+    return
+
   # Set default scenario
   ScenarioManager.set_current_scenario_id("scenario_1")
   

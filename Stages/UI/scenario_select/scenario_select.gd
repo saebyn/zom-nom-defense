@@ -12,8 +12,8 @@ class_name UI_ScenarioSelect
 const ScenarioCardScene = preload("res://Stages/UI/scenario_select/scenario_card.tscn")
 
 func _ready():
-  # Ensure a save slot is loaded (default to slot 1)
-  SaveManager.initialize_default_slot()
+  # Keep the active Save Slot or restore the startup selection.
+  SaveManager.initialize_active_slot()
   
   # Set the game state
   GameManager.set_game_state(GameManager.GameState.MAIN_MENU)

@@ -17,6 +17,8 @@ const TIP_SECONDS_PER_WORD := 2.0
 @onready var current_song_label: Label = $CurrentSongLabel
 @onready var tip_label: Label = $Tip
 @onready var tip_timer: Timer = $TipTimer
+@onready var save_slot_button: Button = $CurrentSave
+@onready var play_button: Button = $LeftMenu/ButtonInset/Actions/Play
 
 var settings_menu = null
 var tech_tree_ui = null
@@ -31,9 +33,13 @@ func _ready():
   var version := str(ProjectSettings.get_setting("application/config/version", ""))
   version_label.text = "Dev build" if version.is_empty() else "v" + version
   
-  # Ensure a save slot is loaded (loads existing save or creates new game)
+  # Restore the active Save Slot before reading any progression.
   # This must happen before clearing scenario state
-  SaveManager.initialize_default_slot()
+  var has_save_slot := SaveManager.initialize_active_slot()
+  play_button.disabled = not has_save_slot
+  if has_save_slot:
+    save_slot_button.text = "Save Slot %d" % SaveManager.current_save_slot
+    save_slot_button.tooltip_text = "Change Save Slot"
   
   # Clear any active scenario (we're at menu, not in gameplay)
   # This happens after loading the save to ensure clean menu state
@@ -68,6 +74,8 @@ func _setup_settings_menu():
   settings_menu.closed.connect(_on_settings_menu_closed)
 
 func _on_start_button_pressed():
+  if play_button.disabled:
+    return
   MyLogger.info("MainMenu", "Start button pressed")
   
   # Check how many scenarios are unlocked
@@ -134,8 +142,8 @@ func _on_achievement_list_closed():
   MyLogger.debug("MainMenu", "Achievement list closed")
   achievement_list_ui = null
 
-func _on_load_game_button_pressed():
-  MyLogger.info("MainMenu", "Load Game button pressed - transitioning to save slot selection")
+func _on_save_slot_button_pressed():
+  MyLogger.info("MainMenu", "Opening Save Slot picker")
   _show_save_slot_selection()
 
 func _on_exit_button_pressed():

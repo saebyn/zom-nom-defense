@@ -34,10 +34,27 @@ const TEST_SLOT = 9
 
 # Store original managed systems to restore after tests
 var original_managed_systems: Array = []
+var original_selection_existed: bool
+var original_selection: PackedByteArray
+
+func before_all():
+  original_selection_existed = FileAccess.file_exists(SaveManager.LAST_SAVE_SLOT_PATH)
+  if original_selection_existed:
+    original_selection = FileAccess.get_file_as_bytes(SaveManager.LAST_SAVE_SLOT_PATH)
+
+func after_all():
+  if original_selection_existed:
+    var file := FileAccess.open(SaveManager.LAST_SAVE_SLOT_PATH, FileAccess.WRITE)
+    file.store_buffer(original_selection)
+    file.close()
+  else:
+    DirAccess.remove_absolute(SaveManager.LAST_SAVE_SLOT_PATH)
 
 func before_each():
   # Clean up any existing test save files
   _cleanup_test_saves()
+  if FileAccess.file_exists(SaveManager.LAST_SAVE_SLOT_PATH):
+    DirAccess.remove_absolute(SaveManager.LAST_SAVE_SLOT_PATH)
   
   # Save original managed systems so we can restore them after
   original_managed_systems = SaveManager.managed_systems.duplicate()
@@ -320,9 +337,10 @@ func test_initialize_default_slot_loads_existing(backup_only = use_parameters([f
   # Reset state
   SaveManager.current_save_slot = -1
   mock_system.loaded_data = {}
+  assert_eq(DirAccess.remove_absolute(SaveManager.LAST_SAVE_SLOT_PATH), OK)
   
   # Initialize default slot should load existing save
-  var success = SaveManager.initialize_default_slot()
+  var success = SaveManager.initialize_active_slot()
   
   assert_true(success, "Should succeed")
   assert_eq(SaveManager.current_save_slot, SaveManager.DEFAULT_SLOT, "Should load default slot")
@@ -337,7 +355,7 @@ func test_initialize_default_slot_creates_new():
   SaveManager.delete_save_slot(SaveManager.DEFAULT_SLOT)
   
   # Initialize should create new game
-  var success = SaveManager.initialize_default_slot()
+  var success = SaveManager.initialize_active_slot()
   
   assert_true(success, "Should succeed")
   assert_eq(SaveManager.current_save_slot, SaveManager.DEFAULT_SLOT, "Should create default slot")
@@ -352,7 +370,70 @@ func test_initialize_default_slot_already_loaded():
   SaveManager.create_new_game(2)
   
   # Initialize should not change slot
-  var success = SaveManager.initialize_default_slot()
+  var success = SaveManager.initialize_active_slot()
   
   assert_true(success, "Should succeed")
   assert_eq(SaveManager.current_save_slot, 2, "Should keep existing slot")
+
+func test_startup_restores_last_selected_slot_and_its_progress(
+  selection = use_parameters(["new slot", "existing slot", "backup only"])
+):
+  var system := MockSaveableSystem.new("test_system")
+  SaveManager.register_system(system)
+  SaveManager.create_new_game(TEST_SLOT)
+  system.save_data = {"value": 42}
+  assert_true(SaveManager.save_current_slot(false))
+  if selection != "new slot":
+    SaveManager.create_new_game(SaveManager.DEFAULT_SLOT)
+    assert_true(SaveManager.load_save_slot(TEST_SLOT))
+  if selection == "backup only":
+    assert_eq(DirAccess.rename_absolute(
+      SaveManager.SAVE_SLOT_PATH % TEST_SLOT, SaveManager.SAVE_SLOT_BACKUP_PATH % TEST_SLOT
+    ), OK)
+
+  var restarted_manager = _new_save_manager()
+  var restarted_system := MockSaveableSystem.new("test_system")
+  restarted_manager.register_system(restarted_system)
+
+  assert_true(restarted_manager.initialize_active_slot())
+  assert_eq(restarted_manager.current_save_slot, TEST_SLOT)
+  assert_eq(restarted_system.loaded_data.get("value"), 42.0)
+
+func test_startup_does_not_switch_slots_when_the_last_selection_is_unusable(
+  delete_slot = use_parameters([true, false])
+):
+  assert_true(SaveManager.create_new_game(SaveManager.DEFAULT_SLOT))
+  assert_true(SaveManager.create_new_game(TEST_SLOT))
+  if delete_slot:
+    assert_true(SaveManager.delete_save_slot(TEST_SLOT))
+  else:
+    var primary := FileAccess.open(SaveManager.SAVE_SLOT_PATH % TEST_SLOT, FileAccess.WRITE)
+    primary.store_string("not JSON")
+    primary.close()
+
+  var restarted_manager = _new_save_manager()
+  assert_false(restarted_manager.initialize_active_slot())
+  assert_eq(restarted_manager.current_save_slot, -1)
+  assert_false(restarted_manager.initialize_active_slot(), "Returning to the menu still requires a selection")
+
+  assert_true(restarted_manager.load_save_slot(SaveManager.DEFAULT_SLOT), "The player can select a different slot")
+  var next_launch = _new_save_manager()
+  assert_true(next_launch.initialize_active_slot())
+  assert_eq(next_launch.current_save_slot, SaveManager.DEFAULT_SLOT)
+
+func test_failed_slot_creation_does_not_replace_the_remembered_selection():
+  assert_true(SaveManager.create_new_game(SaveManager.DEFAULT_SLOT))
+  # Block the temporary save write without affecting the previous slot.
+  var temp_path := (SaveManager.SAVE_SLOT_PATH % TEST_SLOT) + ".tmp"
+  assert_eq(DirAccess.make_dir_absolute(temp_path), OK)
+  var created := SaveManager.create_new_game(TEST_SLOT)
+  assert_eq(DirAccess.remove_absolute(temp_path), OK)
+
+  assert_false(created)
+  assert_eq(SaveManager.current_save_slot, -1)
+  var next_launch = _new_save_manager()
+  assert_true(next_launch.initialize_active_slot())
+  assert_eq(next_launch.current_save_slot, SaveManager.DEFAULT_SLOT)
+
+func _new_save_manager():
+  return autofree(load("res://Utilities/Systems/save_manager.gd").new())

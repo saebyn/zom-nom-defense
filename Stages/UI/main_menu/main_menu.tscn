@@ -105,10 +105,12 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -214.0
-offset_bottom = 50.0
+offset_left = -234.0
+offset_top = 22.0
+offset_right = -20.0
+offset_bottom = 72.0
 grow_horizontal = 0
-text = "{current save}"
+text = "Select Save Slot"
 
 [node name="Version" type="Label" parent="." unique_id=1827910137]
 layout_mode = 1
@@ -161,5 +163,5 @@ ignore_time_scale = true
 [connection signal="pressed" from="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/AchievementsButton" to="." method="_on_achievements_button_pressed"]
 [connection signal="pressed" from="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/UtilityRow/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="LeftMenu/ButtonInset/Actions/SecondaryInset/SecondaryActions/UtilityRow/ExitButton" to="." method="_on_exit_button_pressed"]
-[connection signal="pressed" from="CurrentSave" to="." method="_on_load_game_button_pressed"]
+[connection signal="pressed" from="CurrentSave" to="." method="_on_save_slot_button_pressed"]
 [connection signal="timeout" from="TipTimer" to="." method="_show_next_tip"]
